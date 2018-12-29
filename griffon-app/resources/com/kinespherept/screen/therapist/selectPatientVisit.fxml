@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import griffon.javafx.support.JavaFXUtils?>
+<?import java.lang.Double?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+
+
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<AnchorPane fx:id="rootAnchorPane" prefHeight="450" prefWidth="340" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.therapist.SelectPatientVisitController">
+
+    <children>
+        <FlowPane prefHeight="450.0" prefWidth="340.0">
+            <children>
+
+                <!-- navigation pane -->
+                <AnchorPane prefHeight="400" prefWidth="100" fx:id="navigationPane"/>
+
+                <Separator orientation="VERTICAL" prefHeight="450" prefWidth="10.0" />
+
+                <!-- schedule section (date picker, visitors) -->
+                <FlowPane prefHeight="333.0" prefWidth="230.0">
+                    <children>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="200.0" text="Daily Schedule" />
+                        <FlowPane hgap="20" prefHeight="39.0" prefWidth="225.0">
+                            <children>
+                                <DatePicker id="visitDate" />
+                            </children>
+                        </FlowPane>
+                        <VBox prefHeight="30.0" prefWidth="200.0" spacing="20">
+                            <children>
+                                <RadioButton fx:id="showPending" text="Show Only Pending" JavaFXUtils.griffonActionId="showPendingVisits">
+                                    <toggleGroup><ToggleGroup fx:id="visitFilter" /></toggleGroup>
+                                </RadioButton>
+                                <RadioButton fx:id="showAll" selected="true" text="Show All" toggleGroup="$visitFilter" JavaFXUtils.griffonActionId="showAllVisits" />
+                            </children>
+                        </VBox>
+                        <Separator prefHeight="7" prefWidth="200.0" />
+                        <ListView id="visitors" fx:id="visitors" prefHeight="180.0" prefWidth="200.0" />
+                        <HBox alignment="center" prefHeight="55.0" prefWidth="200.0">
+                            <children>
+                                <Button mnemonicParsing="false" text="Load" JavaFXUtils.griffonActionId="loadVisit" />
+                            </children>
+                        </HBox>
+
+                    </children>
+                </FlowPane>
+            </children>
+        </FlowPane>
+    </children>
+</AnchorPane>

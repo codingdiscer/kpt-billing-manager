@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import griffon.javafx.support.JavaFXUtils?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+<AnchorPane prefHeight="500" prefWidth="300" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.visitstatus.EditVisitDetailsNoTreatmentController">
+   <children>
+
+    <FlowPane prefHeight="500.0" prefWidth="300.0">
+        <children>
+
+           <GridPane>
+               <columnConstraints>
+                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.0" minWidth="10.0" prefWidth="90.0" />
+                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+               </columnConstraints>
+               <rowConstraints>
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                   <Label text="Visit Date" />
+                   <Label id="visitDate" text="2018-04-08" GridPane.columnIndex="1" />
+
+                   <Label text="Visit Number" GridPane.rowIndex="1" />
+                   <Label id="visitNumber" text="3" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                   <Label text="Name" GridPane.rowIndex="2"  />
+                   <Label id="patientName" prefWidth="150.0" text="Sparkles McGoo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+
+                   <Label text="Patient Type" GridPane.rowIndex="3" />
+                   <ChoiceBox id="patientTypes" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                   <Label text="Insurance" GridPane.rowIndex="4" />
+                   <ChoiceBox id="insuranceTypes" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                   <Label text="Visit Type" GridPane.rowIndex="5" />
+                   <ChoiceBox id="visitTypes" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                   <Label text="Therapist" GridPane.rowIndex="6" />
+                   <ChoiceBox id="therapists" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+               </children>
+           </GridPane>
+            <Separator prefHeight="10" prefWidth="290.0" />
+            <Label alignment="CENTER" prefWidth="290" text="Notes" />
+            <TextArea id="notes" prefHeight="60.0" prefWidth="290.0" wrapText="true"/>
+            <Separator prefHeight="30" prefWidth="290.0" />
+            <Button alignment="CENTER" prefWidth="290" text="Save and Continue" JavaFXUtils.griffonActionId="saveChangesAndContinue" />
+            <Separator prefHeight="30" prefWidth="290.0" />
+            <Button alignment="CENTER" prefWidth="290" text="Cancel and Ignore Changes" JavaFXUtils.griffonActionId="cancelAndIgnoreChanges" />
+
+        </children>
+    </FlowPane>
+
+   </children>
+</AnchorPane>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import griffon.javafx.support.JavaFXUtils?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="550" prefWidth="960" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.admin.SetupDiagnosesController"  fx:id="rootAnchorPane">
+<!--
+    <fx:define>
+        <Double fx:id="SCREEN_WIDTH" fx:value="100"/>
+        <Double fx:id="SCREEN_HEIGHT" fx:value="400"/>
+    </fx:define>
+-->
+   <children>
+       <!-- master flow pane -->
+        <FlowPane prefHeight="500" prefWidth="960">
+            <children>
+
+                <AnchorPane fx:id="navigationPane" prefHeight="400" prefWidth="100" />
+
+                <Separator orientation="VERTICAL" prefHeight="500" prefWidth="10.0" />
+
+                <!-- dx-type column -->
+                <FlowPane prefHeight="500" prefWidth="250">
+                    <children>
+
+                        <Label alignment="CENTER" prefWidth="250" style="-fx-background-color: c0c0c0;" text="Diagnosis Types : Update or Add" />
+
+                        <ListView id="diagnosisTypesDisplay" prefHeight="150" prefWidth="250" />
+
+                        <Separator prefHeight="20" prefWidth="250" />
+
+                        <Label alignment="CENTER" prefWidth="250" style="-fx-background-color: c0c0c0;" text="Select type to update" />
+
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="190.0" minWidth="10.0" prefWidth="190.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <ChoiceBox id="dtUpdateDiagnosisType" prefWidth="170" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <TextField id="dtUpdateDiagnosisTypeName" text="{name}" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Label text="Order" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <ChoiceBox id="dtUpdateDisplayOrder" prefWidth="70" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <FlowPane prefWidth="190.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <children>
+                                        <Button text="Update" JavaFXUtils.griffonActionId="updateType" />
+                                        <Label prefWidth="10" />
+                                        <Button text="Delete" JavaFXUtils.griffonActionId="deleteType" />
+                                    </children>
+                                </FlowPane>
+                            </children>
+                        </GridPane>
+
+                        <Label id="dtUpdateErrorMessage" alignment="CENTER" prefWidth="250" text="{errors}" textFill="#ff0000" />
+
+                        <Separator prefHeight="20" prefWidth="250" />
+
+                        <Label alignment="CENTER" prefWidth="250" style="-fx-background-color: c0c0c0;" text="New type to add" />
+
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="190.0" minWidth="10.0" prefWidth="190.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField id="dtAddDiagnosisTypeName" text="{name}" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                <Label text="Order" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <ChoiceBox id="dtAddDisplayOrder" prefWidth="70" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Button text="Add Type" GridPane.columnIndex="1" GridPane.rowIndex="2" JavaFXUtils.griffonActionId="addType" />
+                            </children>
+                        </GridPane>
+
+                        <Label id="dtAddErrorMessage" alignment="CENTER" prefWidth="250" text="{errors}" textFill="#ff0000" />
+
+
+                    </children>
+                </FlowPane>
+
+                <!-- end DxTypeAddUpdate block -->
+                <Separator orientation="VERTICAL" prefHeight="500" prefWidth="20" />
+                <!-- start DxSelector block -->
+
+                <FlowPane prefHeight="500" prefWidth="280">
+                    <children>
+                        <Label alignment="CENTER" prefWidth="280" style="-fx-background-color: c0c0c0;" text="Diagnosis Selector Preview" />
+
+                        <AnchorPane fx:id="diagnosisSelector" prefHeight="350" prefWidth="280" />
+
+                    </children>
+                </FlowPane>
+
+                <!-- end DxSelector block -->
+                <Separator orientation="VERTICAL" prefHeight="500" prefWidth="20" />
+                <!-- start DxAddUpdate block -->
+
+                <FlowPane prefHeight="500" prefWidth="250">
+                    <children>
+
+                        <Label alignment="CENTER" prefWidth="250" style="-fx-background-color: c0c0c0;" text="Diagnoses : Update or Add" />
+
+                        <Separator prefHeight="20" prefWidth="250" />
+
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="190.0" minWidth="10.0" prefWidth="190.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Select diagnosis to update..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <ChoiceBox id="dxUpdateDiagnosisTypeSelect" prefWidth="170" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Label text="Diagnosis" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <ChoiceBox id="dxUpdateDiagnosis" prefWidth="170" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                <Label text="Update values..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                                <Label text="Code" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                <TextField id="dxUpdateDiagnosisCode" text="{code}" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                                <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                <TextField id="dxUpdateDiagnosisName" text="{name}" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                                <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                                <ChoiceBox id="dxUpdateDiagnosisType" prefWidth="170" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                                <Label text="Order" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                                <ChoiceBox id="dxUpdateDisplayOrder" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                                <FlowPane prefWidth="190.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                    <children>
+                                        <Button text="Update" JavaFXUtils.griffonActionId="updateDiagnosis" />
+                                        <Label prefWidth="10" />
+                                        <Button text="Delete" JavaFXUtils.griffonActionId="deleteDiagnosis" />
+                                    </children>
+                                </FlowPane>
+                            </children>
+                        </GridPane>
+
+                        <Label id="dxUpdateErrorMessage" alignment="CENTER" prefWidth="250" text="{errors}" textFill="#ff0000" />
+
+                        <Separator prefHeight="20" prefWidth="250" />
+
+                        <Label alignment="CENTER" prefWidth="250" style="-fx-background-color: c0c0c0;" text="New diagnosis to add" />
+
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="190.0" minWidth="10.0" prefWidth="190.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <TextField id="dxAddDiagnosisName" text="{name}" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                <Label text="Code" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <TextField id="dxAddDiagnosisCode" text="{code}" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <ChoiceBox id="dxAddDiagnosisType" prefWidth="170" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                <Label text="Order" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <ChoiceBox id="dxAddDisplayOrder" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                                <Button text="Add" GridPane.columnIndex="1" GridPane.rowIndex="4" JavaFXUtils.griffonActionId="addDiagnosis" />
+                            </children>
+                        </GridPane>
+
+                        <Label id="dxAddErrorMessage" alignment="CENTER" prefWidth="250" text="{errors}" textFill="#ff0000" />
+
+
+                    </children>
+                </FlowPane>
+
+
+
+            </children>
+        </FlowPane>
+   </children>
+</AnchorPane>

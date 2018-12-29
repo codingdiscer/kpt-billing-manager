@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import griffon.javafx.support.JavaFXUtils?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+
+<AnchorPane prefHeight="400.0" prefWidth="1320.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.visitstatus.TrackVisitStatusController" fx:id="rootAnchorPane">
+   <children>
+        <FlowPane prefHeight="400.0" prefWidth="1310.0">
+            <children>
+
+               <!-- navigation pane -->
+               <AnchorPane prefHeight="400" prefWidth="100" fx:id="navigationPane"/>
+
+               <Separator orientation="VERTICAL" prefHeight="400" prefWidth="10.0" />
+
+              <FlowPane prefHeight="400.0" prefWidth="1200.0">
+                 <children>
+
+
+                    <Label text="Status " />
+                    <ChoiceBox id="visitStatuses" prefWidth="250.0" />
+
+                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                    <Label text="On/From Date " />
+                    <DatePicker id="fromDate"/>
+
+                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                    <Label text="To Date " />
+                    <DatePicker id="toDate" />
+                    <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearToDate"/>
+
+                    <Separator prefHeight="10.0" prefWidth="1200" />
+
+
+                    <Label text="Insurance " />
+                    <ChoiceBox id="insuranceTypes" prefWidth="150.0" />
+
+                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                    <Label text="Therapist " />
+                    <ChoiceBox id="therapists" prefWidth="150.0" />
+
+                    <Separator prefHeight="20" prefWidth="1200.0" />
+
+                    <GridPane prefWidth="1200">
+                      <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />    <!-- Date of service -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />    <!-- Visit # -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="160.0" />   <!-- First name -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />   <!-- Last name -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />    <!-- Dx Change ? -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />   <!-- Tx Codes -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />    <!-- Tx # -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />    <!-- Notes? -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />    <!-- See details -->
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380.0" />   <!-- Actions(/buttons) -->
+                      </columnConstraints>
+                      <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      </rowConstraints>
+                       <children>
+                          <Label alignment="CENTER" prefWidth="80" style="-fx-border-color: black;" text="DoS" GridPane.columnIndex="0" >
+                              <tooltip><Tooltip text="Date Of Service"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="30" style="-fx-border-color: black;" text="Vst #" GridPane.columnIndex="1" >
+                               <tooltip><Tooltip text="Visit number"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="160" style="-fx-border-color: black;" text="Last" GridPane.columnIndex="2" />
+                          <Label alignment="CENTER" prefWidth="120" style="-fx-border-color: black;" text="First" GridPane.columnIndex="3" />
+                          <Label alignment="CENTER" prefWidth="50" style="-fx-border-color: black;" text="Dx Chg" GridPane.columnIndex="4" >
+                               <tooltip><Tooltip text="Indicates if diagnoses changed from the previous visit"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="200" style="-fx-border-color: black;" text="Tx Codes" GridPane.columnIndex="5">
+                               <tooltip><Tooltip text="List of the performed treatment codes"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="30" style="-fx-border-color: black;" text="#" GridPane.columnIndex="6">
+                               <tooltip><Tooltip text="The total number of performed treatments"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="50" style="-fx-border-color: black;" text="Notes" GridPane.columnIndex="7">
+                              <tooltip><Tooltip text="Indicates if notes were taken during the visit"/> </tooltip>
+                          </Label>
+                          <Label alignment="CENTER" prefWidth="80" style="-fx-border-color: black;" text="See Details" GridPane.columnIndex="8" />
+                          <Label alignment="CENTER" prefWidth="380" style="-fx-border-color: black;" text="Actions (Set status to...)" GridPane.columnIndex="9" />
+                       </children>
+                    </GridPane>
+                    <ScrollPane prefHeight="300.0" prefWidth="1200.0">
+                      <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1200.0">
+                            <GridPane prefWidth="1200" fx:id="visitResultsGridPane">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="160.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                <children>
+                                    <Label alignment="CENTER" prefWidth="80" style="-fx-border-color: black;" text="05-18-2018" GridPane.columnIndex="0" />
+                                    <Label alignment="CENTER" prefWidth="30" style="-fx-border-color: black;" text="3" GridPane.columnIndex="1" />
+                                    <Label alignment="CENTER" prefWidth="160" style="-fx-border-color: black;" text="Lucy" GridPane.columnIndex="2" />
+                                    <Label alignment="CENTER" prefWidth="120" style="-fx-border-color: black;" text="Juicy" GridPane.columnIndex="3" />
+                                    <Label alignment="CENTER" prefWidth="50" style="-fx-border-color: black;" text="Yes" GridPane.columnIndex="4" />
+                                    <Label alignment="CENTER" prefWidth="200" style="-fx-border-color: black;" text="abc" GridPane.columnIndex="5" />
+                                    <Label alignment="CENTER" prefWidth="30" style="-fx-border-color: black;" text="1" GridPane.columnIndex="6" />
+                                    <Label alignment="CENTER" prefWidth="50" style="-fx-border-color: black;" text="1" GridPane.columnIndex="7" />
+                                    <Button alignment="CENTER" text="View" GridPane.columnIndex="8"/>
+                                    <Button alignment="CENTER" text="Billed to insurance" GridPane.columnIndex="9"/>
+                                </children>
+                            </GridPane>
+
+                        </AnchorPane>
+                      </content>
+                    </ScrollPane>
+
+                </children>
+            </FlowPane>
+
+         </children>
+      </FlowPane>
+   </children>
+</AnchorPane>

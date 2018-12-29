@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+
+
+
+
+                           <children>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97161) Eval low complex" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97162) Eval mod complex" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97163) Eval high complex" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97112) Neuromuscular Re-Education" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97110) Therapeutic Exercise" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97140) Manual Therapy" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97530) Therapeutic Activities" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97164) Re-evaluation" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97035) Ultrasound" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+                               <FlowPane hgap="3" layoutX="41.0" layoutY="62.0" prefHeight="25.0" prefWidth="300.0">
+                                   <children>
+                                       <Label prefWidth="200" text="(97799) Dry Needling" />
+                                       <Button text="+" />
+                                       <Button text="-" />
+                                       <Label text="1" />
+                                   </children>
+                               </FlowPane>
+
+                           </children>
+
+
+
+
+-->
+
+<AnchorPane prefHeight="350.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.component.SelectTreatmentController">
+   <children>
+       <FlowPane prefHeight="350.0" prefWidth="300.0">
+           <children>
+               <FlowPane prefWidth="300.0" alignment="CENTER" rowValignment="CENTER" columnHalignment="CENTER">
+                   <children>
+                       <Label text="Currently Selected Treatments  " /> <Label text="10" id="treatmentCount" />
+                   </children>
+               </FlowPane>
+               <FlowPane prefHeight="350.0" prefWidth="300.0">
+                   <children>
+                       <VBox prefHeight="350.0" prefWidth="300.0" fx:id="treatmentRows"/>
+                   </children>
+               </FlowPane>
+           </children>
+       </FlowPane>
+   </children>
+</AnchorPane>

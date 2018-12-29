@@ -1,0 +1,38 @@
+package {package}
+
+import com.kinespherept.autowire.GriffonAutowire
+import com.kinespherept.autowire.SpringAutowire
+import com.kinespherept.config.SpringConfig
+import griffon.core.artifact.GriffonController
+import griffon.core.controller.ControllerAction
+import griffon.inject.MVCMember
+import griffon.metadata.ArtifactProviderFor
+import griffon.transform.Threading
+import groovy.util.logging.Slf4j
+
+import javax.annotation.Nonnull
+import javax.annotation.PostConstruct
+
+
+@ArtifactProviderFor(GriffonController)
+@Slf4j
+class {artifact}Controller {
+
+    @MVCMember @Nonnull {artifact}Model model
+    @MVCMember @Nonnull {artifact}View view
+
+//    @SpringAutowire LookupDataService lookupDataService
+//    @GriffonAutowire ArtifactController artifactController
+
+    @PostConstruct
+    void init() {
+        log.debug "init()"
+        SpringConfig.autowire(this)
+    }
+
+
+//    @ControllerAction
+//    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+//    void doStuff() { }
+
+}

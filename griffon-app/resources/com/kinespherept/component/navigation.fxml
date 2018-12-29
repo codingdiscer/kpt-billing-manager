@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.Double?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Button?>
+
+<AnchorPane prefHeight="$SCREEN_HEIGHT" prefWidth="$SCREEN_WIDTH" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.LoginController" style="-fx-background-color: WHITE">
+    <fx:define>
+        <Double fx:id="SCREEN_WIDTH" fx:value="100"/>
+        <Double fx:id="SCREEN_HEIGHT" fx:value="400"/>
+    </fx:define>
+   <children>
+       <FlowPane prefHeight="$SCREEN_HEIGHT" prefWidth="$SCREEN_WIDTH" >
+           <children>
+               <Label alignment="CENTER" prefHeight="20" prefWidth="$SCREEN_WIDTH" text="Navigation" />
+               <FlowPane fx:id="navigationLinks" prefHeight="380.0" prefWidth="$SCREEN_WIDTH">
+                   <children>
+                       <Button text="visit status tracker" prefHeight="100" prefWidth="100" wrapText="true" textAlignment="CENTER"/>
+                   </children>
+               </FlowPane>
+           </children>
+       </FlowPane>
+   </children>
+</AnchorPane>

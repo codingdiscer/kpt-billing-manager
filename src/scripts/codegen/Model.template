@@ -1,0 +1,25 @@
+package {package}
+
+import griffon.core.artifact.GriffonModel
+import griffon.inject.MVCMember
+import griffon.metadata.ArtifactProviderFor
+
+import javax.annotation.Nonnull
+
+@ArtifactProviderFor(GriffonModel)
+class {artifact}Model {
+
+    @MVCMember @Nonnull {artifact}Controller controller
+
+//    // how to attach a change listener to a property
+//    @FXObservable @ChangeListener('handleEvent')
+//    String searchFilter = ''          // property
+//    Closure handleEvent = { StringProperty ob, ov, nv -> controller.doSomething(ob.value) }
+
+
+//    // how to declare list property, and the 'choice' for that property
+//    @FXObservable List<String> patientTypes = []
+//    @FXObservable String patientTypesChoice = ''
+
+
+}
