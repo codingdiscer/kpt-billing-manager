@@ -4,11 +4,11 @@ Kinesphere PT Visit Tracking Manager instruction manual
 This article explains how to use the application.
 
 The application has 5 major sections:
-* [Add & modify patient/client data](#add--modify_patientclient-data)
+* [Add & modify patient/client data](#add--modify-patientclient-data)
 * [Schedule patient/client visits](#schedule-patientclient-visits)
-* [Therapist enter visit (diagnosis/treatment) data](#therapist-enter-visit_(diagnosis/treatment)_data)
+* [Therapist enter visit (diagnosis/treatment) data](#therapist-enter-visit-diagnosistreatment-data)
 * [Track visit status](#track-visit-status)
-* [Add & modify diagnosis data](#add--modify-diagnosis-data)
+* [Add & modify diagnosis data](#manage-diagnoses)
 
 
 ## FAQ 
