@@ -59,7 +59,7 @@ class FillOutPatientVisitNoTreatmentController {
     }
 
 
-    void prepareForm(boolean resetVisitDate = true) {
+    void prepareForm(boolean resetVisitDate = true, boolean showAllVisits = false) {
 
         preparingForm = true
 
@@ -70,10 +70,13 @@ class FillOutPatientVisitNoTreatmentController {
         if(resetVisitDate) {
             model.visitDate = LocalDate.now()
         }
+
+        model.showAllVisits = showAllVisits
+        view.setToggle(model.showAllVisits)
+
         refreshVisitors()
 
         preparingForm = false
-
     }
 
 
@@ -105,7 +108,7 @@ class FillOutPatientVisitNoTreatmentController {
         clearingForm = true
         model.selectedVisit = null
 
-        selectPatientVisitController.prepareForm(false)
+        selectPatientVisitController.prepareForm(false, model.showAllVisits)
         SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
         clearingForm = false
     }
@@ -116,7 +119,7 @@ class FillOutPatientVisitNoTreatmentController {
             Visit visit = model.visits[view.visitors.selectionModel.selectedIndex]
 
             if(visitService.visitRequiresTreatment(visit)) {
-                fillOutPatientVisitWithTreatmentController.transitionToTreatments(visit)
+                fillOutPatientVisitWithTreatmentController.transitionToTreatments(visit, model.showAllVisits)
                 SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_WITH_TREATMENT)
             } else {
                 // load the visit for the selected patient
@@ -202,15 +205,17 @@ class FillOutPatientVisitNoTreatmentController {
         SceneManager.changeTheScene(SceneDefinition.VERIFY_PATIENT_VISIT_NO_TREATMENT)
     }
 
-    void transitionFromTreatments(Visit visit) {
-        transitionFromTreatments(visit, visit.patientType.patientTypeName,
-                visit.insuranceType.insuranceTypeName, visit.visitType.visitTypeName, visit.notes)
+    void transitionFromTreatments(Visit visit, boolean showAllVisits) {
+        transitionFromTreatments(visit, visit.patientType.patientTypeName, visit.insuranceType.insuranceTypeName,
+                visit.visitType.visitTypeName, visit.notes, showAllVisits)
     }
 
 
-    void transitionFromTreatments(Visit visit, String patientTypesChoice, String insuranceTypesChoice, String visitTypesChoice, String notes) {
+    void transitionFromTreatments(Visit visit, String patientTypesChoice, String insuranceTypesChoice,
+                                  String visitTypesChoice, String notes, boolean showAllVisits)
+    {
         model.visitDate = visit.visitDate
-        prepareForm(false)
+        prepareForm(false, showAllVisits)
         setVisitAndDisplay(visit)
 
         preparingForm = true
@@ -232,7 +237,8 @@ class FillOutPatientVisitNoTreatmentController {
             {
                 log.info "..need to change scenes here..."
                 fillOutPatientVisitWithTreatmentController.transitionToTreatments(model.selectedVisit,
-                        model.patientTypesChoice, model.insuranceTypesChoice, model.visitTypesChoice, model.notes)
+                        model.patientTypesChoice, model.insuranceTypesChoice, model.visitTypesChoice, model.notes,
+                        model.showAllVisits)
                 SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_WITH_TREATMENT)
             }
         }

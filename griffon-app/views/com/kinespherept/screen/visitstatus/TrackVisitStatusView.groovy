@@ -103,6 +103,10 @@ class TrackVisitStatusView extends BaseView {
 
         // action button(s)
         switch (visitStatus) {
+            case VisitStatus.VISIT_CREATED:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit),
+                        9, rowNumber)
+                break
             case VisitStatus.SEEN_BY_THERAPIST:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit,
                         VisitStatus.PREPARED_FOR_BILLING, VisitStatus.PAID_IN_FULL),

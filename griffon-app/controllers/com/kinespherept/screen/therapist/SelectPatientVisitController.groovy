@@ -57,7 +57,7 @@ class SelectPatientVisitController {
         SpringConfig.autowire(this)
     }
 
-    void prepareForm(boolean resetVisitDate = true) {
+    void prepareForm(boolean resetVisitDate = true, boolean showAllVisits = false) {
 
         preparingForm = true
 
@@ -68,6 +68,9 @@ class SelectPatientVisitController {
         if(resetVisitDate) {
             model.visitDate = LocalDate.now()
         }
+        model.showAllVisits = showAllVisits
+        view.setToggle(model.showAllVisits)
+
         refreshVisitors()
 
         preparingForm = false
@@ -76,7 +79,7 @@ class SelectPatientVisitController {
 
 
     void refreshVisitors() {
-        log.debug "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
+        log.info "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
 
         model.visitors.clear()
         model.visits = visitService.findVisitsByDateAndTherapist(
@@ -99,10 +102,10 @@ class SelectPatientVisitController {
             Visit visit = model.visits[view.visitors.selectionModel.selectedIndex]
 
             if(visitService.visitRequiresTreatment(visit)) {
-                fillOutPatientVisitWithTreatmentController.transitionToTreatments(visit)
+                fillOutPatientVisitWithTreatmentController.transitionToTreatments(visit, model.showAllVisits)
                 SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_WITH_TREATMENT)
             } else {
-                fillOutPatientVisitNoTreatmentController.transitionFromTreatments(visit)
+                fillOutPatientVisitNoTreatmentController.transitionFromTreatments(visit, model.showAllVisits)
                 SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_NO_TREATMENT)
             }
         } else {
@@ -116,6 +119,7 @@ class SelectPatientVisitController {
         log.debug "showPendingVisits()"
         if(model.showAllVisits) {
             model.showAllVisits = false
+            view.setToggle(model.showAllVisits)
             refreshVisitors()
         }
     }
@@ -125,6 +129,7 @@ class SelectPatientVisitController {
         log.debug "showAllVisits()"
         if(!model.showAllVisits) {
             model.showAllVisits = true
+            view.setToggle(model.showAllVisits)
             refreshVisitors()
         }
     }

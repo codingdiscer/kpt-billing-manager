@@ -10,6 +10,8 @@ import griffon.inject.MVCMember
 import griffon.metadata.ArtifactProviderFor
 import javafx.fxml.FXML
 import javafx.scene.control.ListView
+import javafx.scene.control.RadioButton
+import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.FlowPane
 
@@ -34,6 +36,12 @@ class SelectPatientVisitView extends BaseView {
     @FXML AnchorPane navigationPane
 
 
+    @FXML ToggleGroup visitFilter
+    @FXML RadioButton showPending
+    @FXML RadioButton showAll
+
+
+
     @PostConstruct
     void init() {
         log.debug "init()"
@@ -50,6 +58,17 @@ class SelectPatientVisitView extends BaseView {
     @PostSpringConstruct
     void initAfterSpring() {
         rootAnchorPane.style = commonProperties.therapistBackground
+    }
+
+    /**
+     * Sets the radio button toggle for the "show pending" / "show all" options
+     */
+    void setToggle(boolean showAllVisits) {
+        if(showAllVisits) {
+            visitFilter.selectToggle(showAll)
+        } else {
+            visitFilter.selectToggle(showPending)
+        }
     }
 
 }

@@ -2,7 +2,9 @@ package com.kinespherept.screen
 
 import com.kinespherept.config.GriffonConfig
 import com.kinespherept.screen.patient.SchedulePatientsController
+import com.kinespherept.screen.patient.SetupPatientController
 import com.kinespherept.screen.therapist.FillOutPatientVisitNoTreatmentController
+import com.kinespherept.screen.therapist.SelectPatientVisitController
 import com.kinespherept.screen.visitstatus.TrackVisitStatusController
 import com.kinespherept.autowire.GriffonAutowire
 import com.kinespherept.autowire.SpringAutowire
@@ -45,8 +47,8 @@ class LoginController {
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire EmployeeSession employeeSession
 
-    @GriffonAutowire FillOutPatientVisitNoTreatmentController fillOutPatientVisitNoTreatmentController
     @GriffonAutowire SchedulePatientsController schedulePatientsController
+    @GriffonAutowire SelectPatientVisitController selectPatientVisitController
 
     // temp for testing
     @GriffonAutowire TrackVisitStatusController trackVisitStatusController
@@ -217,9 +219,9 @@ class LoginController {
                 SceneManager.changeTheScene(SceneDefinition.TRACK_VISIT_STATUS)
 
             } else if (employee?.roles.contains(EmployeeRole.THERAPIST)) {
-                fillOutPatientVisitNoTreatmentController.prepareForm()
+                selectPatientVisitController.prepareForm()
                 // change to the therapist's daily schedule
-                SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_NO_TREATMENT)
+                SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
             } else {
                 log.info "performLogin() :: no login logic implemented for employee ${employee}"
             }

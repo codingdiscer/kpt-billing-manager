@@ -36,7 +36,6 @@ class AdministerPatientsController {
     @GriffonAutowire SetupVisitController setupVisitController
 
     @SpringAutowire PatientService patientService
-    //@SpringAutowire SceneManager sceneManager
 
     boolean preparingForm = false
 

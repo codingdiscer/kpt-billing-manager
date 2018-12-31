@@ -33,7 +33,6 @@ class VerifyPatientVisitNoTreatmentController {
 
     @SpringAutowire EmployeeSession employeeSession
     @SpringAutowire LookupDataService lookupDataService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire VisitService visitService
 
 
@@ -61,7 +60,8 @@ class VerifyPatientVisitNoTreatmentController {
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void returnToEdit() {
         log.info "returnToEdit() :: model.visit=${model.visit}"
-        fillOutPatientVisitNoTreatmentController.prepareForm(false)
+        fillOutPatientVisitNoTreatmentController.prepareForm(false,
+                fillOutPatientVisitNoTreatmentController.model.showAllVisits)
         fillOutPatientVisitNoTreatmentController.setVisitAndDisplay(model.visit)
         SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_NO_TREATMENT)
     }
@@ -82,7 +82,8 @@ class VerifyPatientVisitNoTreatmentController {
         )
 
         // return to the therapist view page
-        selectPatientVisitController.prepareForm(false)
+        selectPatientVisitController.prepareForm(false,
+                fillOutPatientVisitNoTreatmentController.model.showAllVisits)
         SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
     }
 }

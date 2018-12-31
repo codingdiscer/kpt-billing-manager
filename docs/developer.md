@@ -32,6 +32,9 @@ Another idea - could write the label of the enum to the table (db column=string?
  
 
 ## Database scripts
+
+
+### Add a new user to the db
 Use this template to prepare a new user in the db.
 
 Variables:
@@ -44,6 +47,17 @@ create user {username} with encrypted password '{password}';
 grant all privileges on database {dbName} to {username};
 grant all privileges on all sequences in schema public to {username};
 grant select, insert, update, delete on all tables in schema public to {username};
+```
+
+### Add a user to a role
+
+Variables:
+* {next employee_roles_id pk}
+* {id of employee}
+* {id of role}
+
+```
+INSERT INTO employee_roles(employee_roles_id, employee_id, employee_role_id) VALUES ({next employee_roles_id pk}, id of employee}, {id of role});
 ```
 
 
@@ -60,7 +74,7 @@ $ git push origin v0.1
 ```
 
 
-### How to build a new deployable file
+### How to build and deploy a new version
 Run the `shadowJar` task to build the deployable
 
 ```
@@ -68,6 +82,9 @@ $ gradlew shadowJar
 ```
 
 The updated uber-jar will be found at `build/libs/kpt-billing-manager-all.jar`
+
+Upload the file to [here](https://github.com/codingdiscer/kpt-billing-manager/releases):
+
 
 
 

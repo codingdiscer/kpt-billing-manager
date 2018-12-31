@@ -62,6 +62,7 @@ class TrackVisitStatusController {
 
         // prepare the visit statuses (a selected list)
         model.visitStatuses.clear()
+        model.visitStatuses << VisitStatus.VISIT_CREATED.text
         model.visitStatuses << VisitStatus.SEEN_BY_THERAPIST.text
         model.visitStatuses << VisitStatus.PREPARED_FOR_BILLING.text
         model.visitStatuses << VisitStatus.BILLED_TO_INSURANCE.text

@@ -80,7 +80,7 @@
                        <Separator prefHeight="7.0" prefWidth="250.0" />
                        <Label  text="Notes"  prefWidth="250"/>
                        <Separator orientation="VERTICAL" prefHeight="60.0" prefWidth="3.0" />
-                       <Label id="notes" alignment="TOP_LEFT" prefHeight="60.0" prefWidth="225.0" text="{notes}" />
+                       <Label id="notes" alignment="TOP_LEFT" prefHeight="60.0" prefWidth="225.0" text="{notes}" wrapText="true"/>
 
                        <Separator prefHeight="7.0" prefWidth="250.0" />
                        <HBox >
