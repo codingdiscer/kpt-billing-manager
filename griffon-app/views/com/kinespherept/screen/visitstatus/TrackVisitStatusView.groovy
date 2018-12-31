@@ -65,8 +65,6 @@ class TrackVisitStatusView extends BaseView {
         // date, visit number, last name, first name
         visitResultsGridPane.add(new Label(text: visit.visitDate.format(commonProperties.dateFormatter),
                 prefWidth: 80, style: "-fx-border-color: black;", alignment: Pos.CENTER), 0, rowNumber)
-//        visitResultsGridPane.add(new Label(text: String.valueOf(visitService.getVisitNumber(visit)),
-//                prefWidth: 30, style: "-fx-border-color: black;", alignment: Pos.CENTER), 1, rowNumber)
         visitResultsGridPane.add(new Label(text: String.valueOf(visit.visitNumber),
                 prefWidth: 30, style: "-fx-border-color: black;", alignment: Pos.CENTER), 1, rowNumber)
         visitResultsGridPane.add(new Label(text: visit.patient.lastName, prefWidth: 160, style: "-fx-border-color: black;"), 2, rowNumber)
@@ -103,47 +101,57 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(new Button(text: 'View Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
                 8, rowNumber)
 
-        // action button
+        // action button(s)
         switch (visitStatus) {
             case VisitStatus.SEEN_BY_THERAPIST:
-                FlowPane flowPane = new FlowPane()
-                flowPane.children.addAll(
-                        new Button(text: 'Prepared For Billing', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.PREPARED_FOR_BILLING)}),
-                        new Button(text: 'Paid In Full', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.PAID_IN_FULL)})
-                )
-                visitResultsGridPane.add(flowPane, 9, rowNumber)
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.PREPARED_FOR_BILLING, VisitStatus.PAID_IN_FULL),
+                        9, rowNumber)
                 break
             case VisitStatus.PREPARED_FOR_BILLING:
-                visitResultsGridPane.add(
-                        new Button(text: 'Billed To Insurance', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.BILLED_TO_INSURANCE)}),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.BILLED_TO_INSURANCE),
                         9, rowNumber)
                 break
             case VisitStatus.BILLED_TO_INSURANCE:
-                visitResultsGridPane.add(
-                        new Button(text: 'Remittance Entered', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.REMITTANCE_ENTERED)}),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.REMITTANCE_ENTERED),
                         9, rowNumber)
                 break
             case VisitStatus.REMITTANCE_ENTERED:
-                visitResultsGridPane.add(
-                        new Button(text: 'Bill Sent To Patient', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.BILL_SENT_TO_PATIENT)}),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.BILL_SENT_TO_PATIENT, VisitStatus.AWAITING_SECONDARY, VisitStatus.PAID_IN_FULL),
+                        9, rowNumber)
+                break
+            case VisitStatus.AWAITING_SECONDARY:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.PAID_IN_FULL),
                         9, rowNumber)
                 break
             case VisitStatus.BILL_SENT_TO_PATIENT:
-                visitResultsGridPane.add(
-                        new Button(text: 'Paid In Full', id: visit.visitId,
-                                onAction: { a -> controller.changeVisitStatus(visit, VisitStatus.PAID_IN_FULL)}),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
+                        VisitStatus.PAID_IN_FULL),
                         9, rowNumber)
                 break
         }
 
     }
 
+    /**
+     * Builds a button with the label of the given VisitStatus, and when clicked, changes the visit to that status
+     */
+    Button buildButtonForStatus(Visit visit, VisitStatus visitStatus) {
+        new Button(text: visitStatus.text, id: visit.visitId,
+                onAction: { a -> controller.changeVisitStatus(visit, visitStatus)})
+    }
 
-
+    /**
+     * Builds the FlowPane of status change options for the given visit
+     */
+    FlowPane buildActionButtonFlowPane(Visit visit, VisitStatus ... visitStatuses) {
+        FlowPane flowPane = new FlowPane()
+        flowPane.children.addAll(visitStatuses.collect { buildButtonForStatus(visit, it) })
+        flowPane
+    }
 
 }

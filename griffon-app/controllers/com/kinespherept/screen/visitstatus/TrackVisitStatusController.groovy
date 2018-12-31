@@ -37,7 +37,6 @@ class TrackVisitStatusController {
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire EmployeeSession employeeSession
     @SpringAutowire LookupDataService lookupDataService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire VisitService visitService
 
     @GriffonAutowire NavigationController navigationController
@@ -61,15 +60,16 @@ class TrackVisitStatusController {
         // declare that we are preparing the form
         preparingForm = true
 
-        // prepare the insurance and therapist lists
+        // prepare the visit statuses (a selected list)
         model.visitStatuses.clear()
-        model.visitStatuses << 'SEEN_BY_THERAPIST'
-        model.visitStatuses << 'PREPARED_FOR_BILLING'
-        model.visitStatuses << 'BILLED_TO_INSURANCE'
-        model.visitStatuses << 'REMITTANCE_ENTERED'
-        model.visitStatuses << 'BILL_SENT_TO_PATIENT'
-        model.visitStatuses << 'PAID_IN_FULL'
-        model.visitStatusesChoice = 'SEEN_BY_THERAPIST'
+        model.visitStatuses << VisitStatus.SEEN_BY_THERAPIST.text
+        model.visitStatuses << VisitStatus.PREPARED_FOR_BILLING.text
+        model.visitStatuses << VisitStatus.BILLED_TO_INSURANCE.text
+        model.visitStatuses << VisitStatus.REMITTANCE_ENTERED.text
+        model.visitStatuses << VisitStatus.AWAITING_SECONDARY.text
+        model.visitStatuses << VisitStatus.BILL_SENT_TO_PATIENT.text
+        model.visitStatuses << VisitStatus.PAID_IN_FULL.text
+        model.visitStatusesChoice = VisitStatus.SEEN_BY_THERAPIST.text
 
         // prepare the insurance and therapist lists
         model.insuranceTypes.clear()
@@ -143,7 +143,7 @@ class TrackVisitStatusController {
 
         // convert VisitStatus, InsuranceType and Therapist into proper objects
 
-        VisitStatus visitStatus = VisitStatus.valueOf(model.visitStatusesChoice)
+        VisitStatus visitStatus = VisitStatus.findFromText(model.visitStatusesChoice)
         InsuranceType insuranceType = null
         Employee therapist = null
 

@@ -19,6 +19,17 @@ TODO - document how spring is bootstrapped
 ### Very little testing!
 The automated testing is currently insufficient
 
+### Enum ordering links to database
+The two enums VisitStatus & EmployeeRole are saved to the respective objects that are found in.
+The value that gets written to the database is the logical order (zero-based) of the declared
+values in the enum.  IE - the first listed enum value is id=0 in the database.
+Therefore, changing the order of the entries in the enum will necessarily change the interpretation
+of values in the database.  Do not change the order after any data has been written.  
+Adding new values to the end of the list is acceptable, and it will work going forward.
+
+Another idea - could write the label of the enum to the table (db column=string?)
+- need to test out this idea/fix
+ 
 
 ## Database scripts
 Use this template to prepare a new user in the db.
