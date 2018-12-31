@@ -39,6 +39,17 @@ grant select, insert, update, delete on all tables in schema public to {username
 
 ## Miscellaneous notes
 
+
+### How to create a tag
+Info here: https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+```
+$ git tag -a v0.1 -m "first tagged version"
+$ git push origin v0.1
+```
+
+
+
 ### Gradle commands that come with Griffon:
 
 Output from a `$ gradlew -tasks` command:

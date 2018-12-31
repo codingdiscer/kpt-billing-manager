@@ -28,6 +28,7 @@ class VerifyPatientVisitWithTreatmentController {
     @MVCMember @Nonnull VerifyPatientVisitWithTreatmentView view
 
     @GriffonAutowire FillOutPatientVisitWithTreatmentController fillOutPatientVisitWithTreatmentController
+    @GriffonAutowire SelectPatientVisitController selectPatientVisitController
 
     @SpringAutowire EmployeeSession employeeSession
     @SpringAutowire LookupDataService lookupDataService
@@ -95,8 +96,8 @@ class VerifyPatientVisitWithTreatmentController {
         )
 
         // return to the therapist view page
-        fillOutPatientVisitWithTreatmentController.prepareForm(false)
-        SceneManager.changeTheScene(SceneDefinition.FILL_OUT_PATIENT_VISIT_WITH_TREATMENT)
+        selectPatientVisitController.prepareForm(false)
+        SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
     }
 
 }

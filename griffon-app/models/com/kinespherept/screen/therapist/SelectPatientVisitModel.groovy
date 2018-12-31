@@ -7,7 +7,6 @@ import griffon.metadata.ArtifactProviderFor
 import griffon.transform.ChangeListener
 import griffon.transform.FXObservable
 import javafx.beans.property.ObjectProperty
-import javafx.beans.property.StringProperty
 
 import javax.annotation.Nonnull
 import java.time.LocalDate
@@ -30,6 +29,6 @@ class SelectPatientVisitModel {
     Visit selectedVisit = null
 
     // this flags whether the form should "show all" or "show only pending" visits
-    boolean showAllVisits = true
+    boolean showAllVisits = false
 
 }

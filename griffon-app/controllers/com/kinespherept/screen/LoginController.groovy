@@ -93,12 +93,12 @@ class LoginController {
         }
 
         runInsideUISync {
-            model.setMessage("Ok, trying with [${model.getUsername()}:${model.getPassword()}]")
+            model.setMessage("Ok, trying as [${model.getUsername()}]")
         }
 
         if(successfulLogin()) {
             runInsideUISync {
-                model.setMessage("Got it... we'll get started in a moment..")
+                model.setMessage("Login successful!  We'll get started in a moment (~20 seconds)")
                 view.viewProgressIndicator()
             }
 
@@ -122,7 +122,7 @@ class LoginController {
 
         } else {
             runInsideUISync {
-                model.setMessage("Nope.")
+                model.setMessage('Nope.')
             }
         }
     }
