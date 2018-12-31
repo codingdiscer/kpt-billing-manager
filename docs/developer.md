@@ -60,6 +60,16 @@ $ git push origin v0.1
 ```
 
 
+### How to build a new deployable file
+Run the `shadowJar` task to build the deployable
+
+```
+$ gradlew shadowJar
+```
+
+The updated uber-jar will be found at `build/libs/kpt-billing-manager-all.jar`
+
+
 
 ### Gradle commands that come with Griffon:
 
