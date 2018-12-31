@@ -24,12 +24,12 @@ class TrackVisitStatusModel {
 
     // fields that match up to form elements
     @FXObservable @ChangeListener('selectFromDate')
-    LocalDate fromDate = LocalDate.now()
+    LocalDate fromDate = null
     Closure selectFromDate = { ObjectProperty<LocalDate> ob, ov, nv -> controller.selectFromDate() }
 
 
     @FXObservable @ChangeListener('selectToDate')
-    LocalDate toDate = null
+    LocalDate toDate = LocalDate.now()
     Closure selectToDate = { ObjectProperty<LocalDate> ob, ov, nv -> controller.selectToDate() }
 
     @FXObservable List<String> visitStatuses = []

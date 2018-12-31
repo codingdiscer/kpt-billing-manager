@@ -246,30 +246,30 @@ class VisitService {
 
         List<Visit> visits = null
 
-        if(!visitStatus || !fromDate) {
-            throw new IllegalArgumentException('VisitStatus and fromDate are required parameters to findVisitsByStatus()')
+        if(!visitStatus || !toDate) {
+            throw new IllegalArgumentException('VisitStatus and toDate are required parameters to findVisitsByStatus()')
         }
 
-        if(!toDate) {
+        if(!fromDate) {
             // only search by the fromDate
             if(!insuranceType) {
                 if(!therapist) {
                     // insurance type and therapist are null
                     log.info 'findByVisitStatusIdAndVisitDate()'
-                    visits = visitRepository.findByVisitStatusAndVisitDate(visitStatus, fromDate)
+                    visits = visitRepository.findByVisitStatusAndVisitDate(visitStatus, toDate)
                 } else {
                     // therapist is not null
                     log.info 'findByVisitStatusIdAndVisitDateAndTherapistId()'
-                    visits =  visitRepository.findByVisitStatusAndVisitDateAndTherapistId(visitStatus, fromDate, therapist.employeeId)
+                    visits =  visitRepository.findByVisitStatusAndVisitDateAndTherapistId(visitStatus, toDate, therapist.employeeId)
                 }
             } else if(!therapist) {
                 // insuranceType is not null
                 log.info 'findByVisitStatusIdAndVisitDateAndInsuranceTypeId()'
-                visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeId(visitStatus, fromDate, insuranceType.insuranceTypeId)
+                visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeId(visitStatus, toDate, insuranceType.insuranceTypeId)
             } else {
                 // insuranceType and therapist are not null
                 log.info 'findByVisitStatusIdAndVisitDateAndInsuranceTypeIdAndTherapistId()'
-                visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeIdAndTherapistId(visitStatus, fromDate, insuranceType.insuranceTypeId, therapist.employeeId)
+                visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeIdAndTherapistId(visitStatus, toDate, insuranceType.insuranceTypeId, therapist.employeeId)
             }
         } else {
             // search by the fromDate & toDate
@@ -299,7 +299,6 @@ class VisitService {
             // yup, so load up all the useful lookup info
             visits.each{ populateLookupData(it, true) }
         }
-
 
         visits
     }

@@ -34,14 +34,15 @@
 
                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
 
-                    <Label text="On/From Date " />
+                    <Label text="From Date " />
                     <DatePicker id="fromDate"/>
+                    <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearFromDate"/>
 
                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
 
-                    <Label text="To Date " />
+                    <Label text="On / To Date " />
                     <DatePicker id="toDate" />
-                    <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearToDate"/>
+
 
                     <Separator prefHeight="10.0" prefWidth="1200" />
 
@@ -97,7 +98,7 @@
                           <Label alignment="CENTER" prefWidth="380" style="-fx-border-color: black;" text="Actions (Set status to...)" GridPane.columnIndex="9" />
                        </children>
                     </GridPane>
-                    <ScrollPane prefHeight="300.0" prefWidth="1200.0">
+                    <ScrollPane prefHeight="300.0" prefWidth="1200.0" vbarPolicy="ALWAYS" hbarPolicy="ALWAYS">
                       <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1200.0">
                             <GridPane prefWidth="1200" fx:id="visitResultsGridPane">

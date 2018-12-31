@@ -70,7 +70,7 @@ class TrackVisitStatusController {
         model.visitStatuses << VisitStatus.AWAITING_SECONDARY.text
         model.visitStatuses << VisitStatus.BILL_SENT_TO_PATIENT.text
         model.visitStatuses << VisitStatus.PAID_IN_FULL.text
-        model.visitStatusesChoice = VisitStatus.SEEN_BY_THERAPIST.text
+        model.visitStatusesChoice = VisitStatus.VISIT_CREATED.text
 
         // prepare the insurance and therapist lists
         model.insuranceTypes.clear()
@@ -98,9 +98,9 @@ class TrackVisitStatusController {
 
     @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
-    void clearToDate() {
-        log.debug "[clearToDate] button pressed "
-        model.toDate = null
+    void clearFromDate() {
+        log.debug "[clearFromDate] button pressed "
+        model.fromDate = null
     }
 
     void selectFromDate() {
