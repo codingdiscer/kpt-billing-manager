@@ -98,9 +98,9 @@
                           <Label alignment="CENTER" prefWidth="380" style="-fx-border-color: black;" text="Actions (Set status to...)" GridPane.columnIndex="9" />
                        </children>
                     </GridPane>
-                    <ScrollPane prefHeight="300.0" prefWidth="1200.0" vbarPolicy="ALWAYS" hbarPolicy="ALWAYS">
-                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1200.0">
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1200.0">
+                        <ScrollPane prefHeight="300.0" prefWidth="1200.0" >
+                            <content>
                             <GridPane prefWidth="1200" fx:id="visitResultsGridPane">
                                 <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
@@ -131,9 +131,9 @@
                                 </children>
                             </GridPane>
 
-                        </AnchorPane>
-                      </content>
-                    </ScrollPane>
+                            </content>
+                        </ScrollPane>
+                     </AnchorPane>
 
                 </children>
             </FlowPane>
