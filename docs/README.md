@@ -20,7 +20,8 @@ The FAQ (frequently asked questions) section provides shortcuts to the answers.
 * [How do I schedule a visit?](#schedule-a-visit)
 * [How do I modify a visit?](#modify-a-visit)
 * [How do I delete a visit?](#delete-a-visit)
-* [How do I enter data for a patient visit?]()
+* [How do I enter data for a patient visit?](#therapist-enter-visit-diagnosistreatment-data)
+* [How do I track a visit by status?](#track-visit-status)
 * [How do I add a diagnosis type?](#add-a-diagnosis-type)
 * [How do I edit a diagnosis type?](#update-a-diagnosis-type)
 * [How do I re-order a diagnosis type?](#re-order-a-diagnosis-type)
@@ -68,7 +69,7 @@ The *Patient* screen allows the KPT Superhero to add patients & clients to the d
 
 * #1 - Click the _Schedule_ navigation link
 * #2 - Click the name of a patient/client 
-  * Clicking any name will take you to the [visit setup]() screen 
+  * Clicking any name will take you to the [visit setup](#visit-setup) screen 
   
 **Notes:**
 * #1 The selected therapist and date will be pre-populated in the [visit setup]() screen.
@@ -80,7 +81,7 @@ The *Patient* screen allows the KPT Superhero to add patients & clients to the d
 * #1 - Click the _Schedule_ navigation link
 * #2 - Click the name of a patient/client 
 * #3 - Click the _Edit_ button
-  * Clicking the _Edit_ button will take you to the [visit setup]() screen. 
+  * Clicking the _Edit_ button will take you to the [visit setup](#visit-setup) screen. 
   
 
 
@@ -101,16 +102,12 @@ Notes when creating a visit:
 on the selection from the screen that brought you here.
 
 
-Notes when editing a visit
-* 
-
-
-
 ## Therapist enter visit (diagnosis/treatment) data
-
+Explanation coming soon...
 
 
 ## Track visit status
+Explanation coming soon...
 
 
 
