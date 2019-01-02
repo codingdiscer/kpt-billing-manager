@@ -17,9 +17,9 @@ The FAQ (frequently asked questions) section provides shortcuts to the answers.
 * [What does the _Refresh_ button do?](#refresh-button)
 * [How do I add a patient/client to the system?](#add-a-patientclient)
 * [How do I modify a patient/client?](#edit-a-patientclient)
-* [How do I schedule a visit?]()
-* [How do I modify a visit?]()
-* [How do I delete a visit?]()
+* [How do I schedule a visit?](#schedule-a-visit)
+* [How do I modify a visit?](#modify-a-visit)
+* [How do I delete a visit?](#delete-a-visit)
 * [How do I enter data for a patient visit?]()
 * [How do I add a diagnosis type?](#add-a-diagnosis-type)
 * [How do I edit a diagnosis type?](#update-a-diagnosis-type)
@@ -62,6 +62,48 @@ The *Patient* screen allows the KPT Superhero to add patients & clients to the d
 ## Schedule patient/client visits
 
 ![Schedule a patient](schedule_full_raw.png)
+
+### Schedule a visit
+![Schedule a visit](schedule_howto_create_visit.png)
+
+* #1 - Click the _Schedule_ navigation link
+* #2 - Click the name of a patient/client 
+  * Clicking any name will take you to the [visit setup]() screen 
+  
+**Notes:**
+* #1 The selected therapist and date will be pre-populated in the [visit setup]() screen.
+
+
+### Modify a visit
+![Modify a visit](schedule_howto_edit_visit.png)
+
+* #1 - Click the _Schedule_ navigation link
+* #2 - Click the name of a patient/client 
+* #3 - Click the _Edit_ button
+  * Clicking the _Edit_ button will take you to the [visit setup]() screen. 
+  
+
+
+### Delete a visit
+![Delete a visit](schedule_howto_delete_visit.png)
+
+* #1 - Click the _Schedule_ navigation link
+* #2 - Click the name of a patient/client 
+* #3 - Click the _Delete_ button
+
+## Visit Setup
+![Visit setup](setup_visit_raw.png)
+
+The visit setup screen is used both for creating new visits, and modifying existing details for a visit.
+
+Notes when creating a visit:
+* The name of the selected therapist and date will be pre-populated based
+on the selection from the screen that brought you here.
+
+
+Notes when editing a visit
+* 
+
 
 
 ## Therapist enter visit (diagnosis/treatment) data
