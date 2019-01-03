@@ -84,24 +84,27 @@ class FillOutPatientVisitNoTreatmentController {
         log.debug "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
 
         model.visitors.clear()
-        model.visits = visitService.findVisitsByDateAndTherapist(
-                model.visitDate, employeeSession.employee)
-        model.visits?.each { Visit v ->
-            model.visitors.addAll(
-                    patientService.patients.stream()
-                            .filter({ p -> p.patientId == v.patientId })
-                            .filter({ p -> model.showAllVisits ?: v.visitStatus == VisitStatus.VISIT_CREATED })
-                            .map({ p -> p.getDisplayableName() })
-                            .collect(Collectors.toList())
-            )
-        }
+        model.visits.clear()
+
+        // prepare the list of visits - grab the full list from the visitService..
+        model.visits.addAll(visitService.findVisitsByDateAndTherapist(model.visitDate, employeeSession.employee)
+                .stream()
+                // .. and filter down based on showAllVisits
+                .filter{ v ->  model.showAllVisits ?: v.visitStatus == VisitStatus.VISIT_CREATED }
+                .collect(Collectors.toList())
+        )
+
+        // for each entry in the visit list, populate the name for the list view
+        model.visitors.addAll(
+                model.visits.stream()
+                        .map{ v -> patientService.findById(v.patientId).displayableName }
+                        .collect(Collectors.toList()))
 
         // now clear the form
         clearForm()
     }
 
-
-
+    
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void clearForm() {
         log.debug "clearForm()"

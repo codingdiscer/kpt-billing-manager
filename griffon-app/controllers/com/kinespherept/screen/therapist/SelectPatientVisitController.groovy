@@ -48,9 +48,6 @@ class SelectPatientVisitController {
     // those methods not to take any action that would otherwise be taken if a user triggered the onChange() event.
     boolean preparingForm = false
 
-    // same deal as above, just for clearing the form
-    boolean clearingForm = false
-
     @PostConstruct
     void init() {
         log.debug "init()"
@@ -82,17 +79,21 @@ class SelectPatientVisitController {
         log.info "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
 
         model.visitors.clear()
-        model.visits = visitService.findVisitsByDateAndTherapist(
-                model.visitDate, employeeSession.employee)
-        model.visits?.each { Visit v ->
-            model.visitors.addAll(
-                    patientService.patients.stream()
-                            .filter({ p -> p.patientId == v.patientId })
-                            .filter({ p -> model.showAllVisits ?: v.visitStatus == VisitStatus.VISIT_CREATED })
-                            .map({ p -> p.getDisplayableName() })
-                            .collect(Collectors.toList())
-            )
-        }
+        model.visits.clear()
+
+        // prepare the list of visits - grab the full list from the visitService..
+        model.visits.addAll(visitService.findVisitsByDateAndTherapist(model.visitDate, employeeSession.employee)
+                .stream()
+                // .. and filter down based on showAllVisits
+                .filter{ v ->  model.showAllVisits ?: v.visitStatus == VisitStatus.VISIT_CREATED }
+                .collect(Collectors.toList())
+        )
+
+        // for each entry in the visit list, populate the name for the list view
+        model.visitors.addAll(
+                model.visits.stream()
+                    .map{ v -> patientService.findById(v.patientId).displayableName }
+                    .collect(Collectors.toList()))
     }
 
 
