@@ -94,8 +94,12 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(new Label(text: String.valueOf(txCount), prefWidth: 30, style: "-fx-border-color: black;", alignment: Pos.CENTER), 6, rowNumber)
 
         // notes ?
-        visitResultsGridPane.add(new Label(text: StringUtils.isEmpty(visit.notes) ? "" : "YES",
-                prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER), 7, rowNumber)
+        Label notesLabel = new Label(text: StringUtils.isEmpty(visit.notes) ? "" : "YES",
+                prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER)
+        if(!StringUtils.isEmpty(visit.notes)) {
+            notesLabel.setTooltip(new Tooltip(visit.notes))
+        }
+        visitResultsGridPane.add(notesLabel, 7, rowNumber)
 
         // view details button
         visitResultsGridPane.add(new Button(text: 'View Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
