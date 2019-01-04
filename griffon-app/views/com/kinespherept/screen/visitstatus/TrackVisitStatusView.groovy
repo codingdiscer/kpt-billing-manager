@@ -13,9 +13,12 @@ import griffon.core.artifact.GriffonView
 import griffon.inject.MVCMember
 import griffon.metadata.ArtifactProviderFor
 import javafx.fxml.FXML
+import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Button
+import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
+import javafx.scene.control.Separator
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.FlowPane
@@ -27,6 +30,9 @@ import javax.annotation.PostConstruct
 
 @ArtifactProviderFor(GriffonView)
 class TrackVisitStatusView extends BaseView {
+
+    // magic string!
+    static String SELECT_STATUS = 'Select a status..'
 
     @MVCMember @Nonnull TrackVisitStatusController controller
     @MVCMember @Nonnull TrackVisitStatusModel model
@@ -108,38 +114,34 @@ class TrackVisitStatusView extends BaseView {
         // action button(s)
         switch (visitStatus) {
             case VisitStatus.VISIT_CREATED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit),
-                        9, rowNumber)
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
                 break
             case VisitStatus.SEEN_BY_THERAPIST:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.PREPARED_FOR_BILLING, VisitStatus.PAID_IN_FULL),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PREPARED_FOR_BILLING),
                         9, rowNumber)
                 break
             case VisitStatus.PREPARED_FOR_BILLING:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.BILLED_TO_INSURANCE),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILLED_TO_INSURANCE),
                         9, rowNumber)
                 break
             case VisitStatus.BILLED_TO_INSURANCE:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.REMITTANCE_ENTERED),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.REMITTANCE_ENTERED),
                         9, rowNumber)
                 break
             case VisitStatus.REMITTANCE_ENTERED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.BILL_SENT_TO_PATIENT, VisitStatus.AWAITING_SECONDARY, VisitStatus.PAID_IN_FULL),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILL_SENT_TO_PATIENT),
                         9, rowNumber)
                 break
             case VisitStatus.AWAITING_SECONDARY:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.PAID_IN_FULL),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
                         9, rowNumber)
                 break
             case VisitStatus.BILL_SENT_TO_PATIENT:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit,
-                        VisitStatus.PAID_IN_FULL),
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
                         9, rowNumber)
+                break
+            case VisitStatus.PAID_IN_FULL:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
                 break
         }
 
@@ -157,8 +159,33 @@ class TrackVisitStatusView extends BaseView {
      * Builds the FlowPane of status change options for the given visit
      */
     FlowPane buildActionButtonFlowPane(Visit visit, VisitStatus ... visitStatuses) {
-        FlowPane flowPane = new FlowPane()
+        FlowPane flowPane = new FlowPane(alignment: Pos.CENTER_LEFT)
         flowPane.children.addAll(visitStatuses.collect { buildButtonForStatus(visit, it) })
+
+        // prepare the list of all status to change to (exclude the current status)
+        List<String> options = [SELECT_STATUS]
+        options.addAll(VisitStatus.values().findAll { it != visit.visitStatus }.collect { it.text })
+
+        // create the drop-down box and add the options
+        ChoiceBox<String> directSetChoiceBox = new ChoiceBox<>(style: '-fx-background-color: lavender')
+        directSetChoiceBox.items.addAll(options)
+        directSetChoiceBox.selectionModel.select(SELECT_STATUS)
+
+        // add a divider only if a quick status button is supplied
+        if(visitStatuses.size() > 0) {
+            flowPane.children.add(new Separator(orientation: Orientation.VERTICAL, prefWidth: 10))
+        }
+        // add the choice box and button behind it
+        flowPane.children.add(directSetChoiceBox)
+        flowPane.children.add(new Button(text: 'Change status', id: visit.visitId,
+                style: '-fx-background-color: lavender',
+                onAction: { a ->
+                     if(directSetChoiceBox.selectionModel.selectedItem != SELECT_STATUS) {
+                         controller.changeVisitStatus(visit,
+                                 VisitStatus.findFromText(directSetChoiceBox.selectionModel.selectedItem))
+                     }
+                }))
+
         flowPane
     }
 
