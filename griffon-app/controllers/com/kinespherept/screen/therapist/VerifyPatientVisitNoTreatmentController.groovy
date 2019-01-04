@@ -76,6 +76,11 @@ class VerifyPatientVisitNoTreatmentController {
         model.visit.visitDiagnoses.clear()
         model.visit.visitTreatments.clear()
 
+        // see if this is a cancel/no show...if so, set the visit number to 0.
+        if(model.visitType == 'Cancel/No Show') {
+            model.visit.visitNumber = 0
+        }
+
         // save the visit
         visitService.saveVisitReplaceDiagnosesAndTreatments(model.visit,
                 VisitStatus.SEEN_BY_THERAPIST, employeeSession.getEmployee()
