@@ -9,6 +9,7 @@ import griffon.metadata.ArtifactProviderFor
 import groovy.util.logging.Slf4j
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.Tooltip
 import javafx.scene.layout.AnchorPane
 import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
@@ -46,17 +47,18 @@ class SelectDiagnosisView extends BaseView {
                 onAction: { a -> controller.selectDiagnosis(diagnosis) },
                 prefWidth: 250.0, prefHeight: 20,
                 font:  new Font(12),
-                textAlignment: TextAlignment.LEFT
+                textAlignment: TextAlignment.LEFT,
+                tooltip: new Tooltip(diagnosis.getNameForDisplay())
         )
     }
 
     Button buildSelectedDiagnosis(Diagnosis diagnosis) {
         Button b = new Button(id: diagnosis.diagnosisId,
                 text: diagnosis.getNameForDisplay(),
-                //onAction: { a -> controller.removeDiagnosis(diagnosis) },
                 prefWidth: 250.0, prefHeight: 20,
                 font:  new Font(12),
-                textAlignment: TextAlignment.LEFT
+                textAlignment: TextAlignment.LEFT,
+                tooltip: new Tooltip(diagnosis.getNameForDisplay())
         )
         b.onAction = { a -> controller.removeDiagnosis(b) }
         return b
