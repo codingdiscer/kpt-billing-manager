@@ -23,6 +23,9 @@ import griffon.metadata.ArtifactProviderFor
 import griffon.transform.Threading
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+import javafx.fxml.FXML
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.Environment
@@ -84,12 +87,14 @@ class LoginController {
         // clear the message first, then continue
         runInsideUISync {
             model.setMessage('')
+            view.disableLogin()
         }
 
         // make sure a user & pass are entered
         if(StringUtils.isEmpty(model.getUsername()) || StringUtils.isEmpty(model.getPassword())) {
             runInsideUISync {
                 model.setMessage('Enter a username and password to proceed.')
+                view.enableLogin()
             }
             return
         }
@@ -119,12 +124,14 @@ class LoginController {
                 // this block should NOT run - why would someone be able to login, but doesn't have an employee profile?
                 runInsideUISync {
                     model.setMessage("Something doesn't seem right.  Try again.")
+                    view.enableLogin()
                 }
             }
 
         } else {
             runInsideUISync {
                 model.setMessage('Nope.')
+                view.enableLogin()
             }
         }
     }
@@ -226,8 +233,6 @@ class LoginController {
                 log.info "performLogin() :: no login logic implemented for employee ${employee}"
             }
         }
-
     }
-
 
 }

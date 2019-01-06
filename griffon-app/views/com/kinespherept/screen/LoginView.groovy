@@ -11,7 +11,10 @@ import griffon.metadata.ArtifactProviderFor
 import groovy.util.logging.Slf4j
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.PasswordField
 import javafx.scene.control.ProgressIndicator
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 
 import javax.annotation.Nonnull
 import javax.annotation.PostConstruct
@@ -24,6 +27,7 @@ class LoginView extends BaseView {
     @MVCMember @Nonnull LoginController controller
     @MVCMember @Nonnull LoginModel model
 
+    @FXML PasswordField passwordField
     @FXML ProgressIndicator progressIndicator
     @FXML Button loginButton
 
@@ -33,6 +37,9 @@ class LoginView extends BaseView {
 
     void disableLogin() {
         loginButton.disable = true
+    }
+    void enableLogin() {
+        loginButton.disable = false
     }
 
 
@@ -49,5 +56,15 @@ class LoginView extends BaseView {
         //this is needed because of circular references within the components, which means that all components
         // (ie - mvc-groups) are fully loaded because they can be injected into each other
         GriffonConfig.performAutowire()
+
+        passwordField.setOnKeyPressed({ KeyEvent keyEvent ->
+            if(keyEvent.getCode() == KeyCode.ENTER) {
+                keyEvent.consume()
+                runOutsideUI {
+                    controller.go()
+                }
+            }
+        })
+
     }
 }
