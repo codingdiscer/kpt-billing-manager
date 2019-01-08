@@ -18,6 +18,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
+import javafx.scene.control.ProgressIndicator
 import javafx.scene.control.Separator
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.AnchorPane
@@ -49,6 +50,14 @@ class TrackVisitStatusView extends BaseView {
 
     @FXML AnchorPane rootAnchorPane
 
+    @FXML ProgressIndicator spinner
+
+    void showSpinner(boolean showSpinner) {
+        spinner.visible = showSpinner
+    }
+
+
+
     @PostConstruct
     void init() {
         log.debug "init()"
@@ -66,8 +75,7 @@ class TrackVisitStatusView extends BaseView {
     }
 
 
-    void buildResultRow(Visit visit, VisitStatus visitStatus, int rowNumber) {
-
+    void buildResultRowByStatus(Visit visit, int rowNumber) {
         // date, visit number, last name, first name
         visitResultsGridPane.add(new Label(text: visit.visitDate.format(commonProperties.dateFormatter),
                 prefWidth: 80, style: "-fx-border-color: black;", alignment: Pos.CENTER), 0, rowNumber)
@@ -77,20 +85,15 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(new Label(text: visit.patient.firstName, prefWidth: 120, style: "-fx-border-color: black;"), 3, rowNumber)
 
         // dx
-        Visit previousVisit = visitService.getPreviousVisit(visit)
-        String previousVisitText = ''
-        if(previousVisit && !visitService.visitsHaveSameDiganoses(visit, previousVisit)) {
-            previousVisitText = 'YES'
-        }
-        visitResultsGridPane.add(new Label(text: previousVisitText, prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER), 4, rowNumber)
+        visitResultsGridPane.add(new Label(text: visit.sameDiagnosisAsPrevious ? 'YES' : '', prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER), 4, rowNumber)
 
         // tx
         String txText = visit.visitTreatments.collect {
-                // see if more than 1 treatment (if so, be sure to include it)
-                it.treatmentQuantity > 1 ?
-                        "${lookupDataService.findTreatmentById(it.treatmentId).treatmentCode} (${it.treatmentQuantity})" : // yep, so show the quantity
-                        lookupDataService.findTreatmentById(it.treatmentId).treatmentCode  // nope, just 1
-            }.join(', ')
+            // see if more than 1 treatment (if so, be sure to include it)
+            it.treatmentQuantity > 1 ?
+                    "${lookupDataService.findTreatmentById(it.treatmentId).treatmentCode} (${it.treatmentQuantity})" : // yep, so show the quantity
+                    lookupDataService.findTreatmentById(it.treatmentId).treatmentCode  // nope, just 1
+        }.join(', ')
         Label txLabel = new Label(text: txText, prefWidth: 200, style: "-fx-border-color: black;")
         txLabel.setTooltip(new Tooltip(txText))
         visitResultsGridPane.add(txLabel, 5, rowNumber)
@@ -112,7 +115,7 @@ class TrackVisitStatusView extends BaseView {
                 8, rowNumber)
 
         // action button(s)
-        switch (visitStatus) {
+        switch (visit.visitStatus) {
             case VisitStatus.VISIT_CREATED:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
                 break
@@ -144,7 +147,6 @@ class TrackVisitStatusView extends BaseView {
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
                 break
         }
-
     }
 
     /**
@@ -167,7 +169,7 @@ class TrackVisitStatusView extends BaseView {
         options.addAll(VisitStatus.values().findAll { it != visit.visitStatus }.collect { it.text })
 
         // create the drop-down box and add the options
-        ChoiceBox<String> directSetChoiceBox = new ChoiceBox<>(style: '-fx-background-color: lavender')
+        ChoiceBox<String> directSetChoiceBox = new ChoiceBox<>()
         directSetChoiceBox.items.addAll(options)
         directSetChoiceBox.selectionModel.select(SELECT_STATUS)
 
@@ -178,7 +180,6 @@ class TrackVisitStatusView extends BaseView {
         // add the choice box and button behind it
         flowPane.children.add(directSetChoiceBox)
         flowPane.children.add(new Button(text: 'Change status', id: visit.visitId,
-                style: '-fx-background-color: lavender',
                 onAction: { a ->
                      if(directSetChoiceBox.selectionModel.selectedItem != SELECT_STATUS) {
                          controller.changeVisitStatus(visit,

@@ -1,7 +1,8 @@
 package com.kinespherept.screen.visitstatus
 
+import com.kinespherept.model.core.Patient
 import com.kinespherept.model.core.PatientVisit
-import com.kinespherept.screen.visitstatus.TrackVisitStatusController
+import com.kinespherept.model.core.VisitStatus
 import griffon.core.artifact.GriffonModel
 import griffon.inject.MVCMember
 import griffon.transform.ChangeListener
@@ -22,30 +23,46 @@ class TrackVisitStatusModel {
 
     @MVCMember @Nonnull TrackVisitStatusController controller
 
-    // fields that match up to form elements
+    // tied to the label that declares how many results were found
+    @FXObservable String resultCountMessage = ''
+
+    // tied to the 'from' date selector field
     @FXObservable @ChangeListener('selectFromDate')
     LocalDate fromDate = null
     Closure selectFromDate = { ObjectProperty<LocalDate> ob, ov, nv -> controller.selectFromDate() }
 
-
+    // tied to the 'to/on' date selector field
     @FXObservable @ChangeListener('selectToDate')
     LocalDate toDate = LocalDate.now()
     Closure selectToDate = { ObjectProperty<LocalDate> ob, ov, nv -> controller.selectToDate() }
 
+    // tied to the 'status' drop down
     @FXObservable List<String> visitStatuses = []
     @FXObservable @ChangeListener('changeVisitStatus')
-    String visitStatusesChoice = ''
+    String visitStatusesChoice = VisitStatus.VISIT_CREATED.text
     Closure changeVisitStatus = { StringProperty ob, ov, nv -> controller.changeVisitStatus() }
 
+    // tied to the 'insurance' drop down
     @FXObservable List<String> insuranceTypes = []
     @FXObservable @ChangeListener('changeInsuranceType')
-    String insuranceTypesChoice = ''
+    String insuranceTypesChoice = ALL
     Closure changeInsuranceType = { StringProperty ob, ov, nv -> controller.changeInsuranceType() }
 
+    // tied to the 'therapists' drop down
     @FXObservable List<String> therapists = []
     @FXObservable @ChangeListener('changeTherapist')
-    String therapistsChoice = ''
+    String therapistsChoice = ALL
     Closure changeTherapist = { StringProperty ob, ov, nv -> controller.changeTherapist() }
+
+    // tied to the patient search text field
+    String patientSearch = ''
+    List<Patient> filteredPatients = []
+
+    // tied to the 'patients' drop down
+    @FXObservable List<String> patients = []
+    //@FXObservable @ChangeListener('selectPatient')
+    String patientsChoice = ''
+    //Closure selectPatient = { StringProperty ob, ov, nv -> controller.selectPatient() }
 
 
 

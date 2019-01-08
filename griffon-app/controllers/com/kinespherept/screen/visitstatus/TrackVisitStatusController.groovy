@@ -60,39 +60,40 @@ class TrackVisitStatusController {
         // declare that we are preparing the form
         preparingForm = true
 
+        // set aside the drop-down selections
+        String visitStatusesChoice = model.visitStatusesChoice
+        String insuranceTypesChoice = model.insuranceTypesChoice
+        String therapistsChoice = model.therapistsChoice
+
         // prepare the visit statuses (a selected list)
         model.visitStatuses.clear()
-        model.visitStatuses << VisitStatus.VISIT_CREATED.text
-        model.visitStatuses << VisitStatus.SEEN_BY_THERAPIST.text
-        model.visitStatuses << VisitStatus.PREPARED_FOR_BILLING.text
-        model.visitStatuses << VisitStatus.BILLED_TO_INSURANCE.text
-        model.visitStatuses << VisitStatus.REMITTANCE_ENTERED.text
-        model.visitStatuses << VisitStatus.AWAITING_SECONDARY.text
-        model.visitStatuses << VisitStatus.BILL_SENT_TO_PATIENT.text
-        model.visitStatuses << VisitStatus.PAID_IN_FULL.text
-        model.visitStatusesChoice = VisitStatus.VISIT_CREATED.text
+        model.visitStatuses.addAll(VisitStatus.values().collect{ it.text })
 
         // prepare the insurance and therapist lists
         model.insuranceTypes.clear()
         model.insuranceTypes << TrackVisitStatusModel.ALL
-        model.insuranceTypesChoice = TrackVisitStatusModel.ALL
         lookupDataService.insuranceTypes.each {
             model.insuranceTypes << it.insuranceTypeName
         }
 
         model.therapists.clear()
         model.therapists << TrackVisitStatusModel.ALL
-        model.therapistsChoice = TrackVisitStatusModel.ALL
         employeeService.findByRoleExplicit(EmployeeRole.THERAPIST).each {
             model.therapists << it.fullname
         }
+
+        // restore the choices
+        model.visitStatusesChoice = visitStatusesChoice
+        model.insuranceTypesChoice = insuranceTypesChoice
+        model.therapistsChoice = therapistsChoice
 
         navigationController.prepareForm(view.navigationPane, NavigationSection.STATUS_TRACKER)
 
         // declare that we are done preparing the form
         preparingForm = false
 
-        loadVisitData()
+        // reload the form with the current criteria
+        loadVisitDataByStatusWithDistraction()
     }
 
 
@@ -106,41 +107,100 @@ class TrackVisitStatusController {
     void selectFromDate() {
         log.debug "selectFromDate() :: fromDate=${model.fromDate}; preparingForm=${preparingForm}"
         if(!preparingForm) {
-            loadVisitData()
+            loadVisitDataByStatusWithDistraction()
         }
     }
 
     void selectToDate() {
         log.debug "selectToDate() :: toDate=${model.toDate}; preparingForm=${preparingForm}"
         if(!preparingForm) {
-            loadVisitData()
+            loadVisitDataByStatusWithDistraction()
         }
     }
 
     void changeVisitStatus() {
         log.debug "changeVisitStatus() :: visitStatus=${model.visitStatusesChoice}; preparingForm=${preparingForm}"
         if(!preparingForm) {
-            loadVisitData()
+            loadVisitDataByStatusWithDistraction()
         }
     }
 
     void changeInsuranceType() {
         log.debug "changeInsuranceType() :: insuranceType=${model.insuranceTypesChoice}; preparingForm=${preparingForm}"
         if(!preparingForm) {
-            loadVisitData()
+            loadVisitDataByStatusWithDistraction()
         }
     }
 
     void changeTherapist() {
         log.debug "changeTherapist() :: therapist=${model.therapistsChoice}; preparingForm=${preparingForm}"
         if(!preparingForm) {
-            loadVisitData()
+            loadVisitDataByStatusWithDistraction()
+        }
+    }
+
+//    void selectPatient() {
+//        log.info "selectPatient() :: patientsChoice=${model.patientsChoice}; preparingForm=${preparingForm}"
+//        if(!preparingForm) {
+//            loadVisitDataByPatientWithDistraction()
+//        }
+//    }
+
+
+
+
+    /**
+     * Template method handles managing the UI while searching for results...
+     * @param findVisitData A Closure that returns a List<Visit>
+     * @param buildResultRow A Closure that takes these parameters: { Visit entry, int i },
+     *      and calls the appropriate view method to build the right row result
+     */
+    @Threading(Threading.Policy.OUTSIDE_UITHREAD)
+    void loadVisitDataWithDistraction(Closure findVisitData, Closure buildResultRow) {
+        runInsideUISync {
+            view.showSpinner(true)
+
+            // clear the current result set and message count
+            view.visitResultsGridPane.children.clear()
+            model.resultCountMessage = ''
+
+            runOutsideUI {
+                List<Visit> visits = findVisitData()
+
+                runInsideUISync {
+                    // rebuild the results
+                    model.resultCountMessage = "Found ${visits.size()} result${visits.size() == 1 ? '' : 's'}."
+                    visits.eachWithIndex{ Visit entry, int i -> buildResultRow(entry, i) }
+                    view.showSpinner(false)
+                }
+            }
         }
     }
 
 
-    void loadVisitData() {
-        log.info "loadVisitData(visitStatus=${model.visitStatusesChoice}; fromDate=${model.fromDate}; toDate=${model.toDate}; insuranceType=${model.insuranceTypesChoice}; therapist=${model.therapistsChoice})"
+
+//    @Threading(Threading.Policy.OUTSIDE_UITHREAD)
+//    void loadVisitDataByPatientWithDistraction() {
+//        runInsideUIAsync {
+//            view.showSpinner(true)
+//        }
+//    }
+//
+//
+//    List<Visit> loadVisitDataByPatient() {
+//    }
+
+    @Threading(Threading.Policy.OUTSIDE_UITHREAD)
+    void loadVisitDataByStatusWithDistraction() {
+        loadVisitDataWithDistraction(
+                { loadVisitDataByStatus() },
+                { Visit entry, int i -> view.buildResultRowByStatus(entry, i) }
+        )
+    }
+
+
+    List<Visit> loadVisitDataByStatus() {
+        log.info "loadVisitDataByStatus(visitStatus=${model.visitStatusesChoice}; fromDate=${model.fromDate}; toDate=${model.toDate}; insuranceType=${model.insuranceTypesChoice}; therapist=${model.therapistsChoice})"
 
         // convert VisitStatus, InsuranceType and Therapist into proper objects
 
@@ -156,14 +216,7 @@ class TrackVisitStatusController {
             therapist = employeeService.findByFullname(model.therapistsChoice)
         }
 
-        List<Visit> visits = visitService.findVisitsByStatus(visitStatus, model.fromDate, model.toDate, insuranceType, therapist)
-
-        log.info "found ${visits?.size()} visits that match criteria : ${visits}"
-
-        // clear the children, and rebuild the results
-        view.visitResultsGridPane.children.clear()
-
-        visits.eachWithIndex{ Visit entry, int i -> view.buildResultRow(entry, visitStatus, i)   }
+        visitService.findVisitsByStatus(visitStatus, model.fromDate, model.toDate, insuranceType, therapist)
     }
 
 
@@ -171,7 +224,8 @@ class TrackVisitStatusController {
         log.info "changeVisitStatus(${visit}, ${visitStatus})"
         visitService.saveVisitWithStatusChange(visit, visitStatus, employeeSession.employee)
         // after making the change, refresh the visit data
-        loadVisitData()
+        //loadVisitDataByStatus()
+        loadVisitDataByStatusWithDistraction()
     }
 
     void viewVisitDetails(Visit visit) {
@@ -186,9 +240,5 @@ class TrackVisitStatusController {
             SceneManager.changeTheScene(SceneDefinition.VIEW_VISIT_DETAILS_NO_TREATMENT)
         }
     }
-
-
-
-
 
 }

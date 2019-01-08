@@ -39,4 +39,6 @@ class Visit {
     @Transient List<VisitDiagnosis> visitDiagnoses = []
     @Transient List<VisitTreatment> visitTreatments = []
     @Transient List<VisitStatusChange> visitStatusChanges = []
+    @Transient Visit previousVisit
+    @Transient boolean sameDiagnosisAsPrevious = false
 }

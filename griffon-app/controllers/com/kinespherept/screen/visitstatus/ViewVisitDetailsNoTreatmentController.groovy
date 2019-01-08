@@ -34,7 +34,6 @@ class ViewVisitDetailsNoTreatmentController {
     @SpringAutowire CommonProperties commonProperties
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire LookupDataService lookupDataService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire VisitService visitService
 
     @PostConstruct
