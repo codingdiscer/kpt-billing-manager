@@ -15,6 +15,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Tooltip?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ProgressIndicator?>
 <AnchorPane prefHeight="400.0" prefWidth="1320.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.visitstatus.TrackVisitStatusController" fx:id="rootAnchorPane">
    <children>
         <FlowPane prefHeight="400.0" prefWidth="1310.0">
@@ -28,12 +30,7 @@
               <FlowPane prefHeight="400.0" prefWidth="1200.0">
                  <children>
 
-
-                    <Label text="Status " />
-                    <ChoiceBox id="visitStatuses" prefWidth="250.0" />
-
-                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-
+                     <!-- top row : from date ; to date ; # found label -->
                     <Label text="From Date " />
                     <DatePicker id="fromDate"/>
                     <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearFromDate"/>
@@ -43,11 +40,20 @@
                     <Label text="On / To Date " />
                     <DatePicker id="toDate" />
 
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                     <ProgressIndicator progress="-1" fx:id="spinner" visible="false" prefHeight="30.0" prefWidth="30.0" />
+                     <Label id="resultCountMessage" prefWidth="100" text="Found 1 result."/>
 
                     <Separator prefHeight="10.0" prefWidth="1200" />
 
+                     <!-- second row : status, insurance, therapist -->
+                     <Label text="Status " />
+                     <ChoiceBox id="visitStatuses" prefWidth="150.0" />
 
-                    <Label text="Insurance " />
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                     <Label text="Insurance " />
                     <ChoiceBox id="insuranceTypes" prefWidth="150.0" />
 
                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
@@ -55,7 +61,32 @@
                     <Label text="Therapist " />
                     <ChoiceBox id="therapists" prefWidth="150.0" />
 
-                    <Separator prefHeight="20" prefWidth="1200.0" />
+<!--
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+                     <Button prefWidth="120" text="&lt;- Reset All" JavaFXUtils.griffonActionId="resetStatus"/>
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+-->
+
+
+                     <Separator prefHeight="20" prefWidth="1200.0" />
+
+                     <!-- third row : patient search -->
+<!--
+
+                     <Label text="Patient search " />
+                     <TextField id="patientSearch" prefWidth="100.0" />
+                     <Button text="Clear" JavaFXUtils.griffonActionId="clearPatientSearch"/>
+
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                     <ChoiceBox id="patients" prefWidth="200.0" />
+
+
+                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+                     <ProgressIndicator progress="-1" fx:id="spinner" visible="false" prefHeight="30.0" prefWidth="30.0" />
+
+                     <Separator prefHeight="20" prefWidth="1200.0" />
+-->
 
                     <GridPane prefWidth="1200">
                       <columnConstraints>

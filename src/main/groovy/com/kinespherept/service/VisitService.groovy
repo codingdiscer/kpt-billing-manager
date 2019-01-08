@@ -297,7 +297,30 @@ class VisitService {
         // see if we got any results
         if(visits) {
             // yup, so load up all the useful lookup info
-            visits.each{ populateLookupData(it, true) }
+            visits.each{ Visit v ->
+                populateLookupData(v, true)
+                v.previousVisit = getPreviousVisit(v)
+                v.sameDiagnosisAsPrevious = v.previousVisit ? visitsHaveSameDiganoses(v, v.previousVisit) : false
+            }
+
+            // sort the visits ...
+            visits.sort {
+                v1, v2 ->
+                    // first level, compare visitDate
+                    if(v1.visitDate.isBefore(v2.visitDate)) {
+                        return -1
+                    }
+                    if(v1.visitDate.isAfter(v2.visitDate)) {
+                        return 1
+                    }
+                    // visitDates are the same, so compare last names now
+                    int compare = v1.patient.lastName.compareTo(v2.patient.lastName)
+                    if(compare == 0) {
+                        compare = v1.patient.firstName.compareTo(v2.patient.firstName)
+                    }
+                    return compare
+            }
+
         }
 
         visits
