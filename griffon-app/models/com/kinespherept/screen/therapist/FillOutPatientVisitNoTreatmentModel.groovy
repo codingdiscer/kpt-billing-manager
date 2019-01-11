@@ -21,7 +21,7 @@ class FillOutPatientVisitNoTreatmentModel {
     // the date selector box
     @FXObservable @ChangeListener('selectDate')
     LocalDate visitDate = LocalDate.now()
-    Closure selectDate = { ObjectProperty<LocalDate> ob, ov, nv -> if(!controller.preparingForm) { controller.refreshVisitors() }}
+    Closure selectDate = { ObjectProperty<LocalDate> ob, ov, nv -> if(!controller.preparingForm) { controller.changeDate() }}
 
     // next two lists are parallel, to get quicker access to the Visit object.  visitors holds the patient.displayableName
     @FXObservable List<String> visitors = []

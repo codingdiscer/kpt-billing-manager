@@ -34,7 +34,7 @@
                     <Label alignment="CENTER" prefHeight="35.0" prefWidth="200.0" text="Daily Schedule" />
                     <FlowPane hgap="20" prefHeight="39.0" prefWidth="200.0">
                        <children>
-                          <DatePicker id="visitDate" />
+                          <DatePicker id="visitDate" fx:id="visitDate" />
                        </children>
                     </FlowPane>
                     <VBox prefHeight="30.0" prefWidth="200.0" spacing="20">

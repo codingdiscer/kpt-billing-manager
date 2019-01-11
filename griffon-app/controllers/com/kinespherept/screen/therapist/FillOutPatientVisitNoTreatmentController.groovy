@@ -79,6 +79,15 @@ class FillOutPatientVisitNoTreatmentController {
         preparingForm = false
     }
 
+    /**
+     * Called when the date selection in the date picker is changed.  just toss back
+     * to the visit selection screen.
+     */
+    void changeDate() {
+        selectPatientVisitController.prepareForm(model.visitDate, model.showAllVisits)
+        SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
+    }
+
 
     void refreshVisitors() {
         log.debug "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
@@ -99,9 +108,6 @@ class FillOutPatientVisitNoTreatmentController {
                 model.visits.stream()
                         .map{ v -> patientService.findById(v.patientId).displayableName }
                         .collect(Collectors.toList()))
-
-        // now clear the form
-        clearForm()
     }
 
     
@@ -217,7 +223,6 @@ class FillOutPatientVisitNoTreatmentController {
     void transitionFromTreatments(Visit visit, String patientTypesChoice, String insuranceTypesChoice,
                                   String visitTypesChoice, String notes, boolean showAllVisits)
     {
-        model.visitDate = visit.visitDate
         prepareForm(false, showAllVisits)
         setVisitAndDisplay(visit)
 
@@ -231,7 +236,7 @@ class FillOutPatientVisitNoTreatmentController {
 
 
     void checkTreatmentTypeChange() {
-        log.info "checkPatientTypeChange() :: patientType=${model.patientTypesChoice}; preparingForm=${preparingForm}; clearingForm=${clearingForm}"
+        log.debug "checkPatientTypeChange() :: patientType=${model.patientTypesChoice}; preparingForm=${preparingForm}; clearingForm=${clearingForm}"
 
         // make sure we aren't preparing the form or clearing the form (as those cause false 'change positives')
         if(!preparingForm && !clearingForm) {

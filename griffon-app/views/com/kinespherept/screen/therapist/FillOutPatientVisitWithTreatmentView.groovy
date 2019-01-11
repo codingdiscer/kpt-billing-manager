@@ -10,12 +10,14 @@ import griffon.inject.MVCMember
 import griffon.metadata.ArtifactProviderFor
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.DatePicker
 import javafx.scene.control.ListView
 import javafx.scene.control.RadioButton
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.AnchorPane
 import javax.annotation.Nonnull
 import javax.annotation.PostConstruct
+import java.time.LocalDate
 
 @ArtifactProviderFor(GriffonView)
 class FillOutPatientVisitWithTreatmentView extends BaseView {
@@ -39,6 +41,8 @@ class FillOutPatientVisitWithTreatmentView extends BaseView {
     @FXML ToggleGroup visitFilter
     @FXML RadioButton showPending
     @FXML RadioButton showAll
+
+    @FXML DatePicker visitDate
 
     @PostConstruct
     void init() {
@@ -69,5 +73,12 @@ class FillOutPatientVisitWithTreatmentView extends BaseView {
         }
     }
 
+    /**
+     * Sets the date on the DatePicker object.  For some reason, changing the value of the associated property
+     * in the model does not seem to update the value in the DatePicker, hence we need this method.
+     */
+    void setVisitDate(LocalDate date) {
+        visitDate.setValue(date)
+    }
 
 }

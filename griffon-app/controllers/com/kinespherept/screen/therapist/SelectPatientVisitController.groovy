@@ -54,6 +54,13 @@ class SelectPatientVisitController {
         SpringConfig.autowire(this)
     }
 
+
+    void prepareForm(LocalDate visitDate, boolean showAllVisits) {
+        model.visitDate = visitDate
+        prepareForm(false, showAllVisits)
+    }
+
+
     void prepareForm(boolean resetVisitDate = true, boolean showAllVisits = false) {
 
         preparingForm = true
@@ -71,7 +78,6 @@ class SelectPatientVisitController {
         refreshVisitors()
 
         preparingForm = false
-
     }
 
 

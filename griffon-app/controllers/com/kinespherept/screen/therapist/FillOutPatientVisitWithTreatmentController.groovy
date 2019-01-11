@@ -41,7 +41,6 @@ class FillOutPatientVisitWithTreatmentController {
     @SpringAutowire LookupDataService lookupDataService
     @SpringAutowire PatientService patientService
     @SpringAutowire VisitService visitService
-    //@SpringAutowire SceneManager sceneManager
 
 
     @GriffonAutowire FillOutPatientVisitNoTreatmentController fillOutPatientVisitNoTreatmentController
@@ -85,6 +84,14 @@ class FillOutPatientVisitWithTreatmentController {
         preparingForm = false
     }
 
+    /**
+     * Called when the date selection in the date picker is changed.  just toss back
+     * to the visit selection screen.
+     */
+    void changeDate() {
+        selectPatientVisitController.prepareForm(model.visitDate, model.showAllVisits)
+        SceneManager.changeTheScene(SceneDefinition.SELECT_PATIENT_VISIT)
+    }
 
     void refreshVisitors() {
         log.debug "refreshVisitors() :: showAllVisits=${model.showAllVisits}; ${model.visitDate}; ${employeeSession.employee})"
@@ -105,9 +112,6 @@ class FillOutPatientVisitWithTreatmentController {
                 model.visits.stream()
                         .map{ v -> patientService.findById(v.patientId).displayableName }
                         .collect(Collectors.toList()))
-
-        // now clear the form
-        clearForm()
     }
 
 
@@ -150,11 +154,12 @@ class FillOutPatientVisitWithTreatmentController {
 
         model.selectedVisit = visit
         log.debug "setVisitAndDisplay() :: selectedVisit=${model.selectedVisit}"
+        log.debug "setVisitAndDisplay() :: selectedVisit.visitDate=${model.selectedVisit.visitDate}"
         log.debug "setVisitAndDisplay() :: selectedVisit.visitStatus=${model.selectedVisit.visitStatus}"
         log.debug "setVisitAndDisplay() :: selectedVisit.visitTreatments=${model.selectedVisit.visitTreatments}"
         log.debug "setVisitAndDisplay() :: selectedVisit.visitDiagnoses=${model.selectedVisit.visitDiagnoses}"
         log.debug "setVisitAndDisplay() :: selectedVisit.patient=${model.selectedVisit.patient}"
-        log.info "setVisitAndDisplay() :: selectedVisit.patient.visits=${model.selectedVisit.patient.visits}"
+        log.debug "setVisitAndDisplay() :: selectedVisit.patient.visits=${model.selectedVisit.patient.visits}"
         log.debug "setVisitAndDisplay() :: selectedVisit.patientType=${model.selectedVisit.patientType}"
         log.debug "setVisitAndDisplay() :: selectedVisit.notes=${model.selectedVisit.notes}"
 
@@ -270,7 +275,6 @@ class FillOutPatientVisitWithTreatmentController {
     void transitionToTreatments(Visit visit, String patientTypesChoice, String insuranceTypesChoice,
                                 String visitTypesChoice, String notes, boolean showAllVisits)
     {
-        model.visitDate = visit.visitDate
         prepareForm(false, showAllVisits)
         setVisitAndDisplay(visit)
 
