@@ -44,7 +44,6 @@ class EditVisitDetailsWithTreatmentController {
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire EmployeeSession employeeSession
     @SpringAutowire LookupDataService lookupDataService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire VisitService visitService
 
     boolean preparingForm = false

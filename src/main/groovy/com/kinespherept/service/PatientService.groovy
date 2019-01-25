@@ -74,7 +74,7 @@ class PatientService {
 
         // stream the search!
         patients.stream().filter({ p ->
-            p.firstName.toLowerCase().startsWith(searchString.toLowerCase()) || p.lastName.toLowerCase().startsWith(searchString.toLowerCase())
+            p.firstName.toLowerCase().contains(searchString.toLowerCase()) || p.lastName.toLowerCase().contains(searchString.toLowerCase())
         }).collect(Collectors.toList()).sort({ Patient p1, Patient p2 ->
             // if the patients have the same last name, sort by first name
             if(p1.lastName.toLowerCase() == p2.lastName.toLowerCase()) {
@@ -92,6 +92,10 @@ class PatientService {
 
     Patient findByDisplayableName(String displayableName) {
         patients.find { it.displayableName == displayableName }
+    }
+
+    Patient findByLastNameFirst(String lastNameFirst) {
+        patients.find { it.lastNameFirst == lastNameFirst }
     }
 
     /**

@@ -38,7 +38,6 @@ class EditVisitDetailsNoTreatmentController {
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire EmployeeSession employeeSession
     @SpringAutowire LookupDataService lookupDataService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire VisitService visitService
 
     boolean preparingForm = false
@@ -57,7 +56,6 @@ class EditVisitDetailsNoTreatmentController {
 
         model.visit = visit
         model.visitDate = visit.visitDate.format(commonProperties.dateFormatter)
-        //model.visitNumber = visitService.getVisitNumber(visit)
         model.visitNumber = visit.visitNumber
         model.patientName = visit.patient.displayableName
 
@@ -77,10 +75,9 @@ class EditVisitDetailsNoTreatmentController {
         model.therapists.addAll(employeeService.findByRoleExplicit(EmployeeRole.THERAPIST).stream().map( { e -> e.fullname }).collect(Collectors.toList()))
         model.therapistsChoice = model.visit.therapist.fullname
 
-        model.visitNumber = String.valueOf(model.selectedVisit.visitNumber)
+        model.visitNumber = String.valueOf(model.visit.visitNumber)
         model.notes = visit.notes
         preparingForm = false
-
     }
 
     void checkTreatmentTypeChange() {

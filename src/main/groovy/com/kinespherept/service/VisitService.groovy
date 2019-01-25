@@ -41,8 +41,8 @@ class VisitService {
 
     VisitService(EmployeeService employeeService,
             LookupDataService lookupDataService, PatientService patientService,
-            VisitDao visitDao, VisitRepository visitRepository,
-            VisitDiagnosisRepository visitDiagnosisRepository,
+            VisitDao visitDao, VisitDiagnosisRepository visitDiagnosisRepository,
+            VisitRepository visitRepository,
             VisitStatusChangeRepository visitStatusChangeRepository,
             VisitTreatmentRepository visitTreatmentRepository) {
         this.employeeService = employeeService
@@ -115,14 +115,113 @@ class VisitService {
         visitRepository.delete(visit)
     }
 
+    /**
+     * Re-orders (as necessary) the visit numbers for all the visits of the patient.
+     */
+    void setVisitNumbers(Visit updatedVisit) {
+        List<Visit> allVisits = visitRepository.findByPatientIdOrderByVisitDateAsc(updatedVisit.patientId)
 
+        allVisits.each { populateLookupData(it, false) }
 
+        // keep track of any visits that get updated via this process
+        List<Visit> updatedVisits = []
+
+        // start with the visits that should not get a visit number
+        List<Visit> noVisitNumberVisits = allVisits.findAll { !visitGetsVisitNumber(it) }
+        noVisitNumberVisits.each {
+            // see if the visit number is currently 0
+            if(it.visitNumber != 0) {
+                // nope, so set it to 0, and track that we'll need to save this
+                it.visitNumber = 0
+                updatedVisits << it
+            }
+        }
+
+        // now find the visits that get a visit number, and sort them
+        List<Visit> filteredVisits = allVisits.findAll { visitGetsVisitNumber(it) }
+                .sort{ a, b -> a.visitDate <=> b.visitDate }
+
+        // so now just be sure that the remaining visits are in the proper order
+        // we'll need these values to apply visit numbers
+        int nextVisitNumber = 0
+        LocalDate lastVisitDate = null
+
+        // loop over only the filtered visits (those that need to be numbered)
+        for(Visit v : filteredVisits) {
+            // see if the "last date" matches this one
+            if(v.visitDate != lastVisitDate) {
+                // nope, so increment the visisNumber and set a new "last date"
+                nextVisitNumber++
+                lastVisitDate = v.visitDate
+                // see if this entry needs to change...
+                if(v.visitNumber != nextVisitNumber) {
+                    // ..and only change it if necessary, and track that we changed it
+                    v.visitNumber = nextVisitNumber
+                    updatedVisits << v
+                }
+            } else {
+                // in this case, the visit date is the same as the previous one
+                if(v.visitNumber != nextVisitNumber) {
+                    // track that we are changing the visit number
+                    v.visitNumber = nextVisitNumber
+                    updatedVisits << v
+                }
+            }
+        }
+
+        // save any changes that we made above
+        if(updatedVisits.size() > 0) {
+            visitRepository.saveAll(updatedVisits)
+        }
+    }
+
+    /**
+     * Returns true if the given visit should be assigned a visit numbers.
+     * The visits that should NOT get a visit number:
+     *  - clients (ie - non-insurance)
+     *  - cancel/no shows
+     *  - cash pay customers
+     */
+    boolean visitGetsVisitNumber(Visit visit) {
+
+        log.info "visitGetsVisitNumber() :: visit=${visit}"
+
+        // start assuming it gets a visit number
+        boolean getVisitNumber = true
+
+        // if client -> no
+        if(visit.patientType.patientTypeName == 'Client') {
+            getVisitNumber = false
+        }
+
+        // if cancel/no show -> no
+        if(visit.visitType.visitTypeName == 'Cancel/No Show') {
+            getVisitNumber = false
+        }
+
+        // if cash or cash-no bill -> no
+        if(visit.insuranceType.insuranceTypeName == 'Cash' || visit.insuranceType.insuranceTypeName == 'Cash-Don\'t bill') {
+            getVisitNumber = false
+        }
+
+        getVisitNumber
+    }
 
 
     Visit saveVisitWithStatusChange(Visit visit, VisitStatus visitStatus, Employee employee) {
         // save the visit status
         visit.visitStatus = visitStatus
-        visitRepository.save(visit)
+
+        // see if the visit shouldn't get a visit number
+//        if(!visitGetsVisitNumber(visit)) {
+//            visit.visitNumber = 0
+//        }
+
+        Visit updatedVisit = visitRepository.save(visit)
+
+        // reset the visit numbers
+        setVisitNumbers(updatedVisit)
+
 
         // create the visit change record and add it to the visit
         visit.visitStatusChanges << visitStatusChangeRepository.save(
@@ -228,15 +327,15 @@ class VisitService {
 
 
     /**
-     * The one query to rule them all...
+     * The one method to rule them all (by status)...
      *
-     * This method serves the visitstatus form, which has 5 different search criteria:
+     * This method serves the visitstatus form (search by status), which has 5 different search criteria:
      *  visitStatus, fromDate, toDate, insuranceType and therapist
      *
      *  where:
      *      - visitStatus is never null
-     *      - fromDate is never null
-     *      - toDate can be null (which means only search by the fromDate)
+     *      - fromDate can be null (which means only search by the toDate)
+     *      - toDate is never null
      *      - insuranceType can be null (null means search by all insurance, non-null means search by the specified insurance
      *      - therapist can be null (null means search by all therapist, non-null means search by the specified therapist
      *
@@ -296,35 +395,86 @@ class VisitService {
 
         // see if we got any results
         if(visits) {
-            // yup, so load up all the useful lookup info
-            visits.each{ Visit v ->
-                populateLookupData(v, true)
-                v.previousVisit = getPreviousVisit(v)
-                v.sameDiagnosisAsPrevious = v.previousVisit ? visitsHaveSameDiganoses(v, v.previousVisit) : false
-            }
-
-            // sort the visits ...
-            visits.sort {
-                v1, v2 ->
-                    // first level, compare visitDate
-                    if(v1.visitDate.isBefore(v2.visitDate)) {
-                        return -1
-                    }
-                    if(v1.visitDate.isAfter(v2.visitDate)) {
-                        return 1
-                    }
-                    // visitDates are the same, so compare last names now
-                    int compare = v1.patient.lastName.compareTo(v2.patient.lastName)
-                    if(compare == 0) {
-                        compare = v1.patient.firstName.compareTo(v2.patient.firstName)
-                    }
-                    return compare
-            }
-
+            visits = postSearchProcessing(visits)
         }
 
         visits
     }
+
+
+    /**
+     * The one method to rule them all...
+     *
+     * This method serves the visitstatus form (search by patient), which has 3 different search criteria:
+     *  patient, fromDate, toDate
+     *
+     *  where:
+     *      - patient cannot be null
+     *      - fromDate can be null (which means only search by the toDate)
+     *      - toDate is never null
+     *
+     */
+    List<Visit> findVisitsByPatient(Patient patient, LocalDate fromDate, LocalDate toDate) {
+        List<Visit> visits = null
+
+        if(!patient || !toDate) {
+            throw new IllegalArgumentException('patient & toDate are required parameters to findVisitsByPatient()')
+        }
+
+        if(!fromDate) {
+            // patient and toDate only
+            log.info 'findByPatientIdAndVisitDate()'
+            visits = visitRepository.findByPatientIdAndVisitDate(patient.patientId, toDate)
+        } else {
+            // patient, fromDate and toDate only
+            log.info 'findByPatientIdAndFromDateAndToDate()'
+            visits = visitRepository.findByPatientIdAndFromDateAndToDate(patient.patientId, fromDate, toDate)
+        }
+
+        // see if we got any results
+        if(visits) {
+            visits = postSearchProcessing(visits)
+        }
+
+        visits
+    }
+
+    /**
+     * Performs a few useful tasks on a result set of Visits:
+     *  - populates lookup info
+     *  - loads the previous visit info
+     *  - compares dx to previous
+     *  - sorts the visits by DoS, then patient name
+     */
+    List<Visit> postSearchProcessing(List<Visit> visits) {
+        // yup, so load up all the useful lookup info
+        visits.each{ Visit v ->
+            populateLookupData(v, true)
+            v.previousVisit = getPreviousVisit(v)
+            v.sameDiagnosisAsPrevious = v.previousVisit ? visitsHaveSameDiganoses(v, v.previousVisit) : false
+        }
+
+        // sort the visits ...
+        visits.sort {
+            v1, v2 ->
+                // first level, compare visitDate
+                if(v1.visitDate.isBefore(v2.visitDate)) {
+                    return -1
+                }
+                if(v1.visitDate.isAfter(v2.visitDate)) {
+                    return 1
+                }
+                // visitDates are the same, so compare last names now
+                int compare = v1.patient.lastName.compareTo(v2.patient.lastName)
+                if(compare == 0) {
+                    compare = v1.patient.firstName.compareTo(v2.patient.firstName)
+                }
+                return compare
+        }
+
+        visits
+    }
+
 
 
     /**

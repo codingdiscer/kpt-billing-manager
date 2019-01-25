@@ -22,8 +22,10 @@ import javafx.scene.control.ProgressIndicator
 import javafx.scene.control.Separator
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.GridPane
+import javafx.scene.layout.RowConstraints
 import org.springframework.util.StringUtils
 
 import javax.annotation.Nonnull
@@ -31,6 +33,28 @@ import javax.annotation.PostConstruct
 
 @ArtifactProviderFor(GriffonView)
 class TrackVisitStatusView extends BaseView {
+
+    // magic strings!
+    static String STYLE_BLACK_BORDER = '-fx-border-color: black;'
+
+    // magic numbers!
+    static double COLUMN_WIDTH_DATE_OF_SERVICE  = 80.0
+    static double COLUMN_WIDTH_VISIT_NUMBER     = 30.0
+    static double COLUMN_WIDTH_DX_CHANGE        = 50.0
+    static double COLUMN_WIDTH_TX_CODES         = 200.0
+    static double COLUMN_WIDTH_TX_COUNT         = 30.0
+    static double COLUMN_WIDTH_NOTES            = 50.0
+    static double COLUMN_WIDTH_DETAILS          = 60.0
+    static double COLUMN_WIDTH_ACTIONS          = 380.0
+    static double COLUMN_WIDTH_VISIT_TYPE       = 100.0
+    static double COLUMN_WIDTH_STATUS           = 120.0
+
+    static double COLUMN_WIDTH_PATIENT_NAME     = 150.0
+    static double COLUMN_WIDTH_INSURANCE        = 80.0
+    static double COLUMN_WIDTH_THERAPIST        = 50.0
+
+
+
 
     // magic string!
     static String SELECT_STATUS = 'Select a status..'
@@ -42,20 +66,147 @@ class TrackVisitStatusView extends BaseView {
     @SpringAutowire LookupDataService lookupDataService
     @SpringAutowire VisitService visitService
 
-    @FXML GridPane visitResultsGridPane
-
     // panes that hold other components
     @FXML AnchorPane navigationPane
-
-
     @FXML AnchorPane rootAnchorPane
 
     @FXML ProgressIndicator spinner
+    @FXML Button clearPatientSearchButton
+
+    // the grid panes that display the results
+    @FXML GridPane visitHeadersGridPane
+    @FXML GridPane visitResultsGridPane
 
     void showSpinner(boolean showSpinner) {
         spinner.visible = showSpinner
     }
 
+
+    ColumnConstraints buildColumnConstraints(double width) {
+        new ColumnConstraints(prefWidth: width, minWidth: width, maxWidth: width)
+    }
+
+    Label buildLabel(String text, double width) {
+        new Label(text: text, alignment: Pos.CENTER, prefWidth: width, minWidth: width, maxWidth: width,
+                style: STYLE_BLACK_BORDER)
+    }
+
+    Label buildLabel(String text, double width, String tooltip) {
+        new Label(text: text, alignment: Pos.CENTER, prefWidth: width, minWidth: width, maxWidth: width,
+                style: STYLE_BLACK_BORDER, tooltip: new Tooltip(tooltip))
+    }
+
+    void prepareGridsByStatus() {
+        visitHeadersGridPane.hgap = 1
+        visitHeadersGridPane.columnConstraints.clear()
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DATE_OF_SERVICE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_NUMBER)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_PATIENT_NAME)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_INSURANCE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_THERAPIST)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DX_CHANGE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_CODES)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+
+        visitHeadersGridPane.rowConstraints.clear()
+        visitHeadersGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
+
+        int columnIndex = 0
+
+        visitHeadersGridPane.children.clear()
+        visitHeadersGridPane.add(buildLabel('DoS', COLUMN_WIDTH_DATE_OF_SERVICE, 'Date Of Service'), columnIndex++, 0)
+
+        visitHeadersGridPane.add(buildLabel('Vst #', COLUMN_WIDTH_VISIT_NUMBER,'Visit number'), columnIndex++, 0)
+
+        visitHeadersGridPane.add(buildLabel('Patient Name', COLUMN_WIDTH_PATIENT_NAME), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Insurance', COLUMN_WIDTH_INSURANCE), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Thrpst', COLUMN_WIDTH_THERAPIST), columnIndex++, 0)
+
+        visitHeadersGridPane.add(buildLabel('Dx Chg', COLUMN_WIDTH_DX_CHANGE,'Indicates if diagnoses changed from the previous visit'),columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Tx Codes', COLUMN_WIDTH_TX_CODES,'List of the performed treatment codes'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('#', COLUMN_WIDTH_TX_COUNT,'The total number of performed treatments'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Notes', COLUMN_WIDTH_NOTES,'Indicates if notes were taken during the visit'), columnIndex++, 0)
+
+        visitHeadersGridPane.add(buildLabel('See Visit', COLUMN_WIDTH_DETAILS), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Actions (Set status to...)',COLUMN_WIDTH_ACTIONS), columnIndex++, 0)
+
+        visitResultsGridPane.hgap = 1
+        visitResultsGridPane.columnConstraints.clear()
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DATE_OF_SERVICE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_NUMBER)
+
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_PATIENT_NAME)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_INSURANCE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_THERAPIST)
+
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DX_CHANGE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_CODES)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+
+        visitResultsGridPane.rowConstraints.clear()
+        visitResultsGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
+    }
+
+
+    void prepareGridsByPatient() {
+        visitHeadersGridPane.hgap = 1
+        visitHeadersGridPane.columnConstraints.clear()
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DATE_OF_SERVICE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_NUMBER)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_TYPE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_STATUS)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_INSURANCE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_THERAPIST)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DX_CHANGE)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_CODES)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+
+        visitHeadersGridPane.rowConstraints.clear()
+        visitHeadersGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
+
+        int columnIndex = 0
+
+        visitHeadersGridPane.children.clear()
+        visitHeadersGridPane.add(buildLabel('DoS', COLUMN_WIDTH_DATE_OF_SERVICE, 'Date Of Service'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Vst #', COLUMN_WIDTH_VISIT_NUMBER, 'Visit number'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Visit Type', COLUMN_WIDTH_VISIT_TYPE), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Status', COLUMN_WIDTH_STATUS), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Insurance', COLUMN_WIDTH_INSURANCE), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Thrpst', COLUMN_WIDTH_THERAPIST), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Dx Chg', COLUMN_WIDTH_DX_CHANGE, 'Indicates if diagnoses changed from the previous visit'),columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Tx Codes', COLUMN_WIDTH_TX_CODES, 'List of the performed treatment codes'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('#', COLUMN_WIDTH_TX_COUNT,'The total number of performed treatments'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Notes', COLUMN_WIDTH_NOTES, 'Indicates if notes were taken during the visit'), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('See Visit', COLUMN_WIDTH_DETAILS),columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Actions (Set status to...)', COLUMN_WIDTH_ACTIONS), columnIndex++, 0)
+
+        visitResultsGridPane.hgap = 1
+        visitResultsGridPane.columnConstraints.clear()
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DATE_OF_SERVICE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_NUMBER)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_VISIT_TYPE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_STATUS)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_INSURANCE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_THERAPIST)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DX_CHANGE)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_CODES)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+
+        visitResultsGridPane.rowConstraints.clear()
+        visitResultsGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
+    }
 
 
     @PostConstruct
@@ -72,20 +223,24 @@ class TrackVisitStatusView extends BaseView {
     @PostSpringConstruct
     void initAfterSpring() {
         rootAnchorPane.style = commonProperties.statusTrackerBackground
+        clearPatientSearchButton.text = 'Clear'
     }
 
 
     void buildResultRowByStatus(Visit visit, int rowNumber) {
+        int columnIndex = 0
+
         // date, visit number, last name, first name
-        visitResultsGridPane.add(new Label(text: visit.visitDate.format(commonProperties.dateFormatter),
-                prefWidth: 80, style: "-fx-border-color: black;", alignment: Pos.CENTER), 0, rowNumber)
-        visitResultsGridPane.add(new Label(text: String.valueOf(visit.visitNumber),
-                prefWidth: 30, style: "-fx-border-color: black;", alignment: Pos.CENTER), 1, rowNumber)
-        visitResultsGridPane.add(new Label(text: visit.patient.lastName, prefWidth: 160, style: "-fx-border-color: black;"), 2, rowNumber)
-        visitResultsGridPane.add(new Label(text: visit.patient.firstName, prefWidth: 120, style: "-fx-border-color: black;"), 3, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.visitDate.format(commonProperties.dateFormatter),COLUMN_WIDTH_DATE_OF_SERVICE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.visitNumber > 0 ? String.valueOf(visit.visitNumber) : '',
+                COLUMN_WIDTH_VISIT_NUMBER), columnIndex++, rowNumber)
+
+        visitResultsGridPane.add(new Label(text: "${visit.patient.lastName}, ${visit.patient.firstName}", prefWidth: COLUMN_WIDTH_PATIENT_NAME, style: STYLE_BLACK_BORDER), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.insuranceType.insuranceTypeName, COLUMN_WIDTH_INSURANCE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.therapist.fullname.substring(0, visit.therapist.fullname.indexOf(' ')), COLUMN_WIDTH_THERAPIST), columnIndex++, rowNumber)
 
         // dx
-        visitResultsGridPane.add(new Label(text: visit.sameDiagnosisAsPrevious ? 'YES' : '', prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER), 4, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.sameDiagnosisAsPrevious ? 'YES' : '', COLUMN_WIDTH_DX_CHANGE), columnIndex++, rowNumber)
 
         // tx
         String txText = visit.visitTreatments.collect {
@@ -94,60 +249,130 @@ class TrackVisitStatusView extends BaseView {
                     "${lookupDataService.findTreatmentById(it.treatmentId).treatmentCode} (${it.treatmentQuantity})" : // yep, so show the quantity
                     lookupDataService.findTreatmentById(it.treatmentId).treatmentCode  // nope, just 1
         }.join(', ')
-        Label txLabel = new Label(text: txText, prefWidth: 200, style: "-fx-border-color: black;")
-        txLabel.setTooltip(new Tooltip(txText))
-        visitResultsGridPane.add(txLabel, 5, rowNumber)
+        //Label txLabel = new Label(text: txText, prefWidth: COLUMN_WIDTH_TX_CODES, style: STYLE_BLACK_BORDER, tooltip: new Tooltip(txText))
+        visitResultsGridPane.add(buildLabel(txText, COLUMN_WIDTH_TX_CODES, txText), columnIndex++, rowNumber)
 
         // tx count
         int txCount = visit.visitTreatments.collect { it.treatmentQuantity }.inject(0) { a, b -> a + b}
-        visitResultsGridPane.add(new Label(text: String.valueOf(txCount), prefWidth: 30, style: "-fx-border-color: black;", alignment: Pos.CENTER), 6, rowNumber)
+        visitResultsGridPane.add(buildLabel(String.valueOf(txCount), COLUMN_WIDTH_TX_COUNT), columnIndex++, rowNumber)
 
         // notes ?
-        Label notesLabel = new Label(text: StringUtils.isEmpty(visit.notes) ? "" : "YES",
-                prefWidth: 50, style: "-fx-border-color: black;", alignment: Pos.CENTER)
-        if(!StringUtils.isEmpty(visit.notes)) {
-            notesLabel.setTooltip(new Tooltip(visit.notes))
-        }
-        visitResultsGridPane.add(notesLabel, 7, rowNumber)
+        Label notesLabel = StringUtils.isEmpty(visit.notes) ?
+                buildLabel('', COLUMN_WIDTH_NOTES) :
+                buildLabel('YES',  COLUMN_WIDTH_NOTES, visit.notes)
+        visitResultsGridPane.add(notesLabel, columnIndex++, rowNumber)
 
         // view details button
-        visitResultsGridPane.add(new Button(text: 'View Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
-                8, rowNumber)
+        visitResultsGridPane.add(new Button(text: 'Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
+                columnIndex++, rowNumber)
 
         // action button(s)
         switch (visit.visitStatus) {
             case VisitStatus.VISIT_CREATED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
                 break
             case VisitStatus.SEEN_BY_THERAPIST:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PREPARED_FOR_BILLING),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.PREPARED_FOR_BILLING:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILLED_TO_INSURANCE),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.BILLED_TO_INSURANCE:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.REMITTANCE_ENTERED),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.REMITTANCE_ENTERED:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILL_SENT_TO_PATIENT),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.AWAITING_SECONDARY:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.BILL_SENT_TO_PATIENT:
                 visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
-                        9, rowNumber)
+                        columnIndex++, rowNumber)
                 break
             case VisitStatus.PAID_IN_FULL:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit),9, rowNumber)
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
                 break
         }
     }
+
+
+    void buildResultRowByPatient(Visit visit, int rowNumber) {
+        int columnIndex = 0
+
+        // date, visit number, last name, first name
+        visitResultsGridPane.add(buildLabel(visit.visitDate.format(commonProperties.dateFormatter), COLUMN_WIDTH_DATE_OF_SERVICE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.visitNumber > 0 ? String.valueOf(visit.visitNumber) : '', COLUMN_WIDTH_VISIT_NUMBER), columnIndex++, rowNumber)
+
+        // visit type
+        visitResultsGridPane.add(buildLabel(visit.visitType?.visitTypeName, COLUMN_WIDTH_VISIT_TYPE), columnIndex++, rowNumber)
+
+        // visit status
+        visitResultsGridPane.add(buildLabel(visit.visitStatus?.text, COLUMN_WIDTH_STATUS), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.insuranceType.insuranceTypeName, COLUMN_WIDTH_INSURANCE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(visit.therapist.fullname.substring(0, visit.therapist.fullname.indexOf(' ')), COLUMN_WIDTH_THERAPIST), columnIndex++, rowNumber)
+
+        // dx
+        visitResultsGridPane.add(buildLabel(visit.sameDiagnosisAsPrevious ? 'YES' : '', COLUMN_WIDTH_DX_CHANGE), columnIndex++, rowNumber)
+
+        // tx
+        String txText = visit.visitTreatments.collect {
+            // see if more than 1 treatment (if so, be sure to include it)
+            it.treatmentQuantity > 1 ?
+                    "${lookupDataService.findTreatmentById(it.treatmentId).treatmentCode} (${it.treatmentQuantity})" : // yep, so show the quantity
+                    lookupDataService.findTreatmentById(it.treatmentId).treatmentCode  // nope, just 1
+        }.join(', ')
+        visitResultsGridPane.add(buildLabel(txText, COLUMN_WIDTH_TX_CODES, txText), columnIndex++, rowNumber)
+
+        // tx count
+        int txCount = visit.visitTreatments.collect { it.treatmentQuantity }.inject(0) { a, b -> a + b}
+        visitResultsGridPane.add(buildLabel(String.valueOf(txCount), COLUMN_WIDTH_TX_COUNT), columnIndex++, rowNumber)
+
+        // notes ?
+        Label notesLabel = StringUtils.isEmpty(visit.notes) ?
+                buildLabel('', COLUMN_WIDTH_NOTES) :
+                buildLabel('YES',  COLUMN_WIDTH_NOTES, visit.notes)
+        visitResultsGridPane.add(notesLabel, columnIndex++, rowNumber)
+
+        // view details button
+        visitResultsGridPane.add(new Button(text: 'Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
+                columnIndex++, rowNumber)
+
+        // action button(s)
+        switch (visit.visitStatus) {
+            case VisitStatus.VISIT_CREATED:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
+                break
+            case VisitStatus.SEEN_BY_THERAPIST:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PREPARED_FOR_BILLING), columnIndex++, rowNumber)
+                break
+            case VisitStatus.PREPARED_FOR_BILLING:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILLED_TO_INSURANCE), columnIndex++, rowNumber)
+                break
+            case VisitStatus.BILLED_TO_INSURANCE:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.REMITTANCE_ENTERED), columnIndex++, rowNumber)
+                break
+            case VisitStatus.REMITTANCE_ENTERED:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILL_SENT_TO_PATIENT), columnIndex++, rowNumber)
+                break
+            case VisitStatus.AWAITING_SECONDARY:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL), columnIndex++, rowNumber)
+                break
+            case VisitStatus.BILL_SENT_TO_PATIENT:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL), columnIndex++, rowNumber)
+                break
+            case VisitStatus.PAID_IN_FULL:
+                visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
+                break
+        }
+    }
+
+
 
     /**
      * Builds a button with the label of the given VisitStatus, and when clicked, changes the visit to that status

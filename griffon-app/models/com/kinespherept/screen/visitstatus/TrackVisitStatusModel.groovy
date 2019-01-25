@@ -1,5 +1,6 @@
 package com.kinespherept.screen.visitstatus
 
+import com.kinespherept.enums.SearchType
 import com.kinespherept.model.core.Patient
 import com.kinespherept.model.core.PatientVisit
 import com.kinespherept.model.core.VisitStatus
@@ -17,8 +18,9 @@ import java.time.LocalDate
 @ArtifactProviderFor(GriffonModel)
 class TrackVisitStatusModel {
 
-    // magic string!
+    // magic strings!
     static final ALL = 'All'
+    static final PATIENT_SEARCH = '<-- Search'
 
 
     @MVCMember @Nonnull TrackVisitStatusController controller
@@ -55,25 +57,30 @@ class TrackVisitStatusModel {
     Closure changeTherapist = { StringProperty ob, ov, nv -> controller.changeTherapist() }
 
     // tied to the patient search text field
+    @FXObservable @ChangeListener('changePatientFilter')
     String patientSearch = ''
+    Closure changePatientFilter = { StringProperty ob, ov, nv -> controller.changePatientFilter() }
+
     List<Patient> filteredPatients = []
 
     // tied to the 'patients' drop down
     @FXObservable List<String> patients = []
-    //@FXObservable @ChangeListener('selectPatient')
+    @FXObservable @ChangeListener('selectPatient')
     String patientsChoice = ''
-    //Closure selectPatient = { StringProperty ob, ov, nv -> controller.selectPatient() }
+    Closure selectPatient = { StringProperty ob, ov, nv -> controller.selectPatient() }
 
 
 
-//    @FXObservable List<String> patientTypes = []
-//    @FXObservable String patientTypesChoice = ''
-//
-//    @FXObservable List<String> visitTypes = []
-//    @FXObservable String visitTypesChoice = ''
-
-
+    //
     // fields that hold some state
+    //
+
+    // the list of visits based on the filter criteria
     List<PatientVisit> visits = []
 
+    // keep track of the last search type for when returning to this screen
+    SearchType lastSearchType = SearchType.STATUS
+
+    // this string represents the first entry in the "filtered patients" drop-down
+    String filteredPatientCount = ''
 }

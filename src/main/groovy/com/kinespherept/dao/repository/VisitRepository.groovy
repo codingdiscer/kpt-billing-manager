@@ -13,12 +13,17 @@ interface VisitRepository extends CrudRepository<Visit, Long> {
     List<Visit> findByVisitDateAndTherapistId(LocalDate visitDate, Integer therapistId)
 
     //
-    // queries for visitstatus tracker screen - search by visitStatus, fromDate & ...  (not toDate)
+    // queries for visitstatus tracker screen - search by visitStatus, toDate & ...  (not including fromDate)
     //
     List<Visit> findByVisitStatusAndVisitDate(VisitStatus visitStatus, LocalDate visitDate)
     List<Visit> findByVisitStatusAndVisitDateAndInsuranceTypeId(VisitStatus visitStatus, LocalDate visitDate, Integer insuranceTypeId)
     List<Visit> findByVisitStatusAndVisitDateAndTherapistId(VisitStatus visitStatus, LocalDate visitDate, Integer therapistId)
     List<Visit> findByVisitStatusAndVisitDateAndInsuranceTypeIdAndTherapistId(VisitStatus visitStatus, LocalDate visitDate, Integer insuranceTypeId, Integer therapistId)
+
+    //
+    // query for visitstatus tracker screen - search by patient & toDate (not including fromDate)
+    //
+    List<Visit> findByPatientIdAndVisitDate(Long patientId, LocalDate toDate)
 
     //
     // queries for visitstatus tracker screen - search by visitStatus, fromDate, toDate & ...
@@ -45,6 +50,15 @@ interface VisitRepository extends CrudRepository<Visit, Long> {
             @Param('visitStatus') VisitStatus visitStatus, @Param('fromDate') LocalDate fromDate,
             @Param('toDate') LocalDate toDate, @Param('insuranceTypeId') Integer insuranceTypeId,
             @Param('therapistId') Integer therapistId)
+
+
+    //
+    // query for visitstatus tracker screen - search by patientId, fromDate & toDate
+    //
+    @Query('SELECT v FROM Visit v WHERE v.patientId = :patientId AND v.visitDate >= :fromDate AND v.visitDate <= :toDate')
+    List<Visit> findByPatientIdAndFromDateAndToDate(@Param('patientId') Long patientId,
+                                                    @Param('fromDate') LocalDate fromDate,
+                                                    @Param('toDate') LocalDate toDate)
 
 
 

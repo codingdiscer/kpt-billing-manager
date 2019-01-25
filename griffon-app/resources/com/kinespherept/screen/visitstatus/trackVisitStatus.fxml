@@ -71,24 +71,18 @@
                      <Separator prefHeight="20" prefWidth="1200.0" />
 
                      <!-- third row : patient search -->
-<!--
 
                      <Label text="Patient search " />
                      <TextField id="patientSearch" prefWidth="100.0" />
-                     <Button text="Clear" JavaFXUtils.griffonActionId="clearPatientSearch"/>
+                     <Button text="Clear" fx:id="clearPatientSearchButton" JavaFXUtils.griffonActionId="clearPatientSearch"/>
 
                      <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
 
                      <ChoiceBox id="patients" prefWidth="200.0" />
 
-
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-                     <ProgressIndicator progress="-1" fx:id="spinner" visible="false" prefHeight="30.0" prefWidth="30.0" />
-
                      <Separator prefHeight="20" prefWidth="1200.0" />
--->
 
-                    <GridPane prefWidth="1200">
+                    <GridPane fx:id="visitHeadersGridPane" prefWidth="1200">
                       <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />    <!-- Date of service -->
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />    <!-- Visit # -->

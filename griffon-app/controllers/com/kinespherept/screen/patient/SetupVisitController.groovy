@@ -132,20 +132,22 @@ class SetupVisitController {
             model.patient.visits <<  visitService.saveVisitReplaceDiagnosesAndTreatments(new Visit(
                     visitDate: model.visitDate,
                     patientId: model.patient.patientId,
+                    patient: model.patient,
                     patientTypeId: lookupDataService.findPatientTypeByName(model.patientTypesChoice)?.patientTypeId,
+                    patientType: lookupDataService.findPatientTypeByName(model.patientTypesChoice),
                     insuranceTypeId: lookupDataService.findInsuranceTypeByName(model.insuranceTypesChoice)?.insuranceTypeId,
+                    insuranceType: lookupDataService.findInsuranceTypeByName(model.insuranceTypesChoice),
                     visitTypeId: lookupDataService.findVisitTypeByName(model.visitTypesChoice)?.visitTypeId,
+                    visitType: lookupDataService.findVisitTypeByName(model.visitTypesChoice),
                     therapistId: employeeService.employees.find { it.fullname == model.therapistsChoice }?.employeeId,
                     visitStatus: VisitStatus.VISIT_CREATED,
                     notes: model.notes,
-                    visitNumber: getVisitNumber(),
+                    //visitNumber: getVisitNumber(),
 
                     // map the patient's diagnoses into VisitDiagnosis objects
                     visitDiagnoses: visitService.getAllTrackedDiagnoses(model.patient).stream()
                             .map({ d -> new VisitDiagnosis(diagnosisId: d.diagnosisId) })
                             .collect(Collectors.toList())
-
-
                     ),
                     VisitStatus.VISIT_CREATED,
                     employeeSession.employee
@@ -154,9 +156,13 @@ class SetupVisitController {
         } else if(model.mutation == Mutation.UPDATE) {
             model.visit.visitDate = model.visitDate
             model.visit.patientId =  model.patient.patientId
+            model.visit.patient = model.patient
             model.visit.patientTypeId = lookupDataService.findPatientTypeByName(model.patientTypesChoice)?.patientTypeId
+            model.visit.patientType = lookupDataService.findPatientTypeByName(model.patientTypesChoice)
             model.visit.insuranceTypeId = lookupDataService.findInsuranceTypeByName(model.insuranceTypesChoice)?.insuranceTypeId
+            model.visit.insuranceType = lookupDataService.findInsuranceTypeByName(model.insuranceTypesChoice)
             model.visit.visitTypeId = lookupDataService.findVisitTypeByName(model.visitTypesChoice)?.visitTypeId
+            model.visit.visitType = lookupDataService.findVisitTypeByName(model.visitTypesChoice)
             model.visit.therapistId = employeeService.findByFullname(model.therapistsChoice)?.employeeId
             model.visit.notes = model.notes
 
