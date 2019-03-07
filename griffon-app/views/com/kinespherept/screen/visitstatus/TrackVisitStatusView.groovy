@@ -267,38 +267,7 @@ class TrackVisitStatusView extends BaseView {
                 columnIndex++, rowNumber)
 
         // action button(s)
-        switch (visit.visitStatus) {
-            case VisitStatus.VISIT_CREATED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
-                break
-            case VisitStatus.SEEN_BY_THERAPIST:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PREPARED_FOR_BILLING),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.PREPARED_FOR_BILLING:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILLED_TO_INSURANCE),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.BILLED_TO_INSURANCE:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.REMITTANCE_ENTERED),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.REMITTANCE_ENTERED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILL_SENT_TO_PATIENT),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.AWAITING_SECONDARY:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.BILL_SENT_TO_PATIENT:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL),
-                        columnIndex++, rowNumber)
-                break
-            case VisitStatus.PAID_IN_FULL:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
-                break
-        }
+        visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
     }
 
 
@@ -344,32 +313,7 @@ class TrackVisitStatusView extends BaseView {
                 columnIndex++, rowNumber)
 
         // action button(s)
-        switch (visit.visitStatus) {
-            case VisitStatus.VISIT_CREATED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
-                break
-            case VisitStatus.SEEN_BY_THERAPIST:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PREPARED_FOR_BILLING), columnIndex++, rowNumber)
-                break
-            case VisitStatus.PREPARED_FOR_BILLING:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILLED_TO_INSURANCE), columnIndex++, rowNumber)
-                break
-            case VisitStatus.BILLED_TO_INSURANCE:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.REMITTANCE_ENTERED), columnIndex++, rowNumber)
-                break
-            case VisitStatus.REMITTANCE_ENTERED:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.BILL_SENT_TO_PATIENT), columnIndex++, rowNumber)
-                break
-            case VisitStatus.AWAITING_SECONDARY:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL), columnIndex++, rowNumber)
-                break
-            case VisitStatus.BILL_SENT_TO_PATIENT:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit, VisitStatus.PAID_IN_FULL), columnIndex++, rowNumber)
-                break
-            case VisitStatus.PAID_IN_FULL:
-                visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
-                break
-        }
+        visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
     }
 
 
@@ -385,9 +329,8 @@ class TrackVisitStatusView extends BaseView {
     /**
      * Builds the FlowPane of status change options for the given visit
      */
-    FlowPane buildActionButtonFlowPane(Visit visit, VisitStatus ... visitStatuses) {
+    FlowPane buildActionButtonFlowPane(Visit visit) {
         FlowPane flowPane = new FlowPane(alignment: Pos.CENTER_LEFT)
-        flowPane.children.addAll(visitStatuses.collect { buildButtonForStatus(visit, it) })
 
         // prepare the list of all status to change to (exclude the current status)
         List<String> options = [SELECT_STATUS]
@@ -398,10 +341,6 @@ class TrackVisitStatusView extends BaseView {
         directSetChoiceBox.items.addAll(options)
         directSetChoiceBox.selectionModel.select(SELECT_STATUS)
 
-        // add a divider only if a quick status button is supplied
-        if(visitStatuses.size() > 0) {
-            flowPane.children.add(new Separator(orientation: Orientation.VERTICAL, prefWidth: 10))
-        }
         // add the choice box and button behind it
         flowPane.children.add(directSetChoiceBox)
         flowPane.children.add(new Button(text: 'Change status', id: visit.visitId,

@@ -309,7 +309,6 @@ class TrackVisitStatusController {
         log.info "changeVisitStatus(${visit}, ${visitStatus})"
         visitService.saveVisitWithStatusChange(visit, visitStatus, employeeSession.employee)
         // after making the change, refresh the visit data
-        //loadVisitDataByStatus()
         if(model.lastSearchType == SearchType.STATUS) {
             loadVisitDataByStatusWithDistraction()
         } else {

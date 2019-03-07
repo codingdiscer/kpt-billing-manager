@@ -37,7 +37,6 @@ class SchedulePatientsController {
     @SpringAutowire PatientService patientService
     @SpringAutowire EmployeeService employeeService
     @SpringAutowire VisitService visitService
-    //@SpringAutowire SceneManager sceneManager
 
     @GriffonAutowire SetupPatientController setupPatientController
     @GriffonAutowire SetupVisitController setupVisitController
@@ -85,6 +84,15 @@ class SchedulePatientsController {
 
     void populatePatientResults(List<Patient> patients) {
         view.patientResults.items.clear()
+
+        patients.sort { p1, p2 ->
+            // first level, compare lastname
+            if(p1.lastName != p2.lastName) {
+                return p1.lastName <=> p2.lastName
+            }
+            return p1.firstName <=> p2.firstName
+        }
+
         patients.forEach({ p ->
             view.patientResults.items << view.buildPatientSearchResult(p)})
     }

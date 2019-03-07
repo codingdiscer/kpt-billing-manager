@@ -245,7 +245,6 @@ class LookupDataService {
             throw new IllegalArgumentException("Attempted to delete Diagnosis[${diagnosis.diagnosisName}] failed because it is referenced in a visit")
         }
 
-
         // loop over the diagnoses of the same dx-type, and update the order as necessary
         findDiagnosesByDiagnosisTypeId(diagnosis.diagnosisTypeId).each { dx ->
             if(diagnosis.displayOrder <= dx.displayOrder) {
@@ -261,7 +260,50 @@ class LookupDataService {
         hookupDiagnosisData()
     }
 
+    void updateDiagnosisOfSameDxType(Diagnosis diagnosis) {
+        // loop over the diagnoses, and update the order as necessary
+        List<Diagnosis> dxList = findDiagnosesByDiagnosisTypeId(diagnosis.diagnosisTypeId)
 
+        dxList.remove(diagnosis)
+
+        // re-number all the rest of the dx's, accounting for the order of the updated one
+        for(int i = 0; i < dxList.size(); i++ ) {
+            if(i < diagnosis.displayOrder - 1) {
+                dxList[i].displayOrder = i + 1  // to correct for zero-based counter
+                diagnosisRepository.save(dxList[i])
+            } else {
+                dxList[i].displayOrder = i + 2
+                diagnosisRepository.save(dxList[i])
+            }
+        }
+
+        // save the incoming change
+        diagnosisRepository.save(diagnosis)
+
+        // now refresh everything
+        diagnoses = Lists.newArrayList(diagnosisRepository.findAll())
+        hookupDiagnosisData()
+    }
+
+    void moveDiagnosisToNewDxType(Diagnosis diagnosis, String oldDxTypeName) {
+
+        // loop over the diagnoses, and update the order as necessary
+        List<Diagnosis> oldDxList = findDiagnosesByDiagnosisTypeName(oldDxTypeName)
+
+        // remove the Dx from the old list
+        oldDxList.remove(diagnosis)
+
+        // loop over the old diagnoses, and update the order as necessary
+        for(int i = 0; i < oldDxList.size(); i++ ) {
+            oldDxList[i].displayOrder = i + 1
+            diagnosisRepository.save(oldDxList[i])
+        }
+
+        updateDiagnosisOfSameDxType(diagnosis)
+
+        diagnoses = Lists.newArrayList(diagnosisRepository.findAll())
+        hookupDiagnosisData()
+    }
 
     List<Diagnosis> findDiagnosesByDiagnosisTypeId(int diagnosisTypeId) {
         DiagnosisType dt = findDiagnosisTypeById(diagnosisTypeId)
@@ -271,7 +313,7 @@ class LookupDataService {
             dxList = findDiagnosesByDiagnosisTypeName(dt.diagnosisTypeName)
         }
 
-        dxList
+        dxList.toSorted { a, b -> a.displayOrder <=> b.displayOrder }
     }
 
     List<Diagnosis> findDiagnosesByDiagnosisTypeName(String diagnosisTypeName) {
@@ -282,7 +324,7 @@ class LookupDataService {
            dxList = diagnoses.findAll { it.diagnosisTypeId == dt.diagnosisTypeId }
         }
 
-        dxList
+        dxList.toSorted { a, b -> a.displayOrder <=> b.displayOrder }
     }
 
 

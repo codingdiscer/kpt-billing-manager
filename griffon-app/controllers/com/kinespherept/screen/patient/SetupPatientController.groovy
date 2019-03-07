@@ -29,7 +29,6 @@ class SetupPatientController {
 
     @SpringAutowire LookupDataService lookupDataService
     @SpringAutowire PatientService patientService
-    //@SpringAutowire SceneManager sceneManager
     @SpringAutowire CommonProperties commonProperties
 
     @GriffonAutowire AdministerPatientsController administerPatientsController
@@ -88,6 +87,27 @@ class SetupPatientController {
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void mutatePatient() {
         log.info "mutatePatient() :: mutation=${model.mutation}, firstName=${model.firstName}, lastName=${model.lastName}, patientType=${model.patientTypesChoice}, insuranceType=${model.insuranceTypesChoice}, notes=${model.notes}"
+
+        // clear the error messages
+        model.errorMessage = ''
+
+        if(model.firstName.trim().size() == 0) {
+            model.errorMessage = 'Please enter a first name'
+            return
+        }
+        if(model.lastName.trim().size() == 0) {
+            model.errorMessage = 'Please enter a last name'
+            return
+        }
+        if(model.patientTypesChoice == '') {
+            model.errorMessage = 'Please select a patient type'
+            return
+        }
+        if(model.insuranceTypesChoice == '') {
+            model.errorMessage = 'Please select an insurance type'
+            return
+        }
+
 
         if(model.mutation == Mutation.CREATE) {
             model.patient = new Patient()

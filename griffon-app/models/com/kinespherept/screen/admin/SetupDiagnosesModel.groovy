@@ -80,7 +80,11 @@ class SetupDiagnosesModel {
     @FXObservable String dxUpdateDiagnosisName = 'r'
 
     @FXObservable List<String> dxUpdateDiagnosisType = ['s','t']
-    @FXObservable String dxUpdateDiagnosisTypeChoice = 's'
+
+    @FXObservable @ChangeListener('updateDxDisplayOrderChoices')
+    String dxUpdateDiagnosisTypeChoice = 's'
+    Closure updateDxDisplayOrderChoices = { StringProperty ob, ov, nv -> controller.updateDxDisplayOrderChoices(ob.value) }
+
 
     @FXObservable List<String> dxUpdateDisplayOrder = ['1','2','3']
     @FXObservable String dxUpdateDisplayOrderChoice = '3'

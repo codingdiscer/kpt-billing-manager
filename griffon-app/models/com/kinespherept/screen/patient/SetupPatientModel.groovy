@@ -24,6 +24,7 @@ class SetupPatientModel {
     @FXObservable List<String> insuranceTypes = []
     @FXObservable String insuranceTypesChoice = ''
     @FXObservable String notes = ''
+    @FXObservable String errorMessage = ''
 
     Mutation mutation = Mutation.UNSET
     Patient patient

@@ -33,7 +33,6 @@ class SetupDiagnosesController {
     @SpringAutowire VisitDao visitDao
 
     @GriffonAutowire NavigationController navigationController
-    //@GriffonAutowire(mvcGroupName='selectDiagnosis2') SelectDiagnosisController selectDiagnosisController
     @GriffonAutowire SelectDiagnosisController selectDiagnosisController
 
 
@@ -204,6 +203,7 @@ class SetupDiagnosesController {
         model.dtUpdateErrorMessage = ''
         model.dtAddErrorMessage = ''
         model.dxAddErrorMessage = ''
+        model.dxUpdateErrorMessage = ''
     }
 
     void prepareDtUpdateForm(String dtName) {
@@ -253,27 +253,95 @@ class SetupDiagnosesController {
             model.dxUpdateDiagnosisType.addAll(lookupDataService.getDiagnosisTypes().collect{ it.diagnosisTypeName })
             model.dxUpdateDiagnosisTypeChoice = dx.diagnosisType.diagnosisTypeName
 
+            model.dxUpdateDisplayOrder.clear()
             model.dxUpdateDisplayOrder.addAll(getListOfNumbersUpTo(lookupDataService.findDiagnosesByDiagnosisTypeName(dx.diagnosisType.diagnosisTypeName).size()))
             model.dxUpdateDisplayOrderChoice = String.valueOf(dx.displayOrder)
         }
     }
 
 
+    void updateDxDisplayOrderChoices(String dxTypeName) {
+        if(!preparingForm) {
+            log.info "updateDxDisplayOrderChoices(${dxTypeName})"
+
+            List<Diagnosis> dxList = lookupDataService.findDiagnosesByDiagnosisTypeName(dxTypeName)
+
+            model.dxUpdateDisplayOrder.clear()
+
+            if(dxTypeName == model.dxUpdateDiagnosisTypeSelectChoice) {
+                model.dxUpdateDisplayOrder.addAll(getListOfNumbersUpTo(lookupDataService.findDiagnosesByDiagnosisTypeName(dxTypeName).size()))
+                model.dxUpdateDisplayOrderChoice = String.valueOf(lookupDataService.findDiagnosisByNameForDisplay(model.dxUpdateDiagnosisChoice).displayOrder)
+            } else {
+                int dxTypeDxListSize = lookupDataService.findDiagnosesByDiagnosisTypeName(dxTypeName).size()
+                model.dxUpdateDisplayOrder.addAll(getListOfNumbersUpTo(dxTypeDxListSize + 1))
+                int currentDisplayOrder = lookupDataService.findDiagnosisByNameForDisplay(model.dxUpdateDiagnosisChoice).displayOrder
+                if(currentDisplayOrder <= dxTypeDxListSize + 1) {
+                    model.dxUpdateDisplayOrderChoice = String.valueOf(currentDisplayOrder)
+                } else {
+                    model.dxUpdateDisplayOrderChoice = String.valueOf(dxTypeDxListSize + 1)
+                }
+            }
+        }
+    }
+
     @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void updateDiagnosis() {
         log.info "updateDiagnosis() : name=${model.dxUpdateDiagnosisName}; code=${model.dxUpdateDiagnosisCode}; order=${model.dxUpdateDisplayOrderChoice}; type=${model.dxUpdateDiagnosisTypeChoice}"
+        log.info "updateDiagnosis() : dxUpdateDiagnosisTypeSelectChoice=${model.dxUpdateDiagnosisTypeSelectChoice}; dxUpdateDiagnosisChoice=${model.dxUpdateDiagnosisChoice};"
         clearErrors()
+
+        // get the dx being changed...
+        Diagnosis dx = lookupDataService.findDiagnosisByNameForDisplay(model.dxUpdateDiagnosisChoice)
+
+        log.info "updateDiagnosis() : dx for update : ${dx}"
 
         // do some error checking...
 
-        // error checking - verify the new name isn't used already
 
-        // error checking - verify the new code isn't used already
+        // error checking - see if the name is being changed..
+        if(dx.diagnosisName != model.dxUpdateDiagnosisName) {
+            // verify the new name isn't used already
+            if(lookupDataService.findDiagnosisByName(model.dxUpdateDiagnosisName) != null) {
+                model.dxUpdateErrorMessage = "Error - that name is already is use."
+                return
+            }
+        }
 
-        
+        // error checking - see if the code is being changed..
+        if(dx.diagnosisCode != model.dxUpdateDiagnosisCode) {
+            // verify the new code isn't used already
+            if(lookupDataService.findDiagnosisByCode(model.dxUpdateDiagnosisCode) != null) {
+                model.dxUpdateErrorMessage = "Error - that code is already in use."
+                return
+            }
+        }
 
+
+        log.info "updateDiagnosis() : no errors detected.  ready to make changes to the db"
+
+        // update the Dx record with the new values
+        dx.diagnosisName = model.dxUpdateDiagnosisName
+        dx.diagnosisCode = model.dxUpdateDiagnosisCode
+        dx.diagnosisType = lookupDataService.findDiagnosisTypeByName(model.dxUpdateDiagnosisTypeChoice)
+        dx.diagnosisTypeId = lookupDataService.findDiagnosisTypeByName(model.dxUpdateDiagnosisTypeChoice).diagnosisTypeId
+        dx.displayOrder = Integer.valueOf(model.dxUpdateDisplayOrderChoice)
+
+        log.info "updateDiagnosis() : dx save ready : ${dx}"
+
+        // see if the dx-type changed
+        if(model.dxUpdateDiagnosisTypeSelectChoice == model.dxUpdateDiagnosisTypeChoice) {
+            log.info "updateDiagnosis() : saving dx to the same DxType"
+            lookupDataService.updateDiagnosisOfSameDxType(dx)
+        } else {
+            log.info "updateDiagnosis() : saving dx to a new DxType"
+            lookupDataService.moveDiagnosisToNewDxType(dx, model.dxUpdateDiagnosisTypeSelectChoice)
+        }
+
+        // refresh the form with the updates
+        prepareForm()
     }
+
 
     @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
@@ -292,8 +360,6 @@ class SetupDiagnosesController {
             // refresh the form
             prepareForm()
         }
-
-
     }
 
 
