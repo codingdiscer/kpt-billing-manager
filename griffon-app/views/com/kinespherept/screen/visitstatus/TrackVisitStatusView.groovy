@@ -4,9 +4,11 @@ import com.kinespherept.BaseView
 import com.kinespherept.autowire.PostSpringConstruct
 import com.kinespherept.autowire.SpringAutowire
 import com.kinespherept.config.CommonProperties
+import com.kinespherept.enums.SearchType
 import com.kinespherept.model.core.Visit
 import com.kinespherept.model.core.VisitStatus
 import com.kinespherept.model.navigation.SceneDefinition
+import com.kinespherept.service.EmployeeService
 import com.kinespherept.service.LookupDataService
 import com.kinespherept.service.VisitService
 import griffon.core.artifact.GriffonView
@@ -19,7 +21,10 @@ import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressIndicator
+import javafx.scene.control.RadioButton
 import javafx.scene.control.Separator
+import javafx.scene.control.TextField
+import javafx.scene.control.ToggleGroup
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.ColumnConstraints
@@ -36,6 +41,7 @@ class TrackVisitStatusView extends BaseView {
 
     // magic strings!
     static String STYLE_BLACK_BORDER = '-fx-border-color: black;'
+    static String SELECT_STATUS = 'Select a status..'
 
     // magic numbers!
     static double COLUMN_WIDTH_DATE_OF_SERVICE  = 80.0
@@ -53,16 +59,15 @@ class TrackVisitStatusView extends BaseView {
     static double COLUMN_WIDTH_INSURANCE        = 80.0
     static double COLUMN_WIDTH_THERAPIST        = 50.0
 
+    static double CHOICE_BOX_WIDTH              = 150.0
+    static double TEXTFIELD_PATIENT_SEARCH_WIDTH= 100.0
 
-
-
-    // magic string!
-    static String SELECT_STATUS = 'Select a status..'
 
     @MVCMember @Nonnull TrackVisitStatusController controller
     @MVCMember @Nonnull TrackVisitStatusModel model
 
     @SpringAutowire CommonProperties commonProperties
+    @SpringAutowire EmployeeService employeeService
     @SpringAutowire LookupDataService lookupDataService
     @SpringAutowire VisitService visitService
 
@@ -77,8 +82,113 @@ class TrackVisitStatusView extends BaseView {
     @FXML GridPane visitHeadersGridPane
     @FXML GridPane visitResultsGridPane
 
+
+    @FXML FlowPane searchFilterFlowPane
+
+
+    @FXML ToggleGroup searchTypeFilter
+    @FXML RadioButton patientSearchRadioButton
+    @FXML RadioButton statusSearchRadioButton
+
+    /**
+     * This property is sorta hacky, but it sets aside the ChoiceBox that will hold the
+     * "filtered patients" search results.  This is necessary because this field is built on-the-fly,
+     * and occasionally we need to reference it to select a particular entry
+     */
+    ChoiceBox<String> filteredPatients = null
+
+
     void showSpinner(boolean showSpinner) {
         spinner.visible = showSpinner
+    }
+
+    /**
+     * This method is sorta hacky, but the goal is to allow a way to select a specific
+     * entry from the generated-on-the-fly "filteredPatients" choicebox field
+     */
+    void selectFilteredPatient(String patient) {
+        filteredPatients?.selectionModel.select(patient)
+    }
+
+    /**
+     * Dynamically builds the 2nd row search fields.
+     * When [SearchType.Patient] -> TextField[search filter]; ChoiceBox[filtered patients]; ChoiceBox[status filter]
+     * When [SearchType.Status] -> ChoiceBox[status filter]; ChoiceBox[insurance patients]; ChoiceBox[therapist filter]
+     */
+    void prepareSearchFilterRow(SearchType searchType) {
+        searchFilterFlowPane.children.clear()
+
+        if(searchType == SearchType.PATIENT) {
+
+            // label and textfield to search for names
+            searchFilterFlowPane.children.add(new Label(text: 'Patient search '))
+
+            TextField tf = new TextField(prefWidth: TEXTFIELD_PATIENT_SEARCH_WIDTH)
+            tf.textProperty().bindBidirectional(model.patientSearchProperty)
+            searchFilterFlowPane.children.add(tf)
+
+            // button to clear the patient search
+            Button button = new Button(text: 'Clear')
+            button.onAction = { a -> controller.clearPatientSearch() }
+            searchFilterFlowPane.children.add(button)
+
+            // separator
+            searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
+
+            // choicebox filled with filtered patient names
+            filteredPatients = buildChoiceBox(model.patients, model.patientsChoice)
+            filteredPatients.onAction = { a -> controller.selectPatient(filteredPatients.selectionModel.getSelectedItem()) }
+            searchFilterFlowPane.children.add(filteredPatients)
+
+            // separator
+            searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
+
+            // label and choicebox of status filters
+            searchFilterFlowPane.children.add(new Label(text: 'Status '))
+            ChoiceBox<String> patientStatusChoiceBox = buildChoiceBox(model.patientTypeVisitStatuses, model.patientTypeVisitStatusesChoice)
+            patientStatusChoiceBox.onAction = { a -> controller.changePatientTypeVisitStatus(patientStatusChoiceBox.selectionModel.selectedItem) }
+            searchFilterFlowPane.children.add(patientStatusChoiceBox)
+
+        } else if(searchType == SearchType.STATUS) {
+            // label and ChoiceBox for status options
+            searchFilterFlowPane.children.add(new Label(text: 'Status '))
+            ChoiceBox<String> statusChoiceBox = buildChoiceBox(model.statusTypeVisitStatuses, VisitStatus.values()[0].text)
+            statusChoiceBox.onAction = { a -> controller.changeStatusTypeVisitStatus(statusChoiceBox.selectionModel.selectedItem) }
+            searchFilterFlowPane.children.add(statusChoiceBox)
+
+            // separator
+            searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
+
+            // label and ChoiceBox for insurance options
+            searchFilterFlowPane.children.add(new Label(text: 'Insurance '))
+            ChoiceBox<String> insuranceChoiceBox = buildChoiceBox(model.insuranceTypes, TrackVisitStatusModel.ALL)
+            insuranceChoiceBox.onAction = { a -> controller.changeInsuranceType(insuranceChoiceBox.selectionModel.selectedItem) }
+            searchFilterFlowPane.children.add(insuranceChoiceBox)
+
+            // separator
+            searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
+
+            // label and ChoiceBox for therapist options
+            searchFilterFlowPane.children.add(new Label(text: 'Therapist '))
+            ChoiceBox<String> therapistChoiceBox = buildChoiceBox(model.therapists, TrackVisitStatusModel.ALL)
+            therapistChoiceBox.onAction = { a -> controller.changeTherapist(therapistChoiceBox.selectionModel.selectedItem) }
+            searchFilterFlowPane.children.add(therapistChoiceBox)
+        }
+    }
+
+
+    /**
+     * Builds a ChoiceBox of the given width, tied to the given list of items, with the given selected option.
+     */
+    ChoiceBox<String> buildChoiceBox(javafx.collections.ObservableList items, String selected) {
+        ChoiceBox<String> choiceBox = new ChoiceBox<String>(prefWidth: CHOICE_BOX_WIDTH, items: items)
+        choiceBox.selectionModel.select(selected)
+        choiceBox
+    }
+
+    // builds a small separator UI element (we need a bunch, and you can't re-use a single static one)
+    Separator buildSmallVerticalSeparator() {
+        new Separator(orientation: Orientation.VERTICAL, prefHeight: 20, prefWidth: 20)
     }
 
 
@@ -95,6 +205,19 @@ class TrackVisitStatusView extends BaseView {
         new Label(text: text, alignment: Pos.CENTER, prefWidth: width, minWidth: width, maxWidth: width,
                 style: STYLE_BLACK_BORDER, tooltip: new Tooltip(tooltip))
     }
+
+    Label buildLabel(boolean disabled, String text, double width) {
+        Label label = buildLabel(text, width)
+        label.disable = disabled
+        label
+    }
+
+    Label buildLabel(boolean disabled, String text, double width, String tooltip) {
+        Label label = buildLabel(text, width, tooltip)
+        label.disable = disabled
+        label
+    }
+
 
     void prepareGridsByStatus() {
         visitHeadersGridPane.hgap = 1
@@ -223,7 +346,9 @@ class TrackVisitStatusView extends BaseView {
     @PostSpringConstruct
     void initAfterSpring() {
         rootAnchorPane.style = commonProperties.statusTrackerBackground
-        clearPatientSearchButton.text = 'Clear'
+        //clearPatientSearchButton.text = 'Clear'
+        patientSearchRadioButton.text = 'Search by Patient'
+        statusSearchRadioButton.text = 'Search by Status/Ins/Thrpst'
     }
 
 
@@ -235,6 +360,7 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(buildLabel(visit.visitNumber > 0 ? String.valueOf(visit.visitNumber) : '',
                 COLUMN_WIDTH_VISIT_NUMBER), columnIndex++, rowNumber)
 
+        //visitResultsGridPane.add(new Label(text: "${visit.patient.lastName}, ${visit.patient.firstName}", prefWidth: COLUMN_WIDTH_PATIENT_NAME, style: STYLE_BLACK_BORDER), columnIndex++, rowNumber)
         visitResultsGridPane.add(new Label(text: "${visit.patient.lastName}, ${visit.patient.firstName}", prefWidth: COLUMN_WIDTH_PATIENT_NAME, style: STYLE_BLACK_BORDER), columnIndex++, rowNumber)
         visitResultsGridPane.add(buildLabel(visit.insuranceType.insuranceTypeName, COLUMN_WIDTH_INSURANCE), columnIndex++, rowNumber)
         visitResultsGridPane.add(buildLabel(visit.therapist.fullname.substring(0, visit.therapist.fullname.indexOf(' ')), COLUMN_WIDTH_THERAPIST), columnIndex++, rowNumber)
@@ -274,20 +400,26 @@ class TrackVisitStatusView extends BaseView {
     void buildResultRowByPatient(Visit visit, int rowNumber) {
         int columnIndex = 0
 
-        // date, visit number, last name, first name
-        visitResultsGridPane.add(buildLabel(visit.visitDate.format(commonProperties.dateFormatter), COLUMN_WIDTH_DATE_OF_SERVICE), columnIndex++, rowNumber)
-        visitResultsGridPane.add(buildLabel(visit.visitNumber > 0 ? String.valueOf(visit.visitNumber) : '', COLUMN_WIDTH_VISIT_NUMBER), columnIndex++, rowNumber)
+        boolean disabledLabel = false
+
+        if(visit.visitStatus == VisitStatus.PAID_IN_FULL) {
+            disabledLabel = true
+        }
+
+        // date, visit number
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.visitDate.format(commonProperties.dateFormatter), COLUMN_WIDTH_DATE_OF_SERVICE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.visitNumber > 0 ? String.valueOf(visit.visitNumber) : '', COLUMN_WIDTH_VISIT_NUMBER), columnIndex++, rowNumber)
 
         // visit type
-        visitResultsGridPane.add(buildLabel(visit.visitType?.visitTypeName, COLUMN_WIDTH_VISIT_TYPE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.visitType?.visitTypeName, COLUMN_WIDTH_VISIT_TYPE), columnIndex++, rowNumber)
 
         // visit status
-        visitResultsGridPane.add(buildLabel(visit.visitStatus?.text, COLUMN_WIDTH_STATUS), columnIndex++, rowNumber)
-        visitResultsGridPane.add(buildLabel(visit.insuranceType.insuranceTypeName, COLUMN_WIDTH_INSURANCE), columnIndex++, rowNumber)
-        visitResultsGridPane.add(buildLabel(visit.therapist.fullname.substring(0, visit.therapist.fullname.indexOf(' ')), COLUMN_WIDTH_THERAPIST), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.visitStatus?.text, COLUMN_WIDTH_STATUS), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.insuranceType.insuranceTypeName, COLUMN_WIDTH_INSURANCE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.therapist.fullname.substring(0, visit.therapist.fullname.indexOf(' ')), COLUMN_WIDTH_THERAPIST), columnIndex++, rowNumber)
 
         // dx
-        visitResultsGridPane.add(buildLabel(visit.sameDiagnosisAsPrevious ? 'YES' : '', COLUMN_WIDTH_DX_CHANGE), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, visit.sameDiagnosisAsPrevious ? 'YES' : '', COLUMN_WIDTH_DX_CHANGE), columnIndex++, rowNumber)
 
         // tx
         String txText = visit.visitTreatments.collect {
@@ -296,16 +428,16 @@ class TrackVisitStatusView extends BaseView {
                     "${lookupDataService.findTreatmentById(it.treatmentId).treatmentCode} (${it.treatmentQuantity})" : // yep, so show the quantity
                     lookupDataService.findTreatmentById(it.treatmentId).treatmentCode  // nope, just 1
         }.join(', ')
-        visitResultsGridPane.add(buildLabel(txText, COLUMN_WIDTH_TX_CODES, txText), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, txText, COLUMN_WIDTH_TX_CODES, txText), columnIndex++, rowNumber)
 
         // tx count
         int txCount = visit.visitTreatments.collect { it.treatmentQuantity }.inject(0) { a, b -> a + b}
-        visitResultsGridPane.add(buildLabel(String.valueOf(txCount), COLUMN_WIDTH_TX_COUNT), columnIndex++, rowNumber)
+        visitResultsGridPane.add(buildLabel(disabledLabel, String.valueOf(txCount), COLUMN_WIDTH_TX_COUNT), columnIndex++, rowNumber)
 
         // notes ?
         Label notesLabel = StringUtils.isEmpty(visit.notes) ?
-                buildLabel('', COLUMN_WIDTH_NOTES) :
-                buildLabel('YES',  COLUMN_WIDTH_NOTES, visit.notes)
+                buildLabel(disabledLabel, '', COLUMN_WIDTH_NOTES) :
+                buildLabel(disabledLabel, 'YES',  COLUMN_WIDTH_NOTES, visit.notes)
         visitResultsGridPane.add(notesLabel, columnIndex++, rowNumber)
 
         // view details button

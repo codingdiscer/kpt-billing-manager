@@ -212,11 +212,6 @@ class VisitService {
         // save the visit status
         visit.visitStatus = visitStatus
 
-        // see if the visit shouldn't get a visit number
-//        if(!visitGetsVisitNumber(visit)) {
-//            visit.visitNumber = 0
-//        }
-
         Visit updatedVisit = visitRepository.save(visit)
 
         // reset the visit numbers
@@ -414,22 +409,35 @@ class VisitService {
      *      - toDate is never null
      *
      */
-    List<Visit> findVisitsByPatient(Patient patient, LocalDate fromDate, LocalDate toDate) {
+    List<Visit> findVisitsByPatient(Patient patient, VisitStatus visitStatus, LocalDate fromDate, LocalDate toDate) {
         List<Visit> visits = null
 
         if(!patient || !toDate) {
             throw new IllegalArgumentException('patient & toDate are required parameters to findVisitsByPatient()')
         }
 
-        if(!fromDate) {
-            // patient and toDate only
-            log.info 'findByPatientIdAndVisitDate()'
-            visits = visitRepository.findByPatientIdAndVisitDate(patient.patientId, toDate)
+        if(visitStatus) {
+            if(!fromDate) {
+                // patient and visitStatus
+                log.info 'findByPatientIdAndVisitStatus()'
+                visits = visitRepository.findByPatientIdAndVisitStatus(patient.patientId, visitStatus)
+            } else {
+                // patient, visitStatus, fromDate and toDate
+                log.info 'findByPatientIdAndVisitStatusAndFromDateAndToDate()'
+                visits = visitRepository.findByPatientIdAndVisitStatusAndFromDateAndToDate(patient.patientId, visitStatus, fromDate, toDate)
+            }
         } else {
-            // patient, fromDate and toDate only
-            log.info 'findByPatientIdAndFromDateAndToDate()'
-            visits = visitRepository.findByPatientIdAndFromDateAndToDate(patient.patientId, fromDate, toDate)
+            if(!fromDate) {
+                // patient only
+                log.info 'findByPatientId()'
+                visits = visitRepository.findByPatientId(patient.patientId)
+            } else {
+                // patient, fromDate and toDate
+                log.info 'findByPatientIdAndFromDateAndToDate()'
+                visits = visitRepository.findByPatientIdAndFromDateAndToDate(patient.patientId, fromDate, toDate)
+            }
         }
+
 
         // see if we got any results
         if(visits) {

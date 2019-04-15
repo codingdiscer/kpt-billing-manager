@@ -2,8 +2,6 @@ package com.kinespherept.screen
 
 import com.kinespherept.config.GriffonConfig
 import com.kinespherept.screen.patient.SchedulePatientsController
-import com.kinespherept.screen.patient.SetupPatientController
-import com.kinespherept.screen.therapist.FillOutPatientVisitNoTreatmentController
 import com.kinespherept.screen.therapist.SelectPatientVisitController
 import com.kinespherept.screen.visitstatus.TrackVisitStatusController
 import com.kinespherept.autowire.GriffonAutowire
@@ -23,9 +21,7 @@ import griffon.metadata.ArtifactProviderFor
 import griffon.transform.Threading
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-import javafx.fxml.FXML
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
+import org.postgresql.util.PSQLException
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.Environment
@@ -83,7 +79,6 @@ class LoginController {
      * - change scene to the most appropriate scene for the user
      */
     void go() {
-
         // clear the message first, then continue
         runInsideUISync {
             model.setMessage('')
@@ -105,7 +100,7 @@ class LoginController {
 
         if(successfulLogin()) {
             runInsideUISync {
-                model.setMessage("Login successful!  We'll get started in a moment (~20 seconds)")
+                model.setMessage("Login successful!  We'll get started in a moment...")
                 view.viewProgressIndicator()
             }
 
@@ -130,8 +125,13 @@ class LoginController {
 
         } else {
             runInsideUISync {
-                model.setMessage('Nope.')
-                view.enableLogin()
+                if(model.unableToConnectToDb) {
+                    model.setMessage('Unable to connect to the database.  Contact the system administrator.')
+                    view.disableLogin()
+                } else {
+                    model.setMessage('Nope.')
+                    view.enableLogin()
+                }
             }
         }
     }
@@ -162,7 +162,14 @@ class LoginController {
                     model.getUsername(), model.getPassword(),
                     'org.postgresql.Driver')
             sql.close()
+        } catch(PSQLException e) {
+            if(e.message.contains('refused')) {
+                model.unableToConnectToDb = true
+            }
+            // any exception means total failure...
+            success = false
         } catch(Exception e) {
+            println "************caught exception :: ${e}"
             // any exception means total failure...
             success = false
         }
@@ -193,15 +200,15 @@ class LoginController {
 
 
 
-    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
-    void quickLogin() {
-
-        Employee employee = employeeService.findByFullname(model.employeesChoice)
-
-        log.info "quickLogin() :: selected employee=${employee}"
-
-        performLogin(employee)
-    }
+//    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+//    void quickLogin() {
+//
+//        Employee employee = employeeService.findByFullname(model.employeesChoice)
+//
+//        log.info "quickLogin() :: selected employee=${employee}"
+//
+//        performLogin(employee)
+//    }
 
 
     //@Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)

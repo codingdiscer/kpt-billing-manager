@@ -15,8 +15,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Tooltip?>
 
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <AnchorPane prefHeight="400.0" prefWidth="1320.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.visitstatus.TrackVisitStatusController" fx:id="rootAnchorPane">
    <children>
         <FlowPane prefHeight="400.0" prefWidth="1310.0">
@@ -31,56 +32,52 @@
                  <children>
 
                      <!-- top row : from date ; to date ; # found label -->
-                    <Label text="From Date " />
-                    <DatePicker id="fromDate"/>
-                    <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearFromDate"/>
+                     <FlowPane prefWidth="1200">
+                         <children>
 
-                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
 
-                    <Label text="On / To Date " />
-                    <DatePicker id="toDate" />
+                             <RadioButton fx:id="patientSearchRadioButton" JavaFXUtils.griffonActionId="selectPatientSearch">
+                                 <toggleGroup><ToggleGroup fx:id="searchTypeFilter" /></toggleGroup>
+                             </RadioButton>
+                             <Label text="       " />
+                             <RadioButton fx:id="statusSearchRadioButton" selected="true" toggleGroup="$searchTypeFilter" JavaFXUtils.griffonActionId="selectStatusSearch" />
 
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+                             <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
 
-                     <ProgressIndicator progress="-1" fx:id="spinner" visible="false" prefHeight="30.0" prefWidth="30.0" />
-                     <Label id="resultCountMessage" prefWidth="100" text="Found 1 result."/>
+                             <Label text="From Date " />
+                             <DatePicker id="fromDate"/>
+                             <Button prefWidth="120" text="Clear" JavaFXUtils.griffonActionId="clearFromDate"/>
+
+                             <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+                             <Label text="On / To Date " />
+                             <DatePicker id="toDate" />
+
+                             <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
+
+
+                         </children>
+                     </FlowPane>
 
                     <Separator prefHeight="10.0" prefWidth="1200" />
 
-                     <!-- second row : status, insurance, therapist -->
-                     <Label text="Status " />
-                     <ChoiceBox id="visitStatuses" prefWidth="150.0" />
+                     <!-- second row : search filters by type [status, insurance, therapist] or [patient name/list, status] -->
+                     <FlowPane prefWidth="1200" fx:id="searchFilterFlowPane">
+                         <children>
+                         </children>
+                     </FlowPane>
 
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-
-                     <Label text="Insurance " />
-                    <ChoiceBox id="insuranceTypes" prefWidth="150.0" />
-
-                    <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-
-                    <Label text="Therapist " />
-                    <ChoiceBox id="therapists" prefWidth="150.0" />
-
-<!--
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-                     <Button prefWidth="120" text="&lt;- Reset All" JavaFXUtils.griffonActionId="resetStatus"/>
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
--->
-
-
-                     <Separator prefHeight="20" prefWidth="1200.0" />
+                     <Separator prefHeight="10" prefWidth="1200.0" />
 
                      <!-- third row : patient search -->
+                     <FlowPane prefWidth="1200">
+                         <children>
+                             <ProgressIndicator progress="-1" fx:id="spinner" visible="false" prefHeight="20.0" prefWidth="20.0" />
+                             <Label id="resultsMessage" prefWidth="1000" text="Found 1 result."/>
+                         </children>
+                     </FlowPane>
 
-                     <Label text="Patient search " />
-                     <TextField id="patientSearch" prefWidth="100.0" />
-                     <Button text="Clear" fx:id="clearPatientSearchButton" JavaFXUtils.griffonActionId="clearPatientSearch"/>
-
-                     <Separator orientation="VERTICAL" prefHeight="20.0" prefWidth="20" />
-
-                     <ChoiceBox id="patients" prefWidth="200.0" />
-
-                     <Separator prefHeight="20" prefWidth="1200.0" />
+                     <Separator prefHeight="10" prefWidth="1200.0" />
 
                     <GridPane fx:id="visitHeadersGridPane" prefWidth="1200">
                       <columnConstraints>

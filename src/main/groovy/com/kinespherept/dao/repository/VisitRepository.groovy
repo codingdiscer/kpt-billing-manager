@@ -23,7 +23,8 @@ interface VisitRepository extends CrudRepository<Visit, Long> {
     //
     // query for visitstatus tracker screen - search by patient & toDate (not including fromDate)
     //
-    List<Visit> findByPatientIdAndVisitDate(Long patientId, LocalDate toDate)
+    List<Visit> findByPatientId(Long patientId)
+    List<Visit> findByPatientIdAndVisitStatus(Long patientId, VisitStatus visitStatus)
 
     //
     // queries for visitstatus tracker screen - search by visitStatus, fromDate, toDate & ...
@@ -57,6 +58,15 @@ interface VisitRepository extends CrudRepository<Visit, Long> {
     //
     @Query('SELECT v FROM Visit v WHERE v.patientId = :patientId AND v.visitDate >= :fromDate AND v.visitDate <= :toDate')
     List<Visit> findByPatientIdAndFromDateAndToDate(@Param('patientId') Long patientId,
+                                                    @Param('fromDate') LocalDate fromDate,
+                                                    @Param('toDate') LocalDate toDate)
+
+    //
+    // query for visitstatus tracker screen - search by patientId, visitStatus, fromDate & toDate
+    //
+    @Query('SELECT v FROM Visit v WHERE v.patientId = :patientId AND v.visitStatus = :visitStatus AND v.visitDate >= :fromDate AND v.visitDate <= :toDate')
+    List<Visit> findByPatientIdAndVisitStatusAndFromDateAndToDate(@Param('patientId') Long patientId,
+                                                    @Param('visitStatus') VisitStatus visitStatus,
                                                     @Param('fromDate') LocalDate fromDate,
                                                     @Param('toDate') LocalDate toDate)
 

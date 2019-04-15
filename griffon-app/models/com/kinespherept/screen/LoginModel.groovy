@@ -13,4 +13,6 @@ class LoginModel {
     @FXObservable String username
     @FXObservable String password
     @FXObservable String message
+
+    boolean unableToConnectToDb = false
 }

@@ -14,7 +14,7 @@
         <Label layoutX="138.0" layoutY="134.0" text="Username" />
         <Label layoutX="139.0" layoutY="166.0" text="Password" />
         <PasswordField fx:id="passwordField" id="password" layoutX="237.0" layoutY="162.0" promptText="password"/>
-        <Label id="message" layoutX="139.0" layoutY="234.0" prefHeight="17.0" prefWidth="269.0" />
+        <Label id="message" layoutX="139.0" layoutY="234.0" prefHeight="40.0" prefWidth="269.0" wrapText="true" />
         <Button id="go" fx:id="loginButton" layoutX="236.0" layoutY="200.0" mnemonicParsing="false" text="Go" JavaFXUtils.griffonActionId="go" />
       <ProgressIndicator layoutX="236.0" layoutY="272.0" prefHeight="100.0" prefWidth="100.0" progress="-1.0" visible="false" fx:id="progressIndicator"/>
     </children>
