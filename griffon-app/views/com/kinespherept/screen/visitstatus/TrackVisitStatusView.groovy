@@ -18,6 +18,7 @@ import javafx.fxml.FXML
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressIndicator
@@ -44,23 +45,33 @@ class TrackVisitStatusView extends BaseView {
     static String SELECT_STATUS = 'Select a status..'
 
     // magic numbers!
-    static double COLUMN_WIDTH_DATE_OF_SERVICE  = 80.0
-    static double COLUMN_WIDTH_VISIT_NUMBER     = 30.0
-    static double COLUMN_WIDTH_DX_CHANGE        = 50.0
-    static double COLUMN_WIDTH_TX_CODES         = 200.0
-    static double COLUMN_WIDTH_TX_COUNT         = 30.0
-    static double COLUMN_WIDTH_NOTES            = 50.0
-    static double COLUMN_WIDTH_DETAILS          = 60.0
-    static double COLUMN_WIDTH_ACTIONS          = 380.0
-    static double COLUMN_WIDTH_VISIT_TYPE       = 100.0
-    static double COLUMN_WIDTH_STATUS           = 120.0
 
-    static double COLUMN_WIDTH_PATIENT_NAME     = 150.0
-    static double COLUMN_WIDTH_INSURANCE        = 80.0
-    static double COLUMN_WIDTH_THERAPIST        = 50.0
+    // shared column types
+    static double COLUMN_WIDTH_DATE_OF_SERVICE      = 80.0
+    static double COLUMN_WIDTH_VISIT_NUMBER         = 30.0
+    static double COLUMN_WIDTH_DX_CHANGE            = 50.0
+    static double COLUMN_WIDTH_TX_CODES             = 200.0
+    static double COLUMN_WIDTH_TX_COUNT             = 30.0
+    static double COLUMN_WIDTH_NOTES                = 50.0
+    static double COLUMN_WIDTH_DETAILS              = 60.0
 
-    static double CHOICE_BOX_WIDTH              = 150.0
-    static double TEXTFIELD_PATIENT_SEARCH_WIDTH= 100.0
+    // patient related
+    static double COLUMN_WIDTH_VISIT_TYPE           = 100.0
+    static double COLUMN_WIDTH_STATUS               = 120.0
+
+
+    // status related
+    static double COLUMN_WIDTH_PATIENT_NAME         = 150.0
+    static double COLUMN_WIDTH_INSURANCE            = 80.0
+    static double COLUMN_WIDTH_THERAPIST            = 50.0
+
+    // action columns
+    static double COLUMN_WIDTH_SELECT_FOR_UPDATE    = 270.0
+
+    // various field widths
+    static double CHOICE_BOX_WIDTH                  = 150.0
+    static double TEXTFIELD_PATIENT_SEARCH_WIDTH    = 100.0
+    static double BUTTON_UPDATE_STATUSES            = 105.0
 
 
     @MVCMember @Nonnull TrackVisitStatusController controller
@@ -82,13 +93,14 @@ class TrackVisitStatusView extends BaseView {
     @FXML GridPane visitHeadersGridPane
     @FXML GridPane visitResultsGridPane
 
-
     @FXML FlowPane searchFilterFlowPane
-
-
     @FXML ToggleGroup searchTypeFilter
     @FXML RadioButton patientSearchRadioButton
     @FXML RadioButton statusSearchRadioButton
+    @FXML Button selectAllButton
+    @FXML Button unselectAllButton
+    @FXML ChoiceBox<String> changeToStatusesChoiceBox
+    @FXML Button updateStatusButton
 
     /**
      * This property is sorta hacky, but it sets aside the ChoiceBox that will hold the
@@ -96,6 +108,27 @@ class TrackVisitStatusView extends BaseView {
      * and occasionally we need to reference it to select a particular entry
      */
     ChoiceBox<String> filteredPatients = null
+
+    @PostConstruct
+    void init() {
+        log.debug "init()"
+        baseInit(this)
+    }
+
+    void initUI() {
+        baseInitUI(controller, model)
+        sceneManager.addScene(SceneDefinition.TRACK_VISIT_STATUS, scene)
+    }
+
+    @PostSpringConstruct
+    void initAfterSpring() {
+        rootAnchorPane.style = commonProperties.statusTrackerBackground
+        patientSearchRadioButton.text = 'Search by Patient'
+        statusSearchRadioButton.text = 'Search by Status/Ins/Thrpst'
+        updateStatusButton.text = 'Update Statuses'
+        updateStatusButton.prefWidth = BUTTON_UPDATE_STATUSES
+        allowAffectAllRowsButtons(false)
+    }
 
 
     void showSpinner(boolean showSpinner) {
@@ -109,6 +142,25 @@ class TrackVisitStatusView extends BaseView {
     void selectFilteredPatient(String patient) {
         filteredPatients?.selectionModel.select(patient)
     }
+
+    /**
+     * If true, enables the 'select new status' drop-down & 'update statuses' button; if false, disables them
+     */
+    void allowMultiRowUpdate(boolean allow) {
+        updateStatusButton.disable = !allow
+        changeToStatusesChoiceBox.disable = !allow
+    }
+
+    /**
+     * If true, enables the 'select all' and 'unselect all' buttons; if false, disables them
+     * ..this would be used to enable/disable the buttons depending if results are present
+     */
+    void allowAffectAllRowsButtons(boolean allow) {
+        selectAllButton.disable = !allow
+        unselectAllButton.disable = !allow
+    }
+
+
 
     /**
      * Dynamically builds the 2nd row search fields.
@@ -148,7 +200,6 @@ class TrackVisitStatusView extends BaseView {
             ChoiceBox<String> patientStatusChoiceBox = buildChoiceBox(model.patientTypeVisitStatuses, model.patientTypeVisitStatusesChoice)
             patientStatusChoiceBox.onAction = { a -> controller.changePatientTypeVisitStatus(patientStatusChoiceBox.selectionModel.selectedItem) }
             searchFilterFlowPane.children.add(patientStatusChoiceBox)
-
         } else if(searchType == SearchType.STATUS) {
             // label and ChoiceBox for status options
             searchFilterFlowPane.children.add(new Label(text: 'Status '))
@@ -219,6 +270,9 @@ class TrackVisitStatusView extends BaseView {
     }
 
 
+    /**
+     * Prepares the header & results grid for a "status search"
+     */
     void prepareGridsByStatus() {
         visitHeadersGridPane.hgap = 1
         visitHeadersGridPane.columnConstraints.clear()
@@ -232,7 +286,7 @@ class TrackVisitStatusView extends BaseView {
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
-        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_SELECT_FOR_UPDATE)
 
         visitHeadersGridPane.rowConstraints.clear()
         visitHeadersGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
@@ -254,7 +308,8 @@ class TrackVisitStatusView extends BaseView {
         visitHeadersGridPane.add(buildLabel('Notes', COLUMN_WIDTH_NOTES,'Indicates if notes were taken during the visit'), columnIndex++, 0)
 
         visitHeadersGridPane.add(buildLabel('See Visit', COLUMN_WIDTH_DETAILS), columnIndex++, 0)
-        visitHeadersGridPane.add(buildLabel('Actions (Set status to...)',COLUMN_WIDTH_ACTIONS), columnIndex++, 0)
+
+        visitHeadersGridPane.add(buildLabel('Select to Change',COLUMN_WIDTH_SELECT_FOR_UPDATE), columnIndex++, 0)
 
         visitResultsGridPane.hgap = 1
         visitResultsGridPane.columnConstraints.clear()
@@ -270,13 +325,15 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
-        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_SELECT_FOR_UPDATE)
 
         visitResultsGridPane.rowConstraints.clear()
         visitResultsGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
     }
 
-
+    /**
+     * Prepares the header & results grid for a "patient search"
+     */
     void prepareGridsByPatient() {
         visitHeadersGridPane.hgap = 1
         visitHeadersGridPane.columnConstraints.clear()
@@ -291,7 +348,7 @@ class TrackVisitStatusView extends BaseView {
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
         visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
-        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+        visitHeadersGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_SELECT_FOR_UPDATE)
 
         visitHeadersGridPane.rowConstraints.clear()
         visitHeadersGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
@@ -310,7 +367,8 @@ class TrackVisitStatusView extends BaseView {
         visitHeadersGridPane.add(buildLabel('#', COLUMN_WIDTH_TX_COUNT,'The total number of performed treatments'), columnIndex++, 0)
         visitHeadersGridPane.add(buildLabel('Notes', COLUMN_WIDTH_NOTES, 'Indicates if notes were taken during the visit'), columnIndex++, 0)
         visitHeadersGridPane.add(buildLabel('See Visit', COLUMN_WIDTH_DETAILS),columnIndex++, 0)
-        visitHeadersGridPane.add(buildLabel('Actions (Set status to...)', COLUMN_WIDTH_ACTIONS), columnIndex++, 0)
+        visitHeadersGridPane.add(buildLabel('Select for Update',COLUMN_WIDTH_SELECT_FOR_UPDATE), columnIndex++, 0)
+
 
         visitResultsGridPane.hgap = 1
         visitResultsGridPane.columnConstraints.clear()
@@ -325,33 +383,16 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_TX_COUNT)
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_NOTES)
         visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_DETAILS)
-        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_ACTIONS)
+        visitResultsGridPane.columnConstraints << buildColumnConstraints(COLUMN_WIDTH_SELECT_FOR_UPDATE)
 
         visitResultsGridPane.rowConstraints.clear()
         visitResultsGridPane.rowConstraints << new RowConstraints(prefHeight: 30)
     }
 
 
-    @PostConstruct
-    void init() {
-        log.debug "init()"
-        baseInit(this)
-    }
-
-    void initUI() {
-        baseInitUI(controller, model)
-        sceneManager.addScene(SceneDefinition.TRACK_VISIT_STATUS, scene)
-    }
-
-    @PostSpringConstruct
-    void initAfterSpring() {
-        rootAnchorPane.style = commonProperties.statusTrackerBackground
-        //clearPatientSearchButton.text = 'Clear'
-        patientSearchRadioButton.text = 'Search by Patient'
-        statusSearchRadioButton.text = 'Search by Status/Ins/Thrpst'
-    }
-
-
+    /**
+     * Builds a result row for a "status search" for a single visit
+     */
     void buildResultRowByStatus(Visit visit, int rowNumber) {
         int columnIndex = 0
 
@@ -392,11 +433,15 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(new Button(text: 'Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
                 columnIndex++, rowNumber)
 
-        // action button(s)
-        visitResultsGridPane.add(buildActionButtonFlowPane(visit), columnIndex++, rowNumber)
+
+        // add the 'change status' flow pane
+        visitResultsGridPane.add(buildChangeStatusFlowPane(visit), columnIndex++, rowNumber)
     }
 
 
+    /**
+     * Builds a result row for a "patient search" for a single visit
+     */
     void buildResultRowByPatient(Visit visit, int rowNumber) {
         int columnIndex = 0
 
@@ -444,44 +489,51 @@ class TrackVisitStatusView extends BaseView {
         visitResultsGridPane.add(new Button(text: 'Details', onAction: { a -> controller.viewVisitDetails(visit) } ),
                 columnIndex++, rowNumber)
 
-        // action button(s)
-        visitResultsGridPane.add(buildActionButtonFlowPane(visit),columnIndex++, rowNumber)
-    }
-
-
-
-    /**
-     * Builds a button with the label of the given VisitStatus, and when clicked, changes the visit to that status
-     */
-    Button buildButtonForStatus(Visit visit, VisitStatus visitStatus) {
-        new Button(text: visitStatus.text, id: visit.visitId,
-                onAction: { a -> controller.changeVisitStatus(visit, visitStatus)})
+        // add the 'change status' flow pane
+        visitResultsGridPane.add(buildChangeStatusFlowPane(visit), columnIndex++, rowNumber)
     }
 
     /**
-     * Builds the FlowPane of status change options for the given visit
+     * Builds the FlowPane of status change options for the given visit, along the lines of:
+     * - CheckBox<visitId>  ChoiceBox<VisitStatus>  Button<"Change This Entry">
      */
-    FlowPane buildActionButtonFlowPane(Visit visit) {
+    FlowPane buildChangeStatusFlowPane(Visit visit) {
         FlowPane flowPane = new FlowPane(alignment: Pos.CENTER_LEFT)
+
+        // build the check box associated with this row
+        CheckBox checkBox = new CheckBox(text: '', selected: false, id: String.valueOf(visit.visitId))
+        checkBox.onAction = { a -> controller.rowSelectStatusChanged() }
 
         // prepare the list of all status to change to (exclude the current status)
         List<String> options = [SELECT_STATUS]
         options.addAll(VisitStatus.values().findAll { it != visit.visitStatus }.collect { it.text })
 
         // create the drop-down box and add the options
-        ChoiceBox<String> directSetChoiceBox = new ChoiceBox<>()
+        ChoiceBox<String> directSetChoiceBox = new ChoiceBox<>(id: visit.visitId)
         directSetChoiceBox.items.addAll(options)
         directSetChoiceBox.selectionModel.select(SELECT_STATUS)
 
-        // add the choice box and button behind it
-        flowPane.children.add(directSetChoiceBox)
-        flowPane.children.add(new Button(text: 'Change status', id: visit.visitId,
+
+        // create the 'change this row' button (only good for this row)
+        Button button = new Button(text: 'Change this row', id: visit.visitId,
                 onAction: { a ->
-                     if(directSetChoiceBox.selectionModel.selectedItem != SELECT_STATUS) {
-                         controller.changeVisitStatus(visit,
-                                 VisitStatus.findFromText(directSetChoiceBox.selectionModel.selectedItem))
-                     }
-                }))
+                    if(directSetChoiceBox.selectionModel.selectedItem != SELECT_STATUS) {
+                        controller.changeVisitStatus(visit,
+                                VisitStatus.findFromText(directSetChoiceBox.selectionModel.selectedItem))
+                    } else {
+                        model.errorMessage = 'Must select a status on the same row as the button you pressed.'
+                    }
+                })
+
+        // add the components to the flow pane
+        flowPane.children.add(checkBox)
+        flowPane.children.add(directSetChoiceBox)
+        flowPane.children.add(button)
+
+        // add the relevant components to the model (so we can manipulate them!)
+        model.visitCheckBoxes << checkBox
+        model.statusChoiceBoxes << directSetChoiceBox
+        model.updateStatusButtons << button
 
         flowPane
     }

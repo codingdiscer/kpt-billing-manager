@@ -31,7 +31,7 @@ enum SceneDefinition {
     VERIFY_PATIENT_VISIT_WITH_TREATMENT('Verify the detail of the visit', 800, 400),
 
     // visit-status screens
-    TRACK_VISIT_STATUS('Track Billing for Patient Visits', 1320, 500),
+    TRACK_VISIT_STATUS('Track Billing for Patient Visits', 1200, 500),
     // ... no treatment
     EDIT_VISIT_DETAILS_NO_TREATMENT('Edit Details', 320, 470),
     VIEW_VISIT_DETAILS_NO_TREATMENT('Visit Details', 260, 520),

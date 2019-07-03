@@ -184,7 +184,7 @@ class VisitService {
      */
     boolean visitGetsVisitNumber(Visit visit) {
 
-        log.info "visitGetsVisitNumber() :: visit=${visit}"
+        log.debug "visitGetsVisitNumber() :: visit=${visit}"
 
         // start assuming it gets a visit number
         boolean getVisitNumber = true

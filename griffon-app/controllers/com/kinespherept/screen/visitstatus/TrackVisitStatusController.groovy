@@ -11,7 +11,6 @@ import com.kinespherept.manager.SceneManager
 import com.kinespherept.model.core.Employee
 import com.kinespherept.model.core.EmployeeRole
 import com.kinespherept.model.core.InsuranceType
-import com.kinespherept.model.core.Patient
 import com.kinespherept.model.core.Visit
 import com.kinespherept.model.core.VisitStatus
 import com.kinespherept.model.navigation.SceneDefinition
@@ -29,6 +28,7 @@ import groovy.util.logging.Slf4j
 
 import javax.annotation.Nonnull
 import javax.annotation.PostConstruct
+import java.util.stream.Collectors
 
 @ArtifactProviderFor(GriffonController)
 @Slf4j
@@ -104,6 +104,10 @@ class TrackVisitStatusController {
         model.patientTypeVisitStatuses.addAll(VisitStatus.values().collect{ it.text })
 
 
+        model.changeToStatuses.clear()
+        model.changeToStatuses << TrackVisitStatusView.SELECT_STATUS
+        model.changeToStatuses.addAll(VisitStatus.values().collect{ it.text })
+        model.changeToStatusesChoice = TrackVisitStatusView.SELECT_STATUS
 
         log.info "prepareForm() :: searchType=${model.searchType}"
 
@@ -174,17 +178,8 @@ class TrackVisitStatusController {
         }
     }
 
-//    @Deprecated
-//    void changeStatusTypeVisitStatus() {
-//        log.debug "changeStatusTypeVisitStatus() :: visitStatus=${model.statusTypeVisitStatusesChoice}; preparingForm=${preparingForm}"
-//        if(!preparingForm) {
-//            clearPatientSearch()
-//            loadVisitDataByStatusWithDistraction()
-//        }
-//    }
-
     void changeStatusTypeVisitStatus(String status) {
-        log.info "changeStatusTypeVisitStatus(${status})"
+        log.debug "changeStatusTypeVisitStatus(${status})"
         model.statusTypeVisitStatusesChoice = status
         if(!preparingForm) {
             //clearPatientSearch()
@@ -192,33 +187,16 @@ class TrackVisitStatusController {
         }
     }
 
-//    @Deprecated
-//    void changeInsuranceType() {
-//        log.debug "changeInsuranceType() :: insuranceType=${model.insuranceTypesChoice}; preparingForm=${preparingForm}"
-//        if(!preparingForm) {
-//            //clearPatientSearch()
-//            loadVisitDataByStatusWithDistraction()
-//        }
-//    }
-
     void changeInsuranceType(String insuranceType) {
-        log.info "changeInsuranceType(${insuranceType})"
+        log.debug "changeInsuranceType(${insuranceType})"
         model.insuranceTypesChoice = insuranceType
         if(!preparingForm) {
             loadVisitDataByStatusWithDistraction()
         }
     }
 
-//    @Deprecated
-//    void changeTherapist() {
-//        log.debug "changeTherapist() :: therapist=${model.therapistsChoice}; preparingForm=${preparingForm}"
-//        if(!preparingForm) {
-//            loadVisitDataByStatusWithDistraction()
-//        }
-//    }
-
     void changeTherapist(String therapist) {
-        log.info "changeTherapist(${therapist}) "
+        log.debug "changeTherapist(${therapist}) "
         model.therapistsChoice = therapist
         if(!preparingForm) {
             loadVisitDataByStatusWithDistraction()
@@ -226,7 +204,7 @@ class TrackVisitStatusController {
     }
 
     void changePatientFilter() {
-        log.info "changePatientFilter() :: patientSearchProperty=${model.patientSearchProperty.getValue()}; preparingForm=${preparingForm}"
+        log.debug "changePatientFilter() :: patientSearchProperty=${model.patientSearchProperty.getValue()}; preparingForm=${preparingForm}"
         if(!preparingForm) {
             changePatientFilterInternal()
         }
@@ -234,7 +212,7 @@ class TrackVisitStatusController {
 
 
     void changePatientTypeVisitStatus(String statusChoice) {
-        log.info "changePatientTypeVisitStatus(${statusChoice}) :: preparingForm=${preparingForm}"
+        log.debug "changePatientTypeVisitStatus(${statusChoice}) :: preparingForm=${preparingForm}"
         model.patientTypeVisitStatusesChoice = statusChoice
         if(!preparingForm) {
             loadVisitDataByPatientWithDistraction()
@@ -245,21 +223,21 @@ class TrackVisitStatusController {
 
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void selectPatientSearch() {
-        log.info "selectPatientSearch()"
+        log.debug "selectPatientSearch()"
         if(model.searchType != SearchType.PATIENT) {
             model.searchType = SearchType.PATIENT
             view.prepareSearchFilterRow(SearchType.PATIENT)
-            log.info "just set searchType to PATIENT"
+            log.debug "just set searchType to PATIENT"
         }
     }
 
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void selectStatusSearch() {
-        log.info "selectStatusSearch()"
+        log.debug "selectStatusSearch()"
         if(model.searchType != SearchType.STATUS) {
             model.searchType = SearchType.STATUS
             view.prepareSearchFilterRow(SearchType.STATUS)
-            log.info "just set searchType to STATUS"
+            log.debug "just set searchType to STATUS"
         }
     }
 
@@ -267,9 +245,9 @@ class TrackVisitStatusController {
 
     @Threading(Threading.Policy.OUTSIDE_UITHREAD)
     void changePatientFilterInternal() {
-        log.info "changePatientFilterInternal() :: patientSearch=${model.patientSearchProperty.getValue()}"
+        log.debug "changePatientFilterInternal() :: patientSearch=${model.patientSearchProperty.getValue()}"
         model.filteredPatients = patientService.searchPatients(model.patientSearchProperty.getValue())
-        log.info "changePatientFilterInternal() :: ..found ${model.filteredPatients.size()} results"
+        log.debug "changePatientFilterInternal() :: ..found ${model.filteredPatients.size()} results"
 
         runInsideUISync {
             preparingForm = true
@@ -286,7 +264,7 @@ class TrackVisitStatusController {
     }
 
     void selectPatient(String patientsChoice) {
-        log.info "selectPatient(${patientsChoice}) :: preparingForm=${preparingForm}"
+        log.debug "selectPatient(${patientsChoice}) :: preparingForm=${preparingForm}"
         model.patientsChoice = patientsChoice
         if(!preparingForm) {
             if(model.patientsChoice != model.filteredPatientCount) {
@@ -364,7 +342,19 @@ class TrackVisitStatusController {
                     // clear the results again.  this fixes a display bug that occurs when the user
                     // starts a 2nd (or more) search before a previous search returns results
                     view.visitResultsGridPane.children.clear()
-                    model.resultsMessage = ''
+
+                    // reset the model elements
+                    model.visits.clear()
+                    model.visits.addAll(visits)     // reset Visits list to match this result set
+                    model.statusChoiceBoxes.clear() // clear the status ChoiceBox list so we can rebuilt it
+                    model.visitCheckBoxes.clear()   // clear the CheckBox list so we can rebuild it
+
+                    // allow options based on result set size
+                    view.allowAffectAllRowsButtons(visits.size() > 0)     // select/unselect buttons
+                    view.allowMultiRowUpdate(false)                 // disable to start with
+
+                    // reset the 'multi-update status select' drop-down
+                    model.changeToStatusesChoice = TrackVisitStatusView.SELECT_STATUS
 
                     // rebuild the results
                     model.resultsMessage = "Found ${visits.size()} result${visits.size() == 1 ? '' : 's'}.  Filters:   ${searchFilters}"
@@ -416,7 +406,7 @@ class TrackVisitStatusController {
 
 
     List<Visit> loadVisitDataByStatus() {
-        log.info "loadVisitDataByStatus(visitStatus=${model.statusTypeVisitStatusesChoice}; fromDate=${model.fromDate}; toDate=${model.toDate}; insuranceType=${model.insuranceTypesChoice}; therapist=${model.therapistsChoice})"
+        log.debug "loadVisitDataByStatus(visitStatus=${model.statusTypeVisitStatusesChoice}; fromDate=${model.fromDate}; toDate=${model.toDate}; insuranceType=${model.insuranceTypesChoice}; therapist=${model.therapistsChoice})"
 
         // convert VisitStatus, InsuranceType and Therapist into proper objects
 
@@ -436,8 +426,15 @@ class TrackVisitStatusController {
     }
 
 
+    /**
+     * This is called when a user presses the "Change Status" button after selecting a status to change to
+     */
     void changeVisitStatus(Visit visit, VisitStatus visitStatus) {
-        log.info "changeVisitStatus(${visit}, ${visitStatus})"
+        log.debug "changeVisitStatus(${visit}, ${visitStatus})"
+
+        // reset the error message
+        model.errorMessage = ''
+
         visitService.saveVisitWithStatusChange(visit, visitStatus, employeeSession.employee)
         // after making the change, refresh the visit data
         if(model.searchType == SearchType.STATUS) {
@@ -448,7 +445,7 @@ class TrackVisitStatusController {
     }
 
     void viewVisitDetails(Visit visit) {
-        log.info "viewVisitDetails(${visit}), visitRequiresTreatment=${visitService.visitRequiresTreatment(visit)}"
+        log.debug "viewVisitDetails(${visit}), visitRequiresTreatment=${visitService.visitRequiresTreatment(visit)}"
 
         // decide what 'view-visit-details' page to switch to : [With|No]Treatment
         if(visitService.visitRequiresTreatment(visit)) {
@@ -478,6 +475,105 @@ class TrackVisitStatusController {
         view.visitResultsGridPane.children.clear()
         model.resultsMessage = ''
         preparingForm = false
+    }
+
+    /**
+     * Called when any checkboxes are selected or unselected; performs the work of enabling and
+     * disabling various components to ensure that the user only has intuitive options that will
+     * prevent both confusion & problematic actions from being performs.
+     */
+    void rowSelectStatusChanged() {
+        // reset the error message
+        model.errorMessage = ''
+
+        // what happens depends on how many boxes are checked now...
+        int selectCount = model.visitCheckBoxes.findAll { it.selected }.size()
+
+        // if 0 selected..
+        if(selectCount == 0) {
+            // - enable choice/button for all single row updates
+            // - disable choice/button for multi-select update
+            model.statusChoiceBoxes.each { it.disable = false }
+            model.updateStatusButtons.each { it.disable = false}
+            view.allowMultiRowUpdate(false)
+        }
+
+        // if only 1 selected..
+        if(selectCount == 1) {
+            // - enable choice/button for row
+            // - disable choice/button for all other rows (single row update)
+            // - disable choice/button for multi-select update
+            String visitId = model.visitCheckBoxes.find { it.selected }.id
+            model.statusChoiceBoxes.each {
+                it.disable = it.id != visitId ?: false
+            }
+            model.updateStatusButtons.each {
+                it.disable = it.id != visitId ?: false
+            }
+            view.allowMultiRowUpdate(false)
+        }
+
+        // if more than 1 selected..
+        if(selectCount > 1) {
+            // - disable choice/button for all other rows (single row update)
+            // - enable choice/button for multi-select update
+            model.statusChoiceBoxes.each { it.disable = true }
+            model.updateStatusButtons.each { it.disable = true }
+            view.allowMultiRowUpdate(true)
+        }
+    }
+
+
+
+    @ControllerAction
+    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+    void doMultiSelectUpdateStatus() {
+        // reset the error message
+        model.errorMessage = ''
+
+        VisitStatus newStatus = VisitStatus.findFromText(model.changeToStatusesChoice)
+
+        List<Visit> visitsToUpdate =
+                model.visitCheckBoxes.stream()
+                        // filter by CheckBox.selected..
+                        .filter { cb -> cb.selected }
+                        // map the CheckBox entry to the corresponding Visit
+                        .map { cb ->  model.visits.find { it.visitId == Long.valueOf(cb.id) } }
+                        .collect(Collectors.toList())
+
+        visitsToUpdate.each {
+            visitService.saveVisitWithStatusChange(it, newStatus, employeeSession.employee)
+        }
+
+        // after making the change, refresh the visit data
+        if(model.searchType == SearchType.STATUS) {
+            loadVisitDataByStatusWithDistraction()
+        } else {
+            loadVisitDataByPatientWithDistraction()
+        }
+
+    }
+
+    /**
+     * Called when the "Select All Entries" button is pressed
+     */
+    @ControllerAction
+    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+    void selectAllEntries() {
+        log.debug "selectAllEntries(), model.visitCheckBoxes.size=${model.visitCheckBoxes.size}"
+        model.visitCheckBoxes.each { it.selected = true }
+        rowSelectStatusChanged()
+    }
+
+    /**
+     * Called when the "Unselect All Entries" button is pressed
+     */
+    @ControllerAction
+    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+    void unselectAllEntries() {
+        log.debug "unselectAllEntries(), model.visitCheckBoxes.size=${model.visitCheckBoxes.size}"
+        model.visitCheckBoxes.each { it.selected = false }
+        rowSelectStatusChanged()
     }
 
 }

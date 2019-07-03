@@ -4,6 +4,8 @@ import groovy.transform.Canonical
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -27,7 +29,7 @@ class Visit {
     @Column(name='insurance_type_id') Integer insuranceTypeId
     @Column(name='therapist_id') Integer therapistId
     @Column(name='visit_type_id') Integer visitTypeId
-    @Column(name='visit_status_id') VisitStatus visitStatus
+    @Column(name='visit_status') @Enumerated(EnumType.STRING) VisitStatus visitStatus
     @Column(name='notes') String notes
     @Column(name='visit_number') int visitNumber
 
