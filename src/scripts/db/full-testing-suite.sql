@@ -37,7 +37,10 @@ INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (1, 'Orthope
 INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (2, 'Scoliosis');
 INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (3, 'Dancer');
 INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (4, 'POTS');
-INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (5, 'Client');
+INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (5, 'Neuro');
+INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (6, 'Client');
+INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (7, 'Oral');
+INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (8, 'Hypermobility');
 
 
 
