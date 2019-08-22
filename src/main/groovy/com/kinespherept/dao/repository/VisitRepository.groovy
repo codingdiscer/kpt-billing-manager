@@ -76,7 +76,16 @@ interface VisitRepository extends CrudRepository<Visit, Long> {
 
     List<Visit> findByPatientIdAndVisitDateOrderByVisitIdAsc(Long patientId, LocalDate localDate)
 
+
+
     long countByPatientId(long patientId)
+
+
+    //
+    // query for a report for a single month.  includes the "fromDate", does not include the "toDate"
+    //
+    @Query('SELECT v FROM Visit v WHERE v.visitDate >= :fromDate AND v.visitDate < :toDate')
+    List<Visit> findByFromDateAndToDateExclusive(LocalDate fromDate, LocalDate toDate)
 
 }
 

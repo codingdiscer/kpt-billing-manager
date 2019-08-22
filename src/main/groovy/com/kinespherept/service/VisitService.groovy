@@ -522,4 +522,23 @@ class VisitService {
                 .collect(Collectors.toList())
     }
 
+    /**
+     * Returns a list of {@link Visit} objects that occurred between the given dates;
+     * exclusive on the "toDate" side.
+     * The returned visits have their therapist, insuranceType, patientType & visitType
+     * transient objects set.  This method does not set the patient object.
+     * This method is intended to be used by the ReportService to collect visits for
+     * metrics counting purposes.
+     */
+    List<Visit> getVisitsBetweenDates(LocalDate fromDate, LocalDate toDate) {
+        visitRepository.findByFromDateAndToDateExclusive(fromDate, toDate).stream()
+            .map { Visit visit ->
+                visit.therapist = employeeService.findById(visit.therapistId)
+                visit.insuranceType = lookupDataService.findInsuranceTypeById(visit.insuranceTypeId)
+                visit.patientType = lookupDataService.findPatientTypeById(visit.patientTypeId)
+                visit.visitType = lookupDataService.findVisitTypeById(visit.visitTypeId)
+                visit
+            }.collect(Collectors.toList())
+    }
+
 }

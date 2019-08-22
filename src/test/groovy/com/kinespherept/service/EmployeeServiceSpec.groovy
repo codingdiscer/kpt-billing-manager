@@ -51,4 +51,16 @@ class EmployeeServiceSpec extends Specification {
         [1]             | EmployeeRole.INSURANCE_BILLER
     }
 
+
+    static EmployeeService getPopulatedEmployeeService() {
+        EmployeeService es = new EmployeeService(null, null, null)
+        es.employees = [
+                new Employee(employeeId: 1, username: 'ndowma', fullname: 'Noelle Dowma'),
+                new Employee(employeeId: 2, username: 'aherrman', fullname: 'Ashley Herrman'),
+                new Employee(employeeId: 3, username: 'sgalloway', fullname: 'Stacy Galloway'),
+                new Employee(employeeId: 4, username: 'scurtis', fullname: 'Stacey Curtis-Yeager'),
+                new Employee(employeeId: 5, username: 'tneff', fullname: 'Tamara Neff'),
+                new Employee(employeeId: 6, username: 'brisenhoover', fullname: 'Bree Risenhoover') ]
+        es
+    }
 }
