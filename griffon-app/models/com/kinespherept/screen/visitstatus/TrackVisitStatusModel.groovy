@@ -1,6 +1,7 @@
 package com.kinespherept.screen.visitstatus
 
 import com.kinespherept.autowire.PostSpringConstruct
+import com.kinespherept.autowire.SpringAutowire
 import com.kinespherept.enums.SearchType
 import com.kinespherept.model.core.Patient
 
@@ -29,14 +30,19 @@ class TrackVisitStatusModel {
     static final ALL = 'All'
     static final PATIENT_SEARCH = '<-- Search'
 
-
+    // need to call into the controller when stuff happens...
     @MVCMember @Nonnull TrackVisitStatusController controller
 
     // tied to the label that declares how many results were found
     @FXObservable String resultsMessage = ''
 
-    // tied to the label that declares how many results were found
+    // tied to the label that displays error messages
     @FXObservable String errorMessage = ''
+
+    // shared date fields on the top row of the UI
+
+    // keep track of the last search type for when returning to this screen
+    SearchType searchType = SearchType.STATUS
 
     // tied to the 'from' date selector field
     @FXObservable @ChangeListener('selectFromDate')
@@ -47,6 +53,15 @@ class TrackVisitStatusModel {
     @FXObservable @ChangeListener('selectToDate')
     LocalDate toDate = LocalDate.now()
     Closure selectToDate = { ObjectProperty<LocalDate> ob, ov, nv -> controller.selectToDate() }
+
+
+    //
+    // the next batch of properties relates to a "search by status"
+    //
+
+    // holds the "fromDate" & "toDate" values when the search type is changed
+    LocalDate statusFromDate = null
+    LocalDate statusToDate = LocalDate.now()
 
     // tied to the 'status' drop down [status search type]
     javafx.collections.ObservableList<String> statusTypeVisitStatuses = FXCollections.observableList([])
@@ -60,12 +75,21 @@ class TrackVisitStatusModel {
     javafx.collections.ObservableList<String> therapists = FXCollections.observableList([])
     String therapistsChoice = ALL
 
+
+    //
+    // the next batch of properties relates to a "search by patient"
+    //
+
+    // holds the "fromDate" & "toDate" values when the search type is changed
+    LocalDate patientFromDate = null
+    LocalDate patientToDate = LocalDate.now()
+
     StringProperty patientSearchProperty = new SimpleStringProperty('')
     List<Patient> filteredPatients = []
 
 
     // tied to the 'patients' drop down
-    javafx.collections.ObservableList<String> patients = FXCollections.observableList([PATIENT_SEARCH])
+    List<String> patients = [PATIENT_SEARCH]
     String patientsChoice = PATIENT_SEARCH
 
     // tied to the 'status' drop down [status search type]
@@ -76,22 +100,19 @@ class TrackVisitStatusModel {
     @FXObservable List<String> changeToStatuses = []
     @FXObservable String changeToStatusesChoice = VisitStatus.VISIT_CREATED.text
 
-    //
-    // fields that hold some state
-    //
-
-    // keep track of the last search type for when returning to this screen
-    SearchType searchType = SearchType.STATUS
-
     // this string represents the first entry in the "filtered patients" drop-down
     String filteredPatientCount = ''
 
     // useful reference to the select patient
     Patient selectedPatient
 
+
+    //
+    // the next batch holds state related to the search results
+    //
+
     // the list of visits based on the filter criteria
     List<Visit> visits = []
-
 
     // the list of Checkbox entries, each represents a row in the search output (for multi-select actions..)
     List<CheckBox> visitCheckBoxes = []

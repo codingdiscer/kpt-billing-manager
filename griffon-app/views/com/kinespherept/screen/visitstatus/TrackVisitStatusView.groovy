@@ -14,6 +14,7 @@ import com.kinespherept.service.VisitService
 import griffon.core.artifact.GriffonView
 import griffon.inject.MVCMember
 import griffon.metadata.ArtifactProviderFor
+import javafx.collections.FXCollections
 import javafx.fxml.FXML
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
@@ -161,6 +162,20 @@ class TrackVisitStatusView extends BaseView {
     }
 
 
+    /**
+     * This method is a bit of a hack.  It is called when the user changes the value
+     * in the "patient search" filter, and that generates a new set of patients
+     * that match the search.  So this method rebuilds the drop-down box that holds
+     * the results, and replaces the previous drop-down element within the
+     * appropriate FlowPane.
+     */
+    void resetFilteredPatients() {
+        filteredPatients = buildChoiceBox(FXCollections.observableList(model.patients), model.patientsChoice)
+        filteredPatients.onAction = { a -> controller.selectPatient(filteredPatients.selectionModel.getSelectedItem()) }
+        // the "filtered patients drop-down" is the 5th element in the FlowPane..
+        searchFilterFlowPane.children.set(4, filteredPatients)
+    }
+
 
     /**
      * Dynamically builds the 2nd row search fields.
@@ -188,7 +203,7 @@ class TrackVisitStatusView extends BaseView {
             searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
 
             // choicebox filled with filtered patient names
-            filteredPatients = buildChoiceBox(model.patients, model.patientsChoice)
+            filteredPatients = buildChoiceBox(FXCollections.observableList(model.patients), model.patientsChoice)
             filteredPatients.onAction = { a -> controller.selectPatient(filteredPatients.selectionModel.getSelectedItem()) }
             searchFilterFlowPane.children.add(filteredPatients)
 
@@ -203,16 +218,15 @@ class TrackVisitStatusView extends BaseView {
         } else if(searchType == SearchType.STATUS) {
             // label and ChoiceBox for status options
             searchFilterFlowPane.children.add(new Label(text: 'Status '))
-            ChoiceBox<String> statusChoiceBox = buildChoiceBox(model.statusTypeVisitStatuses, VisitStatus.values()[0].text)
+            ChoiceBox<String> statusChoiceBox = buildChoiceBox(model.statusTypeVisitStatuses, model.statusTypeVisitStatusesChoice)
             statusChoiceBox.onAction = { a -> controller.changeStatusTypeVisitStatus(statusChoiceBox.selectionModel.selectedItem) }
             searchFilterFlowPane.children.add(statusChoiceBox)
-
             // separator
             searchFilterFlowPane.children.add(buildSmallVerticalSeparator())
 
             // label and ChoiceBox for insurance options
             searchFilterFlowPane.children.add(new Label(text: 'Insurance '))
-            ChoiceBox<String> insuranceChoiceBox = buildChoiceBox(model.insuranceTypes, TrackVisitStatusModel.ALL)
+            ChoiceBox<String> insuranceChoiceBox = buildChoiceBox(model.insuranceTypes, model.insuranceTypesChoice)
             insuranceChoiceBox.onAction = { a -> controller.changeInsuranceType(insuranceChoiceBox.selectionModel.selectedItem) }
             searchFilterFlowPane.children.add(insuranceChoiceBox)
 
@@ -221,7 +235,7 @@ class TrackVisitStatusView extends BaseView {
 
             // label and ChoiceBox for therapist options
             searchFilterFlowPane.children.add(new Label(text: 'Therapist '))
-            ChoiceBox<String> therapistChoiceBox = buildChoiceBox(model.therapists, TrackVisitStatusModel.ALL)
+            ChoiceBox<String> therapistChoiceBox = buildChoiceBox(model.therapists, model.therapistsChoice)
             therapistChoiceBox.onAction = { a -> controller.changeTherapist(therapistChoiceBox.selectionModel.selectedItem) }
             searchFilterFlowPane.children.add(therapistChoiceBox)
         }

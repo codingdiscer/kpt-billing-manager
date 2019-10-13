@@ -33,11 +33,11 @@ class Patient {
 
 
     String getDisplayableName() {
-        "${firstName} ${lastName}"
+        "${firstName} ${lastName}".toString()
     }
 
     String getLastNameFirst() {
-        "${lastName}, ${firstName}"
+        "${lastName}, ${firstName}".toString()
     }
 
 

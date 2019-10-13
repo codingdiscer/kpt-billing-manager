@@ -67,12 +67,7 @@ class TrackVisitStatusController {
         preparingForm = true
 
         // set aside the drop-down selections
-        String visitStatusesChoice = model.statusTypeVisitStatusesChoice
-        String insuranceTypesChoice = model.insuranceTypesChoice
-        String therapistsChoice = model.therapistsChoice
         String patientSearch = model.patientSearchProperty.getValue()
-        //String patientsChoice = model.patientsChoice.getValue()
-        String patientsChoice = model.patientsChoice
 
         // prepare the status-type visit statuses (all the standard ones)
         model.statusTypeVisitStatuses.clear()
@@ -96,11 +91,10 @@ class TrackVisitStatusController {
         model.patients.clear()
         model.patients << TrackVisitStatusModel.PATIENT_SEARCH
         model.patientsChoice = TrackVisitStatusModel.PATIENT_SEARCH
-        //model.patientsChoice.setValue(TrackVisitStatusModel.PATIENT_SEARCH)
 
         // prepare the patient-type visit statuses (all standard, plus 'ALL')
         model.patientTypeVisitStatuses.clear()
-        model.patientTypeVisitStatuses << model.patientTypeVisitStatusesChoice
+        model.patientTypeVisitStatuses << TrackVisitStatusModel.ALL
         model.patientTypeVisitStatuses.addAll(VisitStatus.values().collect{ it.text })
 
 
@@ -109,7 +103,7 @@ class TrackVisitStatusController {
         model.changeToStatuses.addAll(VisitStatus.values().collect{ it.text })
         model.changeToStatusesChoice = TrackVisitStatusView.SELECT_STATUS
 
-        log.info "prepareForm() :: searchType=${model.searchType}"
+        log.debug "prepareForm() :: searchType=${model.searchType}"
 
         runInsideUISync {
             view.prepareSearchFilterRow(model.searchType)
@@ -117,10 +111,6 @@ class TrackVisitStatusController {
 
         // reload the search results with the current criteria
         if(model.searchType == SearchType.STATUS) {
-            // restore the status based choices
-            model.statusTypeVisitStatusesChoice = visitStatusesChoice
-            model.insuranceTypesChoice = insuranceTypesChoice
-            model.therapistsChoice = therapistsChoice
 
             // kick off the search again
             loadVisitDataByStatusWithDistraction()
@@ -133,15 +123,9 @@ class TrackVisitStatusController {
             // reset this flag - the call above cleared it..
             preparingForm = true
 
-            //model.patientsChoice.setValue(patientsChoice)
-            model.patientsChoice = patientsChoice
-
-            // reset the status based choices
-            model.statusTypeVisitStatusesChoice = VisitStatus.VISIT_CREATED.text
-            model.insuranceTypesChoice = TrackVisitStatusModel.ALL
-            model.therapistsChoice = TrackVisitStatusModel.ALL
-
-            loadVisitDataByPatientWithDistraction()
+            if(model.selectedPatient) {
+                loadVisitDataByPatientWithDistraction()
+            }
         }
 
         // declare that we are done preparing the form
@@ -180,16 +164,19 @@ class TrackVisitStatusController {
 
     void changeStatusTypeVisitStatus(String status) {
         log.debug "changeStatusTypeVisitStatus(${status})"
-        model.statusTypeVisitStatusesChoice = status
+        if(status != null) {
+            model.statusTypeVisitStatusesChoice = status
+        }
         if(!preparingForm) {
-            //clearPatientSearch()
             loadVisitDataByStatusWithDistraction()
         }
     }
 
     void changeInsuranceType(String insuranceType) {
         log.debug "changeInsuranceType(${insuranceType})"
-        model.insuranceTypesChoice = insuranceType
+        if (insuranceType != null) {
+            model.insuranceTypesChoice = insuranceType
+        }
         if(!preparingForm) {
             loadVisitDataByStatusWithDistraction()
         }
@@ -197,7 +184,9 @@ class TrackVisitStatusController {
 
     void changeTherapist(String therapist) {
         log.debug "changeTherapist(${therapist}) "
-        model.therapistsChoice = therapist
+        if(therapist != null) {
+            model.therapistsChoice = therapist
+        }
         if(!preparingForm) {
             loadVisitDataByStatusWithDistraction()
         }
@@ -213,7 +202,9 @@ class TrackVisitStatusController {
 
     void changePatientTypeVisitStatus(String statusChoice) {
         log.debug "changePatientTypeVisitStatus(${statusChoice}) :: preparingForm=${preparingForm}"
-        model.patientTypeVisitStatusesChoice = statusChoice
+        if(statusChoice != null) {
+            model.patientTypeVisitStatusesChoice = statusChoice
+        }
         if(!preparingForm) {
             loadVisitDataByPatientWithDistraction()
         }
@@ -226,8 +217,26 @@ class TrackVisitStatusController {
         log.debug "selectPatientSearch()"
         if(model.searchType != SearchType.PATIENT) {
             model.searchType = SearchType.PATIENT
+
+            preparingForm = true
+
+            // backup the from/to dates for the status search, then..
+            model.statusFromDate = model.fromDate
+            model.statusToDate = model.toDate
+            // ..restore the patient dates
+            model.fromDate = model.patientFromDate
+            model.toDate = model.patientToDate
+
+            preparingForm = false
+
             view.prepareSearchFilterRow(SearchType.PATIENT)
             log.debug "just set searchType to PATIENT"
+
+            if(model.selectedPatient != null) {
+                // execute the search (by patient)
+                loadVisitDataByPatientWithDistraction()
+            }
+
         }
     }
 
@@ -236,8 +245,23 @@ class TrackVisitStatusController {
         log.debug "selectStatusSearch()"
         if(model.searchType != SearchType.STATUS) {
             model.searchType = SearchType.STATUS
+
+            preparingForm = true
+
+            // backup the from/to dates for the status search, then..
+            model.patientFromDate = model.fromDate
+            model.patientToDate = model.toDate
+            // ..restore the patient dates
+            model.fromDate = model.statusFromDate
+            model.toDate = model.statusToDate
+
+            preparingForm = false
+
             view.prepareSearchFilterRow(SearchType.STATUS)
             log.debug "just set searchType to STATUS"
+
+            // execute the search (by status)
+            loadVisitDataByStatusWithDistraction()
         }
     }
 
@@ -247,20 +271,19 @@ class TrackVisitStatusController {
     void changePatientFilterInternal() {
         log.debug "changePatientFilterInternal() :: patientSearch=${model.patientSearchProperty.getValue()}"
         model.filteredPatients = patientService.searchPatients(model.patientSearchProperty.getValue())
-        log.debug "changePatientFilterInternal() :: ..found ${model.filteredPatients.size()} results"
 
-        runInsideUISync {
-            preparingForm = true
-            model.patients.clear()
-            model.filteredPatientCount = "Found ${model.filteredPatients.size()} results..".toString()
-            model.patients << model.filteredPatientCount
-            model.filteredPatients.each {
-                model.patients << it.lastNameFirst
-            }
-            model.patientsChoice = model.filteredPatientCount
-            view.selectFilteredPatient(model.filteredPatientCount)
-            preparingForm = false
+        preparingForm = true
+        model.patients.clear()
+        model.filteredPatientCount = "Found ${model.filteredPatients.size()} results..".toString()
+        model.patients << model.filteredPatientCount
+
+        model.filteredPatients.each {
+            model.patients << it.lastNameFirst
         }
+
+        model.patientsChoice = model.filteredPatientCount
+        view.resetFilteredPatients()
+        preparingForm = false
     }
 
     void selectPatient(String patientsChoice) {
@@ -468,6 +491,7 @@ class TrackVisitStatusController {
         model.patientSearchProperty.setValue('')
         model.patients.clear()
         model.filteredPatients.clear()
+        model.selectedPatient = null
         model.patients << TrackVisitStatusModel.PATIENT_SEARCH
         model.patientsChoice = TrackVisitStatusModel.PATIENT_SEARCH
         view.prepareSearchFilterRow(model.searchType)
