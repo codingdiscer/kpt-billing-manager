@@ -349,20 +349,20 @@ class VisitService {
             if(!insuranceType) {
                 if(!therapist) {
                     // insurance type and therapist are null
-                    log.info 'findByVisitStatusIdAndVisitDate()'
+                    log.debug 'findByVisitStatusIdAndVisitDate()'
                     visits = visitRepository.findByVisitStatusAndVisitDate(visitStatus, toDate)
                 } else {
                     // therapist is not null
-                    log.info 'findByVisitStatusIdAndVisitDateAndTherapistId()'
+                    log.debug 'findByVisitStatusIdAndVisitDateAndTherapistId()'
                     visits =  visitRepository.findByVisitStatusAndVisitDateAndTherapistId(visitStatus, toDate, therapist.employeeId)
                 }
             } else if(!therapist) {
                 // insuranceType is not null
-                log.info 'findByVisitStatusIdAndVisitDateAndInsuranceTypeId()'
+                log.debug 'findByVisitStatusIdAndVisitDateAndInsuranceTypeId()'
                 visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeId(visitStatus, toDate, insuranceType.insuranceTypeId)
             } else {
                 // insuranceType and therapist are not null
-                log.info 'findByVisitStatusIdAndVisitDateAndInsuranceTypeIdAndTherapistId()'
+                log.debug 'findByVisitStatusIdAndVisitDateAndInsuranceTypeIdAndTherapistId()'
                 visits =  visitRepository.findByVisitStatusAndVisitDateAndInsuranceTypeIdAndTherapistId(visitStatus, toDate, insuranceType.insuranceTypeId, therapist.employeeId)
             }
         } else {
@@ -370,20 +370,20 @@ class VisitService {
             if (!insuranceType) {
                 if (!therapist) {
                     // insurance type and therapist are null
-                    log.info 'findByVisitStatusAndFromDateAndToDate()'
+                    log.debug 'findByVisitStatusAndFromDateAndToDate()'
                     visits = visitRepository.findByVisitStatusAndFromDateAndToDate(visitStatus, fromDate, toDate)
                 } else {
                     // therapist is not null
-                    log.info 'findByVisitStatusAndFromDateAndToDateAndTherapistId()'
+                    log.debug 'findByVisitStatusAndFromDateAndToDateAndTherapistId()'
                     visits = visitRepository.findByVisitStatusAndFromDateAndToDateAndTherapistId(visitStatus, fromDate, toDate, therapist.employeeId)
                 }
             } else if (!therapist) {
                 // insuranceType is not null
-                log.info 'findByVisitStatusAndFromDateAndToDateAndInsuranceTypeId()'
+                log.debug 'findByVisitStatusAndFromDateAndToDateAndInsuranceTypeId()'
                 visits = visitRepository.findByVisitStatusAndFromDateAndToDateAndInsuranceTypeId(visitStatus, fromDate, toDate, insuranceType.insuranceTypeId)
             } else {
                 // insuranceType and therapist are not null
-                log.info 'findByVisitStatusAndFromDateAndToDateAndInsuranceTypeIdAndTherapistId()'
+                log.debug 'findByVisitStatusAndFromDateAndToDateAndInsuranceTypeIdAndTherapistId()'
                 visits = visitRepository.findByVisitStatusAndFromDateAndToDateAndInsuranceTypeIdAndTherapistId(visitStatus, fromDate, toDate, insuranceType.insuranceTypeId, therapist.employeeId)
             }
         }
@@ -419,21 +419,21 @@ class VisitService {
         if(visitStatus) {
             if(!fromDate) {
                 // patient and visitStatus
-                log.info 'findByPatientIdAndVisitStatus()'
+                log.debug 'findByPatientIdAndVisitStatus()'
                 visits = visitRepository.findByPatientIdAndVisitStatus(patient.patientId, visitStatus)
             } else {
                 // patient, visitStatus, fromDate and toDate
-                log.info 'findByPatientIdAndVisitStatusAndFromDateAndToDate()'
+                log.debug 'findByPatientIdAndVisitStatusAndFromDateAndToDate()'
                 visits = visitRepository.findByPatientIdAndVisitStatusAndFromDateAndToDate(patient.patientId, visitStatus, fromDate, toDate)
             }
         } else {
             if(!fromDate) {
                 // patient only
-                log.info 'findByPatientId()'
+                log.debug 'findByPatientId()'
                 visits = visitRepository.findByPatientId(patient.patientId)
             } else {
                 // patient, fromDate and toDate
-                log.info 'findByPatientIdAndFromDateAndToDate()'
+                log.debug 'findByPatientIdAndFromDateAndToDate()'
                 visits = visitRepository.findByPatientIdAndFromDateAndToDate(patient.patientId, fromDate, toDate)
             }
         }
