@@ -13,4 +13,5 @@ import javax.persistence.Table
 class InsuranceType {
     @Id @Column(name='insurance_type_id') Integer insuranceTypeId
     @Column(name='insurance_type_name') String insuranceTypeName
+    @Column(name='insurance_type_shorthand') String insuranceTypeShorthand
 }

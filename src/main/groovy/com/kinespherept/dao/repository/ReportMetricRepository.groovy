@@ -7,4 +7,7 @@ interface ReportMetricRepository extends CrudRepository<ReportMetric, Long> {
 
     List<ReportMetric> findByReportId(Integer reportId)
 
+    void deleteByReportId(Integer reportId)
+
+
 }

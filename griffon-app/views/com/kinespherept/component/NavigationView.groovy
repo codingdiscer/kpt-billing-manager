@@ -20,6 +20,9 @@ import javax.annotation.PostConstruct
 @Slf4j
 class NavigationView extends BaseView {
 
+    static double NAVIGATION_ELEMENT_WIDTH = 100.0
+    static double NAVIGATION_ELEMENT_HEIGHT = 55.0
+
 
     @MVCMember @Nonnull NavigationController controller
     @MVCMember @Nonnull NavigationModel model
@@ -31,7 +34,7 @@ class NavigationView extends BaseView {
 
         new Button(text: buttonLabel,
                 onAction: action,
-                prefWidth: 100.0, prefHeight: 70.0,
+                prefWidth: NAVIGATION_ELEMENT_WIDTH, prefHeight: NAVIGATION_ELEMENT_HEIGHT,
                 font:  new Font(12),
                 textAlignment: TextAlignment.CENTER,
                 wrapText: true,

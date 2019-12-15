@@ -22,6 +22,7 @@ class ReportServiceSpec extends Specification {
     ReportService reportService
 
     // supporting classes
+    EmployeeService employeeService
     LookupDataService lookupDataService
     ReportMetricRepository reportMetricRepository
     ReportRepository reportRepository
@@ -29,15 +30,30 @@ class ReportServiceSpec extends Specification {
 
 
     void setup() {
-        lookupDataService = Mock()
+        employeeService = EmployeeServiceSpec.populatedEmployeeService
+        lookupDataService = LookupDataServiceSpec.populatedLookupDataService
         reportMetricRepository = Mock()
         reportRepository = Mock()
         visitService = Mock()
 
-
-        reportService = new ReportService(lookupDataService, reportMetricRepository,
+        reportService = new ReportService(employeeService, lookupDataService, reportMetricRepository,
                 reportRepository, visitService)
+    }
 
+
+    def 'test that init sets the cancelNoShow object'() {
+        when:   'before init is called'
+        reportService.cancelNoShowVisitType = null
+
+        then:   'the stashed visit type is empty'
+        reportService.cancelNoShowVisitType == null
+
+
+        when:
+        reportService.init()
+
+        then:
+        reportService.cancelNoShowVisitType.visitTypeName == ReportService.VISIT_TYPE_CANCEL_NO_SHOW
     }
 
 
@@ -51,6 +67,31 @@ class ReportServiceSpec extends Specification {
                  LocalDate.of(2019, 5, 31),
                  LocalDate.of(2019, 5, 1)]
     }
+
+
+    def 'test getReportHeadersBetweenDateRange()'() {
+        given:
+        LocalDate fromDate = LocalDate.of(2018, 1, 1)
+        LocalDate toDate = LocalDate.of(2018, 6, 1)
+
+        List<Report> repoReports = [
+                new Report(reportDate: LocalDate.of(2018, 1, 1)),
+                new Report(reportDate: LocalDate.of(2018, 2, 1)),
+                new Report(reportDate: LocalDate.of(2018, 3, 1)),
+                new Report(reportDate: LocalDate.of(2018, 4, 1))
+        ]
+
+
+        when:
+        List<Report> outReports = reportService.getReportHeadersBetweenDateRange(fromDate, toDate)
+
+        then:
+        1 * reportRepository.findByReportDateRange(fromDate, toDate) >> repoReports
+        1 * reportRepository.save( { it.reportDate == LocalDate.of(2018, 5, 1) } )
+        1 * reportRepository.save( { it.reportDate == LocalDate.of(2018, 6, 1) } )
+        outReports.size() == 6
+    }
+
 
 
     def 'test generateMetrics() properly counts the metrics'() {

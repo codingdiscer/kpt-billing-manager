@@ -17,6 +17,11 @@ import javax.persistence.Table
 @Table(name='visit_type')
 class VisitType {
 
+    static String INITIAL = 'Initial'
+    static String FOLLOW_UP = 'Follow up'
+    static String CANCEL_NO_SHOW = 'Cancel/No Show'
+
+
     @Id @Column(name='visit_type_id')
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     Integer visitTypeId

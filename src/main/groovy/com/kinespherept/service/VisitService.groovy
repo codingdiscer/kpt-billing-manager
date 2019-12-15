@@ -18,6 +18,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.stereotype.Service
 
 import javax.transaction.Transactional
+import java.sql.Date
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.stream.Collectors
@@ -115,11 +116,60 @@ class VisitService {
         visitRepository.delete(visit)
     }
 
+
+    int getYearOfFirstVisit() {
+        visitDao.getDateOfFirstVisit().toLocalDate().year
+    }
+
+    /**
+     * Returns a list of integers that represent a span of years from the oldest
+     * visit until the current year.
+     */
+    List<Integer> getAllYears() {
+        int firstYear = getYearOfFirstVisit()
+        int currentYear = LocalDate.now().year
+
+        if(firstYear == currentYear) {
+            return [currentYear]
+        }
+
+        List<Integer> years = []
+        for(int i = firstYear; i <= currentYear; i++) {
+            years << i
+        }
+        years
+    }
+
+    /**
+     * Returns a number that represents the current year, unless...
+     * - this is the only year, in which case it return the current regardless
+     * - returns the previous year if it is currently January
+     */
+    int getCurrentYearExceptIfJanuary() {
+        int currentMonth = LocalDate.now().monthValue
+
+        List<Integer> years = getAllYears()
+
+        // see if it is not january..
+        if(currentMonth != 1) {
+            return years[years.size() - 1]
+        }
+
+        // if we got this far, it must be january
+        years[ years.size() == 1 ? 0 : years.size() - 2]
+        // if only 1 year in the list, return it...otherwise return the penultimate entry
+    }
+
+
     /**
      * Re-orders (as necessary) the visit numbers for all the visits of the patient.
      */
     void setVisitNumbers(Visit updatedVisit) {
-        List<Visit> allVisits = visitRepository.findByPatientIdOrderByVisitDateAsc(updatedVisit.patientId)
+        // get all the visits for this patient for the year represents in the given visit
+        List<Visit> allVisits = visitRepository.findByPatientIdAndFromDateAndToDate(updatedVisit.patientId,
+                LocalDate.of(updatedVisit.visitDate.year, 1, 1),
+                LocalDate.of(updatedVisit.visitDate.year, 12, 31)
+        )
 
         allVisits.each { populateLookupData(it, false) }
 
@@ -254,20 +304,21 @@ class VisitService {
     }
 
 
+
     /**
      * @deprecated
      */
     @Deprecated
-    int getVisitNumber(List<Visit> allVisits, Visit visit) {
-        int visitNumber = 1
-        allVisits.eachWithIndex{ Visit entry, int i ->
-            if(entry.visitId == visit.visitId) {
-                visitNumber = i + 1
-                return  // this breaks out of the eachWithIndex{} closure
-            }
-        }
-        visitNumber
-    }
+//    int getVisitNumber(List<Visit> allVisits, Visit visit) {
+//        int visitNumber = 1
+//        allVisits.eachWithIndex{ Visit entry, int i ->
+//            if(entry.visitId == visit.visitId) {
+//                visitNumber = i + 1
+//                return  // this breaks out of the eachWithIndex{} closure
+//            }
+//        }
+//        visitNumber
+//    }
 
 
     /**
@@ -276,10 +327,10 @@ class VisitService {
      *
      * @deprecated
      */
-    @Deprecated
-    int getVisitNumber(Visit visit) {
-        getVisitNumber(visitRepository.findByPatientIdOrderByVisitDateAsc(visit.patient.patientId), visit)
-    }
+//    @Deprecated
+//    int getVisitNumber(Visit visit) {
+//        getVisitNumber(visitRepository.findByPatientIdOrderByVisitDateAsc(visit.patient.patientId), visit)
+//    }
 
 
     /**

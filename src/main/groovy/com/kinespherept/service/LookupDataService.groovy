@@ -332,8 +332,8 @@ class LookupDataService {
         patientTypes.find { it.patientTypeName == patientTypeName }
     }
 
-    PatientType findPatientTypeById(Integer patientId) {
-        patientTypes.find { it.patientTypeId == patientId }
+    PatientType findPatientTypeById(Integer patientTypeId) {
+        patientTypes.find { it.patientTypeId == patientTypeId }
     }
 
     InsuranceType findInsuranceTypeByName(String insuranceTypeName) {

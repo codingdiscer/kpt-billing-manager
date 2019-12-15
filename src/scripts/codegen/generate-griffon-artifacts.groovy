@@ -54,21 +54,30 @@ buildArtifact(
 // performs the work of preparing the file, checking for existence (log a warn and do nothing when it exists,
 // otherwise create the new file and populate it with the applied template data
 void buildArtifact(String packageName, String packagePath, String artifactName, String artifactPath, String artifactTemplate, String shortFileName) {
+    File folder = new File(artifactPath + packagePath)
+    if(!folder.exists()) {
+        folder.mkdirs()
+    }
     File fullFile = new File(artifactPath + packagePath + '/' + shortFileName)
-    if(!fullFile.exists()) {
-        fullFile.createNewFile()
-        fullFile.text = new File(artifactTemplate).text
-                .replaceAll('\\{package\\}', packageName)
-                .replaceAll('\\{artifact\\}', artifactName)
-                .replaceAll('\\{ARTIFACT\\}', artifactName.toUpperCase())
-        println "INFO - created file :: ${fullFile} "
-    } else {
-        println "WARN - fxml file already exists, so no action will take place :: ${fullFile}"
+    try {
+        if (!fullFile.exists()) {
+            fullFile.createNewFile()
+            fullFile.text = new File(artifactTemplate).text
+                    .replaceAll('\\{package\\}', packageName)
+                    .replaceAll('\\{artifact\\}', artifactName)
+                    .replaceAll('\\{ARTIFACT\\}', artifactName.toUpperCase())
+            println "INFO - created file :: ${fullFile} "
+        } else {
+            println "WARN - fxml file already exists, so no action will take place :: ${fullFile}"
+        }
+    } catch(Exception e) {
+        println "caught exception trying to create & populate the file [${fullFile.absolutePath}] :: ${e}"
+        e.printStackTrace()
     }
 }
 
 // prepare the text to add to the `griffon-app/conf/Config.groovy`
-println "***************  Add to Config.groovy  ***************\n"
+println "***************  Add to 'griffon-app/conf/Config.groovy'  ***************\n"
 println "    '${(properties['artifactName'] as String).substring(0, 1).toLowerCase() + (properties['artifactName'] as String).substring(1)}' {"
 println "        model      = '${packageName}.${properties['artifactName']}Model'"
 println "        view       = '${packageName}.${properties['artifactName']}View'"

@@ -5,5 +5,6 @@ enum NavigationSection {
     PATIENTS,
     THERAPIST,
     STATUS_TRACKER,
-    MANAGE_DIAGNOSES
+    MANAGE_DIAGNOSES,
+    REPORTS
 }

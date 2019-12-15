@@ -24,6 +24,10 @@ application {
             'viewVisitDetailsNoTreatment', 'editVisitDetailsNoTreatment',
             'viewVisitDetailsWithTreatment', 'editVisitDetailsWithTreatment',
 
+            // reports
+            'manageReports',
+            'browseReports',
+
             // sub-components
             'selectDiagnosis', 'selectTreatment',
 
@@ -153,6 +157,20 @@ mvcGroups {
         controller = 'com.kinespherept.screen.visitstatus.EditVisitDetailsWithTreatmentController'
     }
 
+
+    /**
+     * reports screens
+     */
+    'manageReports' {
+        model      = 'com.kinespherept.screen.report.ManageReportsModel'
+        view       = 'com.kinespherept.screen.report.ManageReportsView'
+        controller = 'com.kinespherept.screen.report.ManageReportsController'
+    }
+    'browseReports' {
+        model      = 'com.kinespherept.screen.report.BrowseReportsModel'
+        view       = 'com.kinespherept.screen.report.BrowseReportsView'
+        controller = 'com.kinespherept.screen.report.BrowseReportsController'
+    }
 
 
     /**

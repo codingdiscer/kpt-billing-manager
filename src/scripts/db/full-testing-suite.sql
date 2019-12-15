@@ -24,10 +24,13 @@ INSERT INTO diagnosis(diagnosis_id, diagnosis_code, diagnosis_name, diagnosis_ty
 -- INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (?, ?);
 INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (1, 'BCBS');
 INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (2, 'Medicare');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (3, 'Cash');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (4, 'Tricare');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (5, 'UHC');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (3, 'Tricare');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (4, 'UHC');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (5, 'UHC-UMR');
 INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (6, 'Work Comp');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (7, 'Cash');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (8, 'Cash-Don''t bill');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (9, 'Humana');
 
 
 

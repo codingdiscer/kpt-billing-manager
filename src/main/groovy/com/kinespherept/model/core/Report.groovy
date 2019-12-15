@@ -20,6 +20,8 @@ class Report {
 
     @Column(name='report_date') LocalDate reportDate
     @Column(name='report_status') @Enumerated(EnumType.STRING) ReportStatus reportStatus
+    @Column(name='generated_date') LocalDate generatedDate
+
 
     @Transient Map<String, ReportMetric> metricsMap = [:]
 }

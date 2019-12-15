@@ -31,3 +31,6 @@ out
 build
 
 application-secret.properties
+
+src/docker-db/user-setup-stage.sql
+src/docker-db/user-setup-prod.sql

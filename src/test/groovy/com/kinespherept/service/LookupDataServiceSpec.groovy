@@ -165,7 +165,9 @@ class LookupDataServiceSpec extends Specification {
                 new PatientType(patientTypeId: 3, patientTypeName: 'Dancer'),
                 new PatientType(patientTypeId: 4, patientTypeName: 'POTS'),
                 new PatientType(patientTypeId: 5, patientTypeName: 'Neuro'),
-                new PatientType(patientTypeId: 6, patientTypeName: 'Client')
+                new PatientType(patientTypeId: 6, patientTypeName: 'Client'),
+                new PatientType(patientTypeId: 7, patientTypeName: 'Oral'),
+                new PatientType(patientTypeId: 8, patientTypeName: 'Hypermobility')
         ]
 
         lds.treatments = [
