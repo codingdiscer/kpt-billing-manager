@@ -3,6 +3,7 @@ package com.kinespherept.config
 import org.springframework.stereotype.Component
 
 import javax.annotation.PostConstruct
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
@@ -23,9 +24,19 @@ class CommonProperties {
     String dateFormat = 'MM-dd-yyyy'
 
     /**
+     * The format to use when displaying a date.
+     */
+    String monthFormat = 'MM-yyyy'
+
+    /**
      * The object used to perform the date formatting, where the pattern is set from the dateFormat property.
      */
     DateTimeFormatter dateFormatter
+
+    /**
+     * The object used to perform the month formatting, where the pattern is set from the monthFormat property.
+     */
+    DateTimeFormatter monthFormatter
 
     /**
      * Color defaults
@@ -38,10 +49,24 @@ class CommonProperties {
     String metricsBackgroundColor = "BLUE"
 
 
+    /**
+     * Returns the given date formatted per the configured values
+     */
+    String formatDate(LocalDate date) {
+        dateFormatter.format(date)
+    }
+
+    /**
+     * Returns the given date formatted per the configured values
+     */
+    String formatMonth(LocalDate date) {
+        monthFormatter.format(date)
+    }
 
     @PostConstruct
     void init() {
         dateFormatter = DateTimeFormatter.ofPattern(dateFormat)
+        monthFormatter = DateTimeFormatter.ofPattern(monthFormat)
     }
 
 }

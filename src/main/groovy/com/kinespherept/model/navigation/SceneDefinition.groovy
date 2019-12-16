@@ -39,6 +39,10 @@ enum SceneDefinition {
     VIEW_VISIT_DETAILS_WITH_TREATMENT('Visit Details', 800, 400),
     EDIT_VISIT_DETAILS_WITH_TREATMENT('Edit Details', 950, 480),
 
+    // reports
+    MANAGE_REPORTS('Manage Reports', 715, 480),
+    BROWSE_REPORTS('Browse Reports', 1200, 500),
+
     // sub-components...
     DIAGNOSIS_SELECTOR('Diagnosis Selector', 280, 350),
     TREATMENT_SELECTOR('Treatment Selector', 310, 350),
@@ -57,6 +61,5 @@ enum SceneDefinition {
     String title
     int width
     int height
-
 
 }

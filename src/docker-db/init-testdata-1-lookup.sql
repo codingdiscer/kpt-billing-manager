@@ -3,6 +3,7 @@
 -- this script populates the db with useful, consistent data to perform manual testing with.
 --
 
+
 -- diagnosis_type!
 -- INSERT INTO diagnosis_type(diagnosis_type_id, diagnosis_type_name, display_order) VALUES (?, ?, ?);
 
@@ -167,18 +168,19 @@ INSERT INTO diagnosis( diagnosis_type_id, diagnosis_code, diagnosis_name, displa
 
 
 
+
+
 -- insurance!
 -- INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (?, ?);
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (1, 'BCBS');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (2, 'Medicare');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (3, 'Tricare');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (4, 'UHC');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (5, 'UHC-UMR');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (6, 'Work Comp');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (7, 'Cash');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (8, 'Cash-Don''t bill');
-INSERT INTO insurance_type(insurance_type_id, insurance_type_name) VALUES (9, 'Humana');
-
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (1, 'BCBS', 		'BCBS');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (2, 'Medicare', 	'MedCr');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (3, 'Tricare', 		'TriCr');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (4, 'UHC', 			'UHC');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (5, 'UHC-UMR', 		'UHCUMR');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (6, 'Work Comp',	'WrkCmp');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (7, 'Cash', 		'Cash');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (8, 'Cash-Don''t bill', 'Csh-DB');
+INSERT INTO insurance_type(insurance_type_id, insurance_type_name, insurance_type_shorthand) VALUES (9, 'Humana',		'Hmna');
 
 
 -- patient_type
@@ -193,9 +195,8 @@ INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (7, 'Oral');
 INSERT INTO patient_type(patient_type_id, patient_type_name) VALUES (8, 'Hypermobility');
 
 
-
 -- treatment
--- INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order) VALUES (?, ?, ?, ?);
+-- INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order) VALUES (?, ?, ?, ?, ?);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (1, '97112', 'Neuromuscular Re-Education', 1, false);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (2, '97110', 'Therapeutic Exercise', 2, false);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (3, '97140', 'Manual Therapy', 3, false);
@@ -206,9 +207,7 @@ INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_orde
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (8, '97161', 'Eval low complex', 8, true);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (9, '97162', 'Eval mod complex', 9, true);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (10, '97163', 'Eval high complex', 10, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 12, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (12, '97542', 'Wheelchair Assessment', 11, true);
-
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 11, true);
 
 
 
@@ -218,35 +217,6 @@ INSERT INTO visit_type(visit_type_id, visit_type_name) VALUES (1, 'Initial');
 INSERT INTO visit_type(visit_type_id, visit_type_name) VALUES (2, 'Follow up');
 INSERT INTO visit_type(visit_type_id, visit_type_name) VALUES (3, 'Cancel/No Show');
 
-
-
--- patients!
--- INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (?, ?, ?, ?, ?, ?);
-INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (1000001, 'Olga', 'Hammerstein', 5, 5, 'Pain in the ass');
-INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (1000002, 'Pickles', 'Wimbergot', 4, 4, 'Loves cucumbers');
-INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (1000003, 'Sally', 'Smith', 2, 1, 'Wears the best shoes');
-INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (1000004, 'Arnold', 'Drummond', 1, 2, '80s icon');
-INSERT INTO patient(patient_id, first_name, last_name, patient_type_id, insurance_type_id, notes) VALUES (1000005, 'Mario', 'Chitagatzi', 5, 3, 'Soooo italian');
-
-
-
-
--- patient-diagnosis
--- INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (?, ?, ?);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000001, 1000001, 1);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000002, 1000001, 3);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000003, 1000001, 5);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000004, 1000002, 2);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000005, 1000002, 10);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000006, 1000003, 5);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000007, 1000003, 7);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000008, 1000003, 9);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000009, 1000003, 11);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000010, 1000004, 4);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000011, 1000005, 1);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000012, 1000005, 3);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000013, 1000005, 6);
-INSERT INTO patient_diagnosis(patient_diagnosis_id, patient_id, diagnosis_id) VALUES (1000014, 1000005, 10);
 
 
 

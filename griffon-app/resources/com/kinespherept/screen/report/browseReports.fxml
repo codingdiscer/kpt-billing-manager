@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import griffon.javafx.support.JavaFXUtils?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.control.Button?>
+<AnchorPane prefHeight="500" prefWidth="1200" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kinespherept.screen.report.BrowseReportsController">
+   <children>
+        <FlowPane prefHeight="500" prefWidth="1200">
+            <children>
+
+                <!-- navigation pane -->
+                <AnchorPane fx:id="navigationPane" prefHeight="480" prefWidth="100" />
+
+                <Separator orientation="VERTICAL" prefHeight="450" prefWidth="10.0" />
+
+                <FlowPane prefHeight="480.0" prefWidth="1085.0">
+
+                    <!-- top options row:
+                        drop-downs for date range selection || therapist || report type
+                        -->
+                    <FlowPane prefWidth="1085" prefHeight="35">
+                        <FlowPane prefWidth="100" >
+                            <Label prefWidth="100" text="Presets" prefHeight="25" />
+                            <ChoiceBox id="presets" prefWidth="100.0" />
+                        </FlowPane>
+
+                        <Separator orientation="VERTICAL" prefWidth="30" />
+
+                        <FlowPane fx:id="timeRangeFlowPane" style="-fx-background-color: lightgray;" prefWidth="190">
+
+
+                            <Label prefWidth="40" text="From  " alignment="CENTER_RIGHT" prefHeight="25"/>
+
+                            <ChoiceBox id="years" fx:id="yearsChoiceBox" prefWidth="60.0" />
+                            <ChoiceBox id="startMonths" fx:id="startMonthsChoiceBox" prefWidth="85.0" />
+
+
+                            <Label prefWidth="40" text="To  " alignment="CENTER_RIGHT" prefHeight="25"/>
+                            <ChoiceBox id="endMonths" fx:id="endMonthsChoiceBox" prefWidth="120.0" />
+                        </FlowPane>
+
+                        <Separator orientation="VERTICAL" prefWidth="30" />
+
+                        <FlowPane prefWidth="150" >
+                            <Label prefWidth="150" text="Therapist" prefHeight="25" />
+                            <ChoiceBox id="therapists" prefWidth="150.0" />
+                        </FlowPane>
+
+                        <Separator orientation="VERTICAL" prefWidth="30" />
+
+                        <FlowPane prefWidth="200" >
+                            <Label prefWidth="200" text="Report Type" prefHeight="25" />
+                            <ChoiceBox id="reportTypes" prefWidth="200.0" />
+                        </FlowPane>
+
+                        <Separator orientation="VERTICAL" prefWidth="30" />
+
+                        <FlowPane prefWidth="160" >
+                            <Label prefWidth="160" text="Render changes" prefHeight="25" />
+                            <Button text="Go!" fx:id="renderReportButton" JavaFXUtils.griffonActionId="renderReport"/>
+                            <Label prefWidth="120" fx:id="refreshMessageLabel" text="  &lt;-- refresh report" prefHeight="25" textFill="#ff0000"/>
+                        </FlowPane>
+
+                    </FlowPane>
+
+
+                    <!-- end top row -->
+                    <!-- start separators and message row -->
+
+                    <Separator orientation="HORIZONTAL" prefHeight="10" prefWidth="1050.0" />
+
+                    <Label id="reportMessage" prefWidth="1050.0" text="Displaying Insurance Breakdown for All therapists from Jan 2019 - Dec 2019 " />
+
+                    <Separator orientation="HORIZONTAL" prefHeight="10" prefWidth="1050.0" />
+
+                    <!-- end separators and message row -->
+                    <!-- start data row (grid pane!) -->
+
+                    <GridPane fx:id="reportDataGridPane" prefHeight="400" prefWidth="1080">
+
+                    </GridPane>
+
+
+
+
+                </FlowPane>
+            </children>
+        </FlowPane>
+
+   </children>
+</AnchorPane>

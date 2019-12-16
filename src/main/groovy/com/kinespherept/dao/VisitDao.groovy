@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.support.rowset.SqlRowSet
 import org.springframework.stereotype.Service
 
+import java.sql.Date
 import java.time.LocalDate
 
 @Service
@@ -25,6 +26,10 @@ class VisitDao {
 
     boolean diagnosisIsUsed(int diagnosisId) {
         jdbcTemplate.queryForRowSet('select visit_diagnosis_id from visit_diagnosis where diagnosis_id = ?', [diagnosisId].toArray()).first()
+    }
+
+    Date getDateOfFirstVisit() {
+        jdbcTemplate.queryForList('select visit_date from visit order by visit_date asc limit 1', null, Date).first()
     }
 
 }

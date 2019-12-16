@@ -11,6 +11,7 @@ import com.kinespherept.model.navigation.SceneDefinition
 import com.kinespherept.screen.admin.SetupDiagnosesController
 import com.kinespherept.screen.patient.AdministerPatientsController
 import com.kinespherept.screen.patient.SchedulePatientsController
+import com.kinespherept.screen.report.ManageReportsController
 import com.kinespherept.screen.therapist.SelectPatientVisitController
 import com.kinespherept.screen.visitstatus.TrackVisitStatusController
 import com.kinespherept.service.RefreshService
@@ -37,6 +38,7 @@ class NavigationController {
     @SpringAutowire RefreshService refreshService
 
     @GriffonAutowire AdministerPatientsController administerPatientsController
+    @GriffonAutowire ManageReportsController manageReportsController
     @GriffonAutowire SchedulePatientsController schedulePatientsController
     @GriffonAutowire SelectPatientVisitController selectPatientVisitController
     @GriffonAutowire SetupDiagnosesController setupDiagnosesController
@@ -112,6 +114,17 @@ class NavigationController {
                     { a ->
                         setupDiagnosesController.prepareForm()
                         SceneManager.changeTheScene(SceneDefinition.SETUP_DIAGNOSES)
+                    }
+            ))
+        }
+
+        if(employeeSession.employee.roles.contains(EmployeeRole.ADMINISTRATOR)) {
+            view.navigationLinks.children.add(view.prepareNavigationButton(
+                    'Reports',
+                    modifyStyle('-fx-background-color: LIGHTGRAY', NavigationSection.REPORTS, navSection),
+                    { a ->
+                        manageReportsController.prepareForm()
+                        SceneManager.changeTheScene(SceneDefinition.MANAGE_REPORTS)
                     }
             ))
         }
