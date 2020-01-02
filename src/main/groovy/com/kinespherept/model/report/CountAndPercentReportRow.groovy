@@ -1,7 +1,10 @@
 package com.kinespherept.model.report
 
+import groovy.transform.Canonical
+
 import java.time.Month
 
+@Canonical
 class CountAndPercentReportRow {
 
     Month month

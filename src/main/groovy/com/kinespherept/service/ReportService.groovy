@@ -103,6 +103,8 @@ class ReportService {
         // pull from the db first
         List<Report> dbReports = reportRepository.findByReportDateRange(normalizedFromDate, normalizedToDate)
 
+        log.debug "getReportHeadersBetweenDateRange() : found [${dbReports.size()}] current reports in date range from [${normalizedFromDate}] to [${normalizedToDate}]"
+
         List<Report> outReports = []
 
         // loop over the date range
@@ -113,6 +115,7 @@ class ReportService {
             if(!report) {
                 // nope!  so create it and save it
                 report = reportRepository.save(buildNewReport(date))
+                log.debug "getReportHeadersBetweenDateRange() : just saved report with date [${date}], report.id=${report.reportId}"
             }
 
             outReports << report
@@ -490,11 +493,11 @@ class ReportService {
 
         switch(reportType) {
             case ReportType.INSURANCE_BREAKDOWN:
-                return produceInsuranceBreakdownReport(reports, therapist)
+                return buildSummaryRow(produceInsuranceBreakdownReport(reports, therapist))
             case ReportType.PATIENT_TYPES:
-                return producePatientTypesReport(reports, therapist)
+                return buildSummaryRow(producePatientTypesReport(reports, therapist))
             case ReportType.VISIT_TYPES:
-                return produceVisitTypesReport(reports, therapist)
+                return buildSummaryRow(produceVisitTypesReport(reports, therapist))
         }
 
         cpReport
@@ -666,4 +669,39 @@ class ReportService {
     }
 
 
+    CountAndPercentReport buildSummaryRow(CountAndPercentReport report) {
+        CountAndPercentReportRow sumRow = new CountAndPercentReportRow()
+
+        // loop over each row/month in the report
+        report.rows.each { row ->
+            // add each row.count as a running tally for the sum row
+            sumRow.totalCount += row.totalCount
+
+            // loop over each column, and basically do the same thing (sum per column)
+            report.columnTypes.each { columnType ->
+                CountAndPercentCell cell = new CountAndPercentCell()
+
+                if(sumRow.dataMap.containsKey(columnType)) {
+                    cell = sumRow.dataMap.get(columnType)
+                } else {
+                    sumRow.dataMap.put(columnType, cell)
+                }
+
+                cell.count += row.dataMap.get(columnType).count
+            }
+        }
+
+        // loop over columns another time for the sum row, and calculate the percents
+        report.columnTypes.each { columnType ->
+            int colCount = sumRow.dataMap.get(columnType).count
+            if(colCount > 0) {
+                sumRow.dataMap.get(columnType).percent = Math.round( (colCount * 100.0) / sumRow.totalCount )
+            }
+        }
+
+        report.summaryRow = sumRow
+
+        // return the updated report
+        report
+    }
 }

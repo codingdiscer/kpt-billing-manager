@@ -9,5 +9,5 @@ class CountAndPercentReport {
 
     List<String> columnTypes = []
     List<CountAndPercentReportRow> rows = []
-
+    CountAndPercentReportRow summaryRow
 }

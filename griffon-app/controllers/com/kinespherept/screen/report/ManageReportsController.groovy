@@ -36,7 +36,6 @@ class ManageReportsController {
     @SpringAutowire LookupDataService lookupDataService
     @SpringAutowire ReportService reportService
     @SpringAutowire VisitService visitService
-//    @GriffonAutowire ArtifactController artifactController
 
     @GriffonAutowire BrowseReportsController browseReportsController
     @GriffonAutowire NavigationController navigationController
@@ -68,9 +67,7 @@ class ManageReportsController {
 
             // get oldest visit, get current year - fill in the blanks
             model.yearsChoice = String.valueOf(visitService.getCurrentYearExceptIfJanuary())
-
-            refreshDisplay()
-
+            // ..the act of setting the "model.yearsChoice" will trigger to call to the refreshDisplay() method
         }
 
 

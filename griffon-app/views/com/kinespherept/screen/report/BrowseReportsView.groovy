@@ -156,6 +156,8 @@ class BrowseReportsView extends BaseView {
 
         report.rows.each { CountAndPercentReportRow row ->
 
+            reportDataGridPane.rowConstraints << new RowConstraints()
+
             // month & full column count
             reportDataGridPane.add(buildLabel(row.month.name(), COLUMN_WIDTH_MONTH), 0, rowIndex)
             reportDataGridPane.add(buildLabel(String.valueOf(row.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
@@ -171,6 +173,22 @@ class BrowseReportsView extends BaseView {
 
             rowIndex++
         }
+
+
+        // add the summary row
+        reportDataGridPane.rowConstraints << new RowConstraints(prefHeight: 25)
+        reportDataGridPane.add(buildLabel('Summary', COLUMN_WIDTH_MONTH), 0, rowIndex)
+        reportDataGridPane.add(buildLabel(String.valueOf(report.summaryRow.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
+
+        columnIndex = 2
+
+        // loop over the columnTypes
+        report.columnTypes.eachWithIndex { String columnType, int index ->
+            CountAndPercentCell cell = report.summaryRow.dataMap.get(columnType)
+            reportDataGridPane.add(buildLabel(String.valueOf(cell.count), COLUMN_WIDTH_CELL_COUNT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO ), columnIndex++, rowIndex)
+            reportDataGridPane.add(buildLabel("${cell.percent}%", COLUMN_WIDTH_CELL_PERCENT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO), columnIndex++, rowIndex)
+        }
+
     }
 
 }
