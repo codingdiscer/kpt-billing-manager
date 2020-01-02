@@ -203,11 +203,25 @@ INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_orde
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (4, '97530', 'Therapeutic Activities', 4, false);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (5, '97116', 'Gait Training', 5, false);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (6, '97035', 'Ultrasound', 6, false);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (7, '97799', 'Dry Needling', 7, false);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (8, '97161', 'Eval low complex', 8, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (9, '97162', 'Eval mod complex', 9, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (10, '97163', 'Eval high complex', 10, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 11, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (7, '20560', 'Dry Needling 1 or 2 muscles', 7, false);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (8, '97161', 'Eval low complex', 9, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (9, '97162', 'Eval mod complex', 10, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (10, '97163', 'Eval high complex', 11, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 13, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (12, '20561', 'Wheelchair Assessment', 12, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (13, '20561', 'Dry Needling 3 or more muscles', 8, false);
+
+
+-- fixing the old dry needling number
+UPDATE treatment set (treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (7, '97799', 'Dry Needling', 7, false);
+
+
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (7, '20560', 'Dry Needling 1 or 2 muscles', 7, false);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (8, '97161', 'Eval low complex', 9, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (9, '97162', 'Eval mod complex', 10, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (10, '97163', 'Eval high complex', 11, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 12, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (12, '20561', 'Dry Needling 3 or more muscles', 8, true);
 
 
 

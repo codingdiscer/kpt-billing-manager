@@ -80,7 +80,7 @@ class LookupDataService {
         diagnosisTypes = Lists.newArrayList(diagnosisTypeRepository.findAllByOrderByDisplayOrderAsc())
         insuranceTypes = Lists.newArrayList(insuranceTypeRepository.findAll())
         patientTypes = Lists.newArrayList(patientTypeRepository.findAll())
-        treatments = Lists.newArrayList(treatmentRepository.findAll())
+        treatments = Lists.newArrayList(treatmentRepository.findAllByOrderByDisplayOrderAsc())
         visitTypes = Lists.newArrayList(visitTypeRepository.findAll())
 
         // correlate intertwined data
