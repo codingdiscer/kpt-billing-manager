@@ -67,11 +67,11 @@ class BrowseReportsModel {
     Closure changeTherapist = { StringProperty ob, ov, nv -> controller.changeTherapist() }
 
 
-    @FXObservable List<String> reportTypes = [ ReportType.INSURANCE_BREAKDOWN.label,
-                                               ReportType.PATIENT_TYPES.label,
-                                               ReportType.VISIT_TYPES.label ]
+    @FXObservable List<String> reportTypes = [ReportType.INSURANCE_TYPES_SIMPLE.label,
+                                              ReportType.PATIENT_TYPES.label,
+                                              ReportType.VISIT_TYPES.label ]
     @FXObservable @ChangeListener('changeReportType')
-    String reportTypesChoice = ReportType.INSURANCE_BREAKDOWN.label
+    String reportTypesChoice = ReportType.INSURANCE_TYPES_SIMPLE.label
     Closure changeReportType = { StringProperty ob, ov, nv -> controller.changeReportType() }
 
 

@@ -86,7 +86,6 @@ class VisitService {
         visits
     }
 
-
     void populateLookupData(Visit visit, boolean loadDxAndTx) {
         visit.therapist = employeeService.findById(visit.therapistId)
         visit.patient = patientService.findById(visit.patientId)
@@ -98,6 +97,23 @@ class VisitService {
             visit.visitTreatments = visitTreatmentRepository.getByVisitId(visit.visitId)
         }
     }
+
+/*
+    void populateLookupData(Visit visit, boolean loadDx, boolean loadTx) {
+        visit.therapist = employeeService.findById(visit.therapistId)
+        visit.patient = patientService.findById(visit.patientId)
+        visit.insuranceType = lookupDataService.findInsuranceTypeById(visit.insuranceTypeId)
+        visit.patientType = lookupDataService.findPatientTypeById(visit.patientTypeId)
+        visit.visitType = lookupDataService.findVisitTypeById(visit.visitTypeId)
+        if(loadDx) {
+            visit.visitDiagnoses = visitDiagnosisRepository.getByVisitId(visit.visitId)
+        }
+        if(loadTx) {
+            visit.visitTreatments = visitTreatmentRepository.getByVisitId(visit.visitId)
+        }
+    }
+*/
+
 
     /**
      * Returns true if the patient has visited before.
@@ -302,35 +318,6 @@ class VisitService {
 
         visit
     }
-
-
-
-    /**
-     * @deprecated
-     */
-    @Deprecated
-//    int getVisitNumber(List<Visit> allVisits, Visit visit) {
-//        int visitNumber = 1
-//        allVisits.eachWithIndex{ Visit entry, int i ->
-//            if(entry.visitId == visit.visitId) {
-//                visitNumber = i + 1
-//                return  // this breaks out of the eachWithIndex{} closure
-//            }
-//        }
-//        visitNumber
-//    }
-
-
-    /**
-     * Returns the numeric sequential order of this visit in relation to all visits from
-     * this patient.  The visits are sorted by the visit.date.
-     *
-     * @deprecated
-     */
-//    @Deprecated
-//    int getVisitNumber(Visit visit) {
-//        getVisitNumber(visitRepository.findByPatientIdOrderByVisitDateAsc(visit.patient.patientId), visit)
-//    }
 
 
     /**
@@ -588,6 +575,7 @@ class VisitService {
                 visit.insuranceType = lookupDataService.findInsuranceTypeById(visit.insuranceTypeId)
                 visit.patientType = lookupDataService.findPatientTypeById(visit.patientTypeId)
                 visit.visitType = lookupDataService.findVisitTypeById(visit.visitTypeId)
+                visit.visitTreatments = visitTreatmentRepository.getByVisitId(visit.visitId)
                 visit
             }.collect(Collectors.toList())
     }

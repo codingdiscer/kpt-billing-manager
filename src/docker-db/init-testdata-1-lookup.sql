@@ -208,7 +208,7 @@ INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_orde
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (9, '97162', 'Eval mod complex', 10, true);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (10, '97163', 'Eval high complex', 11, true);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (11, '97164', 'Re-evaluation', 13, true);
-INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (12, '20561', 'Wheelchair Assessment', 12, true);
+INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (12, '97542', 'Wheelchair Assessment', 12, true);
 INSERT INTO treatment(treatment_id, treatment_code, treatment_name, display_order, is_evaluation) VALUES (13, '20561', 'Dry Needling 3 or more muscles', 8, false);
 
 

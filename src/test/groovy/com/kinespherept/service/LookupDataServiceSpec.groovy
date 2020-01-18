@@ -148,15 +148,15 @@ class LookupDataServiceSpec extends Specification {
         ]
 
         lds.insuranceTypes = [
-                new InsuranceType(insuranceTypeId: 1, insuranceTypeName: 'BCBS'),
-                new InsuranceType(insuranceTypeId: 2, insuranceTypeName: 'Medicare'),
-                new InsuranceType(insuranceTypeId: 3, insuranceTypeName: 'Tricare'),
-                new InsuranceType(insuranceTypeId: 4, insuranceTypeName: 'UHC'),
-                new InsuranceType(insuranceTypeId: 5, insuranceTypeName: 'UHC-UMR'),
-                new InsuranceType(insuranceTypeId: 6, insuranceTypeName: 'Work Comp'),
-                new InsuranceType(insuranceTypeId: 7, insuranceTypeName: 'Cash'),
-                new InsuranceType(insuranceTypeId: 8, insuranceTypeName: 'Cash-Don\'t bill'),
-                new InsuranceType(insuranceTypeId: 9, insuranceTypeName: 'Humana'),
+                new InsuranceType(insuranceTypeId: 1, insuranceTypeName: 'BCBS', insuranceTypeShorthand: 'BCBS'),
+                new InsuranceType(insuranceTypeId: 2, insuranceTypeName: 'Medicare', insuranceTypeShorthand: 'MedCr'),
+                new InsuranceType(insuranceTypeId: 3, insuranceTypeName: 'Tricare', insuranceTypeShorthand: 'TriCr'),
+                new InsuranceType(insuranceTypeId: 4, insuranceTypeName: 'UHC', insuranceTypeShorthand: 'UHC'),
+                new InsuranceType(insuranceTypeId: 5, insuranceTypeName: 'UHC-UMR', insuranceTypeShorthand: 'UHCUMR'),
+                new InsuranceType(insuranceTypeId: 6, insuranceTypeName: 'Work Comp', insuranceTypeShorthand: 'WrkCmp'),
+                new InsuranceType(insuranceTypeId: 7, insuranceTypeName: 'Cash', insuranceTypeShorthand: 'Cash'),
+                new InsuranceType(insuranceTypeId: 8, insuranceTypeName: 'Cash-Don\'t bill', insuranceTypeShorthand: 'Csh-DB'),
+                new InsuranceType(insuranceTypeId: 9, insuranceTypeName: 'Humana', insuranceTypeShorthand: 'Hmna'),
         ]
 
         lds.patientTypes = [
@@ -177,11 +177,13 @@ class LookupDataServiceSpec extends Specification {
                 new Treatment(treatmentId: 4, treatmentCode: '97530', treatmentName: 'Therapeutic Activities', displayOrder: 4, evaluation: false),
                 new Treatment(treatmentId: 5, treatmentCode: '97116', treatmentName: 'Gait Training', displayOrder: 5, evaluation: false),
                 new Treatment(treatmentId: 6, treatmentCode: '97035', treatmentName: 'Ultrasound', displayOrder: 6, evaluation: false),
-                new Treatment(treatmentId: 7, treatmentCode: '97799', treatmentName: 'Dry Needling', displayOrder: 7, evaluation: false),
-                new Treatment(treatmentId: 8, treatmentCode: '97161', treatmentName: 'Eval low complex', displayOrder: 8, evaluation: true),
-                new Treatment(treatmentId: 9, treatmentCode: '97162', treatmentName: 'Eval mod complex', displayOrder: 9, evaluation: true),
-                new Treatment(treatmentId: 10, treatmentCode: '97163', treatmentName: 'Eval high complex', displayOrder: 10, evaluation: true),
-                new Treatment(treatmentId: 11, treatmentCode: '97164', treatmentName: 'Re-evaluation', displayOrder: 11, evaluation: true)
+                new Treatment(treatmentId: 7, treatmentCode: '20560', treatmentName: 'Dry Needling 1 or 2 muscles', displayOrder: 7, evaluation: false),
+                new Treatment(treatmentId: 8, treatmentCode: '97161', treatmentName: 'Eval low complex', displayOrder: 9, evaluation: true),
+                new Treatment(treatmentId: 9, treatmentCode: '97162', treatmentName: 'Eval mod complex', displayOrder: 10, evaluation: true),
+                new Treatment(treatmentId: 10, treatmentCode: '97163', treatmentName: 'Eval high complex', displayOrder: 11, evaluation: true),
+                new Treatment(treatmentId: 11, treatmentCode: '97164', treatmentName: 'Re-evaluation', displayOrder: 13, evaluation: true),
+                new Treatment(treatmentId: 12, treatmentCode: '97542', treatmentName: 'Wheelchair Assessment', displayOrder: 12, evaluation: true),
+                new Treatment(treatmentId: 13, treatmentCode: '20561', treatmentName: 'Dry Needling 3 or more muscles', displayOrder: 8, evaluation: false),
         ]
 
         lds.visitTypes = [
