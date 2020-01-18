@@ -10,9 +10,11 @@ import com.kinespherept.config.SpringConfig
 import com.kinespherept.enums.NavigationSection
 import com.kinespherept.manager.SceneManager
 import com.kinespherept.model.core.Diagnosis
+import com.kinespherept.model.core.Treatment
 import com.kinespherept.model.core.Visit
 import com.kinespherept.model.core.VisitDiagnosis
 import com.kinespherept.model.core.VisitStatus
+import com.kinespherept.model.core.VisitTreatment
 import com.kinespherept.model.navigation.SceneDefinition
 import com.kinespherept.service.LookupDataService
 import com.kinespherept.service.PatientService
@@ -233,6 +235,15 @@ class FillOutPatientVisitWithTreatmentController {
         // make sure the correct amount of diagnoses have been selected
         if(selectDiagnosisController.getSelectedDiagnoses().size() > commonProperties.maxDiagnosisForPatientVisit) {
             model.errorMessage = "Limited to ${commonProperties.maxDiagnosisForPatientVisit} diagnoses."
+            return
+        }
+
+        // special validation check - can't combine treatment "theraputic activities" with any evals
+        List<VisitTreatment> selectedTreatments = selectTreatmentController.getSelectedTreatments(model.selectedVisit.visitId)
+        if(selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).treatmentCode == Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES } != null &&
+            selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).isEvaluation() != null })
+        {
+            model.errorMessage = "Can't bill ${Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES} with an eval code"
             return
         }
 

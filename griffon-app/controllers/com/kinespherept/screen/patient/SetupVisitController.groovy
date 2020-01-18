@@ -95,8 +95,16 @@ class SetupVisitController {
             model.notes = visit.notes
         } else {
             model.mutation = Mutation.CREATE
-            model.patientTypesChoice = patient.patientType.patientTypeName
             model.insuranceTypesChoice = patient.insuranceType.insuranceTypeName
+
+            // see if the patient has visited before..if so, set the patient type to the type of the latest visit
+            Visit latestVisit = visitService.getLatestVisit(model.patient)
+            if(latestVisit) {
+                model.patientTypesChoice = latestVisit.patientType.patientTypeName
+            } else {
+                model.patientTypesChoice = patient.patientType.patientTypeName
+            }
+
 
             log.debug "prepareForm() :: patient.visit.size=${patient.visits.size()}"
             if(patient.visits.size() == 0) {
