@@ -380,6 +380,10 @@ class LookupDataService {
         treatments.find { it.treatmentId == treatmentId }
     }
 
+    Treatment findTreatmentByTreatmentCode(String treatmentCode) {
+        treatments.find { it.treatmentCode == treatmentCode }
+    }
+
     Treatment findTreatmentByDisplayableName(String displayableName) {
         treatments.find { it.displayableName == displayableName }
     }

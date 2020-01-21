@@ -16,19 +16,6 @@ import javax.annotation.Nonnull
 @ArtifactProviderFor(GriffonModel)
 class BrowseReportsModel {
 
-//    //
-//    static String TIME_RANGE_PRESET_LAST_3_MONTHS = 'Insurance breakdown'
-//    static String TIME_RANGE_PRESET_THIS_YEAR = 'Patient types'
-//    static String TIME_RANGE_PRESET_LAST_YEAR = 'Patient types'
-//
-//    // report types!
-//    static String REPORT_TYPE_INSURANCE_BREAKDOWN = 'Insurance breakdown'
-//    static String REPORT_TYPE_PATIENT_TYPES = 'Patient types'
-
-
-    //static String REPORT_TYPE_EVAL_FOLLOW_UPS = 'Eval / Follow-ups'
-    //static String REPORT_TYPE_ = ''
-
     static String ALL = 'All'
 
 
@@ -68,6 +55,7 @@ class BrowseReportsModel {
 
 
     @FXObservable List<String> reportTypes = [ReportType.INSURANCE_TYPES_SIMPLE.label,
+                                              ReportType.INSURANCE_TYPES_BY_TREATMENT.label,
                                               ReportType.PATIENT_TYPES.label,
                                               ReportType.VISIT_TYPES.label ]
     @FXObservable @ChangeListener('changeReportType')

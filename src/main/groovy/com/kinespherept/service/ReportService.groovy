@@ -447,6 +447,16 @@ class ReportService {
         count
     }
 
+    int getMetricTreatmentCountExcludeCancelNoShow(Report report, InsuranceType it) {
+        int count = 0
+        report.metricsMap.values().each { ReportMetric metric ->
+            if(metric.visitTypeId != cancelNoShowVisitType.visitTypeId && metricMatches(metric, it)) {
+                count += metric.treatmentCount
+            }
+        }
+        count
+    }
+
     boolean metricMatches(ReportMetric metric, InsuranceType it) {
         if(metric.insuranceTypeId == it.insuranceTypeId) {
             return true
@@ -546,6 +556,16 @@ class ReportService {
         count
     }
 
+    int getMetricTreatmentCountExcludeCancelNoShow(Report report, InsuranceType it, Employee th) {
+        int count = 0
+        report.metricsMap.values().each { ReportMetric metric ->
+            if(metric.visitTypeId != cancelNoShowVisitType.visitTypeId && metricMatches(metric, it, th)) {
+                count += metric.treatmentCount
+            }
+        }
+        count
+    }
+
     boolean metricMatches(ReportMetric metric, InsuranceType it, Employee th) {
         if(metric.insuranceTypeId == it.insuranceTypeId && metric.therapistId == th.employeeId) {
             return true
@@ -624,24 +644,28 @@ class ReportService {
             CountAndPercentReportRow row = new CountAndPercentReportRow(month: report.reportDate.month)
 
             // determine the total count first
-            int totalCount = 0
+            double totalCount = 0
 
             // loop over the insurance types to build each CountAndPercentCell
             lookupDataService.insuranceTypes.each { InsuranceType type ->
-                totalCount += (therapist ? getMetricCountExcludeCancelNoShow(report, type, therapist) : getMetricCountExcludeCancelNoShow(report, type))
+                totalCount += (therapist ? getMetricTreatmentCountExcludeCancelNoShow(report, type, therapist) : getMetricTreatmentCountExcludeCancelNoShow(report, type))
             }
 
-            row.totalCount = totalCount
+            // divide by 4 to accommodate 4 treatments in an hour
+            row.totalCount = totalCount / 4.0
 
             // loop over the insurance types to build each CountAndPercentCell
             lookupDataService.insuranceTypes.each { InsuranceType type ->
-                int itCount = (therapist ? getMetricCountExcludeCancelNoShow(report, type, therapist) : getMetricCountExcludeCancelNoShow(report, type))
+                double itCount = (therapist ? getMetricTreatmentCountExcludeCancelNoShow(report, type, therapist) : getMetricTreatmentCountExcludeCancelNoShow(report, type))
 
-                if(totalCount > 0) {
+                // divide by 4 to accommodate 4 treatments in an hour
+                itCount = itCount / 4.0
+
+                if(totalCount > 0.0) {
                     row.dataMap.put(type.insuranceTypeShorthand,
                             new CountAndPercentCell(count: itCount, percent: Math.round( (itCount * 100.0) / totalCount )))
                 } else {
-                    row.dataMap.put(type.insuranceTypeShorthand, new CountAndPercentCell(count: 0, percent: 0))
+                    row.dataMap.put(type.insuranceTypeShorthand, new CountAndPercentCell(count: 0.0, percent: 0.0))
                 }
 
             }

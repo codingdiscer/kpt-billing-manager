@@ -11,6 +11,10 @@ import javax.persistence.Table
 @Entity
 @Table(name='treatment')
 class Treatment {
+
+    // hard-code the 'theraputic activities' so it can be compared in a validation step
+    static String TREATMENT_CODE_THERPUTIC_ACTIVITES = '97530'
+
     @Id @Column(name='treatment_id') Integer treatmentId
     @Column(name='treatment_code') String treatmentCode
     @Column(name='treatment_name') String treatmentName

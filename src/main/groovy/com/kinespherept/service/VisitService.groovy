@@ -86,7 +86,7 @@ class VisitService {
         visits
     }
 
-    void populateLookupData(Visit visit, boolean loadDxAndTx) {
+    Visit populateLookupData(Visit visit, boolean loadDxAndTx) {
         visit.therapist = employeeService.findById(visit.therapistId)
         visit.patient = patientService.findById(visit.patientId)
         visit.insuranceType = lookupDataService.findInsuranceTypeById(visit.insuranceTypeId)
@@ -96,23 +96,9 @@ class VisitService {
             visit.visitDiagnoses = visitDiagnosisRepository.getByVisitId(visit.visitId)
             visit.visitTreatments = visitTreatmentRepository.getByVisitId(visit.visitId)
         }
+        visit
     }
 
-/*
-    void populateLookupData(Visit visit, boolean loadDx, boolean loadTx) {
-        visit.therapist = employeeService.findById(visit.therapistId)
-        visit.patient = patientService.findById(visit.patientId)
-        visit.insuranceType = lookupDataService.findInsuranceTypeById(visit.insuranceTypeId)
-        visit.patientType = lookupDataService.findPatientTypeById(visit.patientTypeId)
-        visit.visitType = lookupDataService.findVisitTypeById(visit.visitTypeId)
-        if(loadDx) {
-            visit.visitDiagnoses = visitDiagnosisRepository.getByVisitId(visit.visitId)
-        }
-        if(loadTx) {
-            visit.visitTreatments = visitTreatmentRepository.getByVisitId(visit.visitId)
-        }
-    }
-*/
 
 
     /**
@@ -336,6 +322,19 @@ class VisitService {
             populateLookupData(previousVisit, true)
         }
         previousVisit
+    }
+
+    /**
+     * Returns the most recent visit for the given patient
+     */
+    Visit getLatestVisit(Patient patient) {
+        List<Visit> visits = visitRepository.findByPatientIdOrderByVisitDateAsc(patient.patientId)
+        if(visits.size() > 0) {
+            return populateLookupData(visits.last(), true)
+        }
+
+        // if we got this far, then the patient hasn't visited before - return null
+        return null
     }
 
     /**
