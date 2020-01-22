@@ -5,7 +5,8 @@ package com.kinespherept.enums
  */
 enum ReportType {
 
-    INSURANCE_BREAKDOWN('Insurance breakdown'),
+    INSURANCE_TYPES_SIMPLE('Insurance breakdown - simple'),
+    INSURANCE_TYPES_BY_TREATMENT('Insurance breakdown - by treatments'),
     PATIENT_TYPES('Patient types'),
     VISIT_TYPES('Visit types')
 

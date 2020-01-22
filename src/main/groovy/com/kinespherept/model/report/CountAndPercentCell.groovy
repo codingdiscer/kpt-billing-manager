@@ -4,6 +4,6 @@ import groovy.transform.Canonical
 
 @Canonical
 class CountAndPercentCell {
-    int count = 0
-    int percent = 0
+    double count = 0.0
+    double percent = 0.0
 }

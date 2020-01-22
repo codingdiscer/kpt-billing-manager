@@ -28,7 +28,7 @@ class BrowseReportsView extends BaseView {
     // magic strings!
     static String STYLE_BLACK_BORDER = '-fx-border-color: black;'
 
-//
+    //
     static String STYLE_BLACK_BORDER_BG_ONE = '-fx-border-color: black; -fx-background-color: #adebeb;'
     static String STYLE_BLACK_BORDER_BG_TWO = '-fx-border-color: black; -fx-background-color: #d6f5f5;'
 
@@ -160,15 +160,15 @@ class BrowseReportsView extends BaseView {
 
             // month & full column count
             reportDataGridPane.add(buildLabel(row.month.name(), COLUMN_WIDTH_MONTH), 0, rowIndex)
-            reportDataGridPane.add(buildLabel(String.valueOf(row.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
+            reportDataGridPane.add(buildLabel(formatDouble(row.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
 
             columnIndex = 2
 
             // loop over the columnTypes
             report.columnTypes.eachWithIndex { String columnType, int index ->
                 CountAndPercentCell cell = row.dataMap.get(columnType)
-                reportDataGridPane.add(buildLabel(String.valueOf(cell.count), COLUMN_WIDTH_CELL_COUNT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO ), columnIndex++, rowIndex)
-                reportDataGridPane.add(buildLabel("${cell.percent}%", COLUMN_WIDTH_CELL_PERCENT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO), columnIndex++, rowIndex)
+                reportDataGridPane.add(buildLabel(formatDouble(cell.count), COLUMN_WIDTH_CELL_COUNT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO ), columnIndex++, rowIndex)
+                reportDataGridPane.add(buildLabel(formatDouble(cell.percent) + '%', COLUMN_WIDTH_CELL_PERCENT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO), columnIndex++, rowIndex)
             }
 
             rowIndex++
@@ -178,17 +178,31 @@ class BrowseReportsView extends BaseView {
         // add the summary row
         reportDataGridPane.rowConstraints << new RowConstraints(prefHeight: 25)
         reportDataGridPane.add(buildLabel('Summary', COLUMN_WIDTH_MONTH), 0, rowIndex)
-        reportDataGridPane.add(buildLabel(String.valueOf(report.summaryRow.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
+        reportDataGridPane.add(buildLabel(formatDouble(report.summaryRow.totalCount), COLUMN_WIDTH_TOTAL_VISITS), 1, rowIndex)
 
         columnIndex = 2
 
         // loop over the columnTypes
         report.columnTypes.eachWithIndex { String columnType, int index ->
             CountAndPercentCell cell = report.summaryRow.dataMap.get(columnType)
-            reportDataGridPane.add(buildLabel(String.valueOf(cell.count), COLUMN_WIDTH_CELL_COUNT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO ), columnIndex++, rowIndex)
-            reportDataGridPane.add(buildLabel("${cell.percent}%", COLUMN_WIDTH_CELL_PERCENT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO), columnIndex++, rowIndex)
+            reportDataGridPane.add(buildLabel(formatDouble(cell.count), COLUMN_WIDTH_CELL_COUNT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO ), columnIndex++, rowIndex)
+            reportDataGridPane.add(buildLabel(formatDouble(cell.percent) + '%', COLUMN_WIDTH_CELL_PERCENT, index % 2 == 0 ? STYLE_BLACK_BORDER_BG_ONE : STYLE_BLACK_BORDER_BG_TWO), columnIndex++, rowIndex)
         }
+    }
 
+    /**
+     * Formats the given double as a String to be displayed in the report view.
+     * If the value of the double has no fractional value, then the final ".0" is
+     * dropped.  Meaning:
+     * - formatDouble(1.0) == '1'
+     * - formatDouble(1.1) == '1.1'
+     */
+    String formatDouble(double number) {
+        String val = String.valueOf(number)
+        if(val.endsWith('.0')) {
+            val = val.substring(0, val.length() - 2)
+        }
+        val
     }
 
 }

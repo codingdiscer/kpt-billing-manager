@@ -26,6 +26,7 @@ class ReportMetric {
     @Column(name='therapist_id') Integer therapistId
     @Column(name='visit_type_id') Integer visitTypeId
     @Column(name='count') int count = 0
+    @Column(name='treatment_count') int treatmentCount = 0
 
     @Transient PatientType patientType
     @Transient InsuranceType insuranceType

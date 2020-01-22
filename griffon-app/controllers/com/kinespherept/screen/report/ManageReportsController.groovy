@@ -99,7 +99,6 @@ class ManageReportsController {
      * Loads the reports for the currently selected year, then refreshes the UI
      * elements for those reports.
      */
-    @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void refreshDisplay() {
         log.info "refreshDisplay() : preparingForm=${preparingForm}"
@@ -120,22 +119,53 @@ class ManageReportsController {
                     model.reports << buildMonthReport(report)
                 }
 
-                view.refreshMonthReports()
+                view.refreshMonthReports(true)
             }
         }
-
     }
 
 
+    /**
+     * Called when any of the "generate report" buttons are pressed
+     */
+    @ControllerAction
+    @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
+    void generateAllReports() {
+        log.info "generateAllReports() for ${model.yearsChoice}"
 
+        // disable the "generate report" buttons
+        view.refreshMonthReports(false)
+
+        runOutsideUI {
+            model.reports.each { MonthReport mr ->
+                reportService.generateAndSaveMetrics(mr.report)
+                log.info "..finished generating report for ${mr.month}"
+            }
+
+            runInsideUISync {
+                refreshDisplay()
+            }
+        }
+    }
+
+    /**
+     * Called when any of the "generate report" buttons are pressed
+     */
     @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void generateReport(MonthReport report) {
         log.info "generateReport() for report with date [${report.report.reportDate}]"
 
-        reportService.generateAndSaveMetrics(report.report)
+        // disable the "generate report" buttons
+        view.refreshMonthReports(false)
 
-        refreshDisplay()
+        runOutsideUI {
+            reportService.generateAndSaveMetrics(report.report)
+
+            runInsideUISync {
+                refreshDisplay()
+            }
+        }
     }
 
     /**
@@ -144,7 +174,7 @@ class ManageReportsController {
     @ControllerAction
     @Threading(Threading.Policy.INSIDE_UITHREAD_ASYNC)
     void browseReports() {
-        log.info "returnToStatusTracker()"
+        log.info "browseReports()"
         browseReportsController.prepareForm()
         SceneManager.changeTheScene(SceneDefinition.BROWSE_REPORTS)
     }

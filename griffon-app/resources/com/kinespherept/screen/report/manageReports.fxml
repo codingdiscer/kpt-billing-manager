@@ -39,8 +39,11 @@
                                </FXCollections>
                            </items>
                        </ChoiceBox>
-                       <Label text="" prefWidth="230"/>
+
+                       <Label text="" prefWidth="50"/>
                        <Button text="Browse Reports" prefWidth="130" JavaFXUtils.griffonActionId="browseReports"/>
+                       <Label text="" prefWidth="20"/>
+                       <Button text="Generate All Reports" fx:id="generateAllReportsButton" prefWidth="160" JavaFXUtils.griffonActionId="generateAllReports"/>
 
                        <GridPane prefWidth="590" fx:id="monthReportGridPane">
                            <columnConstraints>

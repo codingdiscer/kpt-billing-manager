@@ -8,7 +8,7 @@ import java.time.Month
 class CountAndPercentReportRow {
 
     Month month
-    int totalCount = 0
+    double totalCount = 0.0
 
     // key=representation of column type
     // value=CountAndPercentCell that represents the key
