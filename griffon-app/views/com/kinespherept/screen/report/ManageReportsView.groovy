@@ -1,8 +1,6 @@
 package com.kinespherept.screen.report
 
 import com.kinespherept.BaseView
-import com.kinespherept.autowire.SpringAutowire
-import com.kinespherept.config.CommonProperties
 import com.kinespherept.model.core.ReportStatus
 import com.kinespherept.model.navigation.SceneDefinition
 import com.kinespherept.model.report.MonthReport
@@ -13,6 +11,7 @@ import javafx.fxml.FXML
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.ProgressIndicator
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.GridPane
 
@@ -33,12 +32,16 @@ class ManageReportsView extends BaseView {
     @MVCMember @Nonnull ManageReportsModel model
 
 
-//    // how to link FXML elements to a class; must be specified as <.. fx:id="myFlowPane" />
-//    @FXML FlowPane myFlowPane
 
     @FXML AnchorPane navigationPane
 
     @FXML GridPane monthReportGridPane
+    @FXML Button generateAllReportsButton
+
+
+    void toggleGenerateAllReportsButton(boolean disable) {
+        generateAllReportsButton.disable = disable
+    }
 
 
 
@@ -47,9 +50,18 @@ class ManageReportsView extends BaseView {
                 /*style: STYLE_BLACK_BORDER*/)
     }
 
+    /**
+     * Refreshes and populates the "report grid".
+     * @param buildButtons If true, buttons to "generate a report" are displayed.  When false, a progress spinner is displayed instead of a button on each row.
+     *
+     *
+     * This method has one side-effect - The "generate all reports" button is also enabled or disabled based on the
+     * value of the buildButtons parameter (to match the behavior of building buttons or showing spinners)
+     */
+    void refreshMonthReports(boolean buildButtons) {
 
-    void refreshMonthReports() {
-
+        // side-effect!  if(buildButtons), then enable the "generate all reports" button; otherwise vice-versa
+        generateAllReportsButton.disable = !buildButtons
 
         monthReportGridPane.children.clear()
 
@@ -73,27 +85,17 @@ class ManageReportsView extends BaseView {
                 if(report.report.reportStatus == ReportStatus.NEW) {
                     buttonLabel = 'Generate'
                 }
-                monthReportGridPane.add(
-                new Button(text: buttonLabel, onAction: { a -> controller.generateReport(report) } )
-                        , 2, rowIndex)
+                if(buildButtons) {
+                    monthReportGridPane.add(
+                            new Button(text: buttonLabel, onAction: { a -> controller.generateReport(report) })
+                            , 2, rowIndex)
+                } else {
+                    monthReportGridPane.add(
+                            new ProgressIndicator(), 2, rowIndex)
+                }
             }
             rowIndex++
         }
-
-
-
-
-
-//
-//        <Label text="Month" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-//                <Label text="Status" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-//                <Label text="Actions" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-//
-//                <Label text="January" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-//                <Label text="Generated on 2/1/2019" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-//                <Button text="Regenerate" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-
-
 
     }
 

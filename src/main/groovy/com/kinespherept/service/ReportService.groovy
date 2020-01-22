@@ -187,6 +187,7 @@ class ReportService {
             String key = getMetricKey(visit)
             if(metricsMap.containsKey(key)) {
                 metricsMap.get(key).count++
+                metricsMap.get(key).treatmentCount += getTreatmentCount(visit)
             } else {
                 metricsMap[key] = buildMetric(report, visit, 1)
             }
@@ -644,15 +645,15 @@ class ReportService {
             CountAndPercentReportRow row = new CountAndPercentReportRow(month: report.reportDate.month)
 
             // determine the total count first
-            double totalCount = 0
+            //double totalCount = 0
 
             // loop over the insurance types to build each CountAndPercentCell
             lookupDataService.insuranceTypes.each { InsuranceType type ->
-                totalCount += (therapist ? getMetricTreatmentCountExcludeCancelNoShow(report, type, therapist) : getMetricTreatmentCountExcludeCancelNoShow(report, type))
+                row.totalCount += (therapist ? getMetricTreatmentCountExcludeCancelNoShow(report, type, therapist) : getMetricTreatmentCountExcludeCancelNoShow(report, type))
             }
 
             // divide by 4 to accommodate 4 treatments in an hour
-            row.totalCount = totalCount / 4.0
+            row.totalCount = row.totalCount / 4.0
 
             // loop over the insurance types to build each CountAndPercentCell
             lookupDataService.insuranceTypes.each { InsuranceType type ->
@@ -661,9 +662,9 @@ class ReportService {
                 // divide by 4 to accommodate 4 treatments in an hour
                 itCount = itCount / 4.0
 
-                if(totalCount > 0.0) {
+                if(row.totalCount > 0.0) {
                     row.dataMap.put(type.insuranceTypeShorthand,
-                            new CountAndPercentCell(count: itCount, percent: Math.round( (itCount * 100.0) / totalCount )))
+                            new CountAndPercentCell(count: itCount, percent: Math.round( (itCount * 100.0) / row.totalCount )))
                 } else {
                     row.dataMap.put(type.insuranceTypeShorthand, new CountAndPercentCell(count: 0.0, percent: 0.0))
                 }
