@@ -238,14 +238,16 @@ class FillOutPatientVisitWithTreatmentController {
             return
         }
 
-        // special validation check - can't combine treatment "theraputic activities" with any evals
-        List<VisitTreatment> selectedTreatments = selectTreatmentController.getSelectedTreatments(model.selectedVisit.visitId)
-        if(selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).treatmentCode == Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES } != null &&
-            selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).isEvaluation() } != null )
-        {
-            model.errorMessage = "Can't bill ${Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES} with an eval code"
-            return
-        }
+
+        // TODO - remove this block.  likely not needed going forward.
+//        // special validation check - can't combine treatment "theraputic activities" with any evals
+//        List<VisitTreatment> selectedTreatments = selectTreatmentController.getSelectedTreatments(model.selectedVisit.visitId)
+//        if(selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).treatmentCode == Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES } != null &&
+//            selectedTreatments.find { lookupDataService.findTreatmentById(it.treatmentId).isEvaluation() } != null )
+//        {
+//            model.errorMessage = "Can't bill ${Treatment.TREATMENT_CODE_THERPUTIC_ACTIVITES} with an eval code"
+//            return
+//        }
 
         // if we got this far, then diagnoses and treatments have been selected
         log.debug "verifyAndComplete(), selectedDiagnoses=${selectDiagnosisController.getSelectedDiagnoses()}"
