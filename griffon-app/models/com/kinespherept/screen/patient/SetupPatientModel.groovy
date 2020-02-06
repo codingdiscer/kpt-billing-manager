@@ -2,7 +2,6 @@ package com.kinespherept.screen.patient
 
 import com.kinespherept.enums.Mutation
 import com.kinespherept.model.core.Patient
-import com.kinespherept.screen.patient.SetupPatientController
 import griffon.core.artifact.GriffonModel
 import griffon.inject.MVCMember
 import griffon.transform.FXObservable

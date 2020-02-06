@@ -13,6 +13,7 @@ import com.kinespherept.model.core.VisitType
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.Year
 
 class VisitServiceSpec extends Specification {
 
@@ -32,7 +33,8 @@ class VisitServiceSpec extends Specification {
 
     void setup() {
         employeeService = Mock()
-        lookupDataService = Mock()
+        //lookupDataService = Mock()
+        lookupDataService = LookupDataServiceSpec.populatedLookupDataService
         patientService = Mock()
         visitDao = Mock()
         visitDiagnosisRepository = Mock()
@@ -71,13 +73,29 @@ class VisitServiceSpec extends Specification {
     void 'test setVisitNumbers() with all valid visits and no duplicate dates'() {
         given:
         List<Visit> patientVisits = [
-                new Visit(visitId: 1, patient: PATIENT, visitType: INITIAL, patientType: DANCER, insuranceType: BCBS,
+                // initial, dancer, bcbs
+                new Visit(visitId: 1, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[0].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(10)),
-                new Visit(visitId: 2, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 2, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(7)),
-                new Visit(visitId: 3, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 3, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(4)),
-                new Visit(visitId: 4, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 4, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(1))
         ]
 
@@ -85,9 +103,10 @@ class VisitServiceSpec extends Specification {
         service.setVisitNumbers(patientVisits[1])
 
         then:
-        1 * visitRepository.findByPatientIdOrderByVisitDateAsc(1) >> patientVisits
+        1 * visitRepository.findByPatientIdAndFromDateAndToDate(1,
+                LocalDate.of(Year.now().value, 1, 1), LocalDate.of(Year.now().value, 12, 31)) >> patientVisits
         1 * visitRepository.saveAll( { List<Visit> visits ->
-            visits.size() == 4 && visits[0].visitId == 1  && visits[0].visitNumber == 1&&
+            visits.size() == 4 && visits[0].visitId == 1 && visits[0].visitNumber == 1 &&
                     visits[1].visitId == 2 && visits[1].visitNumber == 2 &&
                     visits[2].visitId == 3 && visits[2].visitNumber == 3 &&
                     visits[3].visitId == 4 && visits[3].visitNumber == 4
@@ -97,13 +116,29 @@ class VisitServiceSpec extends Specification {
     void 'test setVisitNumbers() with some non-numbered visits and no duplicate dates'() {
         given:
         List<Visit> patientVisits = [
-                new Visit(visitId: 1, patient: PATIENT, visitType: INITIAL, patientType: DANCER, insuranceType: BCBS,
+                // initial, dancer, bcbs
+                new Visit(visitId: 1, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[0].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(10)),
-                new Visit(visitId: 2, patient: PATIENT, visitType: CANCEL, patientType: DANCER, insuranceType: BCBS,
+                // cancel, dancer, bcbs
+                new Visit(visitId: 2, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[2].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(7)),
-                new Visit(visitId: 3, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 3, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(4)),
-                new Visit(visitId: 4, patient: PATIENT, visitType: CANCEL, patientType: DANCER, insuranceType: BCBS,
+                // cancel, dancer, bcbs
+                new Visit(visitId: 4, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[2].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(1))
         ]
 
@@ -111,7 +146,8 @@ class VisitServiceSpec extends Specification {
         service.setVisitNumbers(patientVisits[1])
 
         then:
-        1 * visitRepository.findByPatientIdOrderByVisitDateAsc(1) >> patientVisits
+        1 * visitRepository.findByPatientIdAndFromDateAndToDate(1,
+                LocalDate.of(Year.now().value, 1, 1), LocalDate.of(Year.now().value, 12, 31)) >> patientVisits
         1 * visitRepository.saveAll( { List<Visit> visits ->
             visits.size() == 2 && visits[0].visitId == 1  && visits[0].visitNumber == 1&&
                     visits[1].visitId == 3 && visits[1].visitNumber == 2
@@ -121,17 +157,41 @@ class VisitServiceSpec extends Specification {
     void 'test setVisitNumbers() with all numbered visits and some duplicate dates'() {
         given:
         List<Visit> patientVisits = [
-                new Visit(visitId: 1, patient: PATIENT, visitType: INITIAL, patientType: DANCER, insuranceType: BCBS,
+                // initial, dancer, bcbs
+                new Visit(visitId: 1, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[0].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(10)),
-                new Visit(visitId: 2, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 2, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(7)),
-                new Visit(visitId: 3, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 3, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(4)),
-                new Visit(visitId: 4, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 4, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(7)),
-                new Visit(visitId: 5, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 5, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(4)),
-                new Visit(visitId: 6, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 6, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(1))
         ]
 
@@ -139,7 +199,8 @@ class VisitServiceSpec extends Specification {
         service.setVisitNumbers(patientVisits[1])
 
         then:
-        1 * visitRepository.findByPatientIdOrderByVisitDateAsc(1) >> patientVisits
+        1 * visitRepository.findByPatientIdAndFromDateAndToDate(1,
+                LocalDate.of(Year.now().value, 1, 1), LocalDate.of(Year.now().value, 12, 31)) >> patientVisits
         1 * visitRepository.saveAll( { List<Visit> visits ->
             visits.size() == 6 && visits[0].visitId == 1 && visits[0].visitNumber == 1 &&
                     visits[1].visitId == 2 && visits[1].visitNumber == 2 &&
@@ -153,17 +214,41 @@ class VisitServiceSpec extends Specification {
     void 'test setVisitNumbers() with all numbered visits and mostly preset visit numbers'() {
         given:
         List<Visit> patientVisits = [
-                new Visit(visitId: 1, patient: PATIENT, visitType: INITIAL, patientType: DANCER, insuranceType: BCBS,
+                // initial, dancer, bcbs
+                new Visit(visitId: 1, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[0].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(10), visitNumber: 1),
-                new Visit(visitId: 2, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 2, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(8), visitNumber: 2),
-                new Visit(visitId: 3, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 3, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(6), visitNumber: 3),
-                new Visit(visitId: 4, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 4, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(5), visitNumber: 4),
-                new Visit(visitId: 5, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 5, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(3), visitNumber: 5),
-                new Visit(visitId: 6, patient: PATIENT, visitType: FOLLOW_UP, patientType: DANCER, insuranceType: BCBS,
+                // follow up, dancer, bcbs
+                new Visit(visitId: 6, patient: PATIENT, patientId: PATIENT.patientId,
+                        visitTypeId: lookupDataService.visitTypes[1].visitTypeId,
+                        patientTypeId: lookupDataService.patientTypes[2].patientTypeId,
+                        insuranceTypeId: lookupDataService.insuranceTypes[0].insuranceTypeId,
                         visitDate: LocalDate.now().minusDays(1), visitNumber: 0)
         ]
 
@@ -171,7 +256,8 @@ class VisitServiceSpec extends Specification {
         service.setVisitNumbers(patientVisits[5])
 
         then:
-        1 * visitRepository.findByPatientIdOrderByVisitDateAsc(1) >> patientVisits
+        1 * visitRepository.findByPatientIdAndFromDateAndToDate(1,
+                LocalDate.of(Year.now().value, 1, 1), LocalDate.of(Year.now().value, 12, 31)) >> patientVisits
         1 * visitRepository.saveAll( { List<Visit> visits ->
             visits.size() == 1 && visits[0].visitId == 6 && visits[0].visitNumber == 6
         })

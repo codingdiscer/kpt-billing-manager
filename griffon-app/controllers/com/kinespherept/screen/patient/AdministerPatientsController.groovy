@@ -7,8 +7,6 @@ import com.kinespherept.config.SpringConfig
 import com.kinespherept.enums.Mutation
 import com.kinespherept.enums.NavigationSection
 import com.kinespherept.manager.SceneManager
-import com.kinespherept.model.core.Employee
-import com.kinespherept.model.core.EmployeeRole
 import com.kinespherept.model.core.Patient
 import com.kinespherept.model.navigation.SceneDefinition
 import com.kinespherept.service.PatientService

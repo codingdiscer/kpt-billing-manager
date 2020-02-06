@@ -214,37 +214,45 @@ class BrowseReportsController {
         }
     }
 
+    /**
+     * This method exists solely to allow for better tests (it can be overridden in a test...)
+     */
+    LocalDate getNow() {
+        LocalDate.now()
+    }
 
+    /**
+     * Changes the selected date elements (yearsChoice, startMonthChoice, endMonthsChoice)
+     * based on the given TimeRangePreset option.
+     */
     void setDatesForPreset(TimeRangePreset preset) {
         switch(preset) {
             case TimeRangePreset.LAST_MONTH:
                 view.disableTimeRangeElements()
-                LocalDate now = LocalDate.now()
+                LocalDate now = getNow()
                 int startYear = model.currentYearExceptIfJanuary
-                if(now.month.value < 1) {
-                    println "//TODO - build this!!"
-                } else {
-                    model.yearsChoice = String.valueOf(model.currentYearExceptIfJanuary)
-                    model.startMonthsChoice = now.minus(1, ChronoUnit.MONTHS).month.name()
+                model.yearsChoice = String.valueOf(model.currentYearExceptIfJanuary)
+                model.startMonthsChoice = now.minus(1, ChronoUnit.MONTHS).month.name()
 
-                    prepareEndMonths(now.minus(1, ChronoUnit.MONTHS).month, startYear, false)
-                    model.endMonthsChoice = model.endMonths.get(0).toString()
-                }
+                prepareEndMonths(now.minus(1, ChronoUnit.MONTHS).month, startYear, false)
+                model.endMonthsChoice = model.endMonths.get(0).toString()
                 break
 
             case TimeRangePreset.LAST_3_MONTHS:
                 view.disableTimeRangeElements()
-                LocalDate now = LocalDate.now()
+                LocalDate now = getNow()
                 int startYear = model.currentYearExceptIfJanuary
-                if(now.month.value < 3) {
-                    println "//TODO - build this!!"
+                model.startMonthsChoice = now.minus(3, ChronoUnit.MONTHS).month.name()
+
+                if(now.month.value == 2 || now.month.value == 3) {  // feb & march have special logic
+                    model.yearsChoice = String.valueOf(model.currentYearExceptIfJanuary - 1)
+                    prepareEndMonths(now.minus(3, ChronoUnit.MONTHS).month, startYear - 1, true)
                 } else {
                     model.yearsChoice = String.valueOf(model.currentYearExceptIfJanuary)
-                    model.startMonthsChoice = now.minus(3, ChronoUnit.MONTHS).month.name()
-
                     prepareEndMonths(now.minus(3, ChronoUnit.MONTHS).month, startYear, false)
-                    model.endMonthsChoice = model.endMonths.get(2).toString()
                 }
+
+                model.endMonthsChoice = model.endMonths.get(2).toString()
                 break
 
             case TimeRangePreset.THIS_YEAR:

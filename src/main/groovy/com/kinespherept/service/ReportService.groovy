@@ -38,6 +38,7 @@ class ReportService {
      */
     static String VISIT_TYPE_CANCEL_NO_SHOW_NOT_FOUND = 'Unable to find VisitType "cancel/no show" within the ReportService - this is a critical error.'
     static String INSURANCE_TYPE_UHC_NOT_FOUND = 'Unable to find InsuranceType "UHC" within the ReportService - this is a critical error.'
+    static String TREATMENT_DRY_NEEDLING_NOT_FOUND = 'Unable to find Treatment "Dry Needling 3 or more" within the ReportService - this is a critical error.'
 
 
     VisitType initialVisitType
@@ -45,6 +46,7 @@ class ReportService {
     VisitType cancelNoShowVisitType
     InsuranceType uhcInsuranceType
     InsuranceType uhcUmrInsuranceType
+    Treatment dryNeedling3OrMore
 
 
     EmployeeService employeeService
@@ -85,6 +87,11 @@ class ReportService {
             throw new IllegalStateException(INSURANCE_TYPE_UHC_NOT_FOUND)
         }
 
+        dryNeedling3OrMore = lookupDataService.findTreatmentByTreatmentCode(Treatment.TREATMENT_CODE_DRY_NEEDLING_3_OR_MORE)
+        if(!dryNeedling3OrMore) {
+            log.error(TREATMENT_DRY_NEEDLING_NOT_FOUND)
+            throw new IllegalStateException(TREATMENT_DRY_NEEDLING_NOT_FOUND)
+        }
     }
 
 
@@ -253,6 +260,9 @@ class ReportService {
             Treatment treatment = lookupDataService.findTreatmentById(vt.treatmentId)
             if(treatment.isEvaluation()) {
                 count += 2
+            } else if(treatment.treatmentId == dryNeedling3OrMore.treatmentId) {
+                // "dry needling 3 or more" counts as 2 treatments
+                count += vt.treatmentQuantity * 2
             } else {
                 count += vt.treatmentQuantity
             }

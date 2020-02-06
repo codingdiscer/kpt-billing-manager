@@ -48,13 +48,14 @@ class ReportServiceSpec extends Specification {
     }
 
 
-    def 'test that init sets the visitType & insuranceType objects'() {
+    def 'test that init sets the visitType & insuranceType & treatment objects'() {
         when:   'before init is called, all should be null'
         reportService.initialVisitType = null
         reportService.followUpVisitType = null
         reportService.cancelNoShowVisitType = null
         reportService.uhcInsuranceType = null
         reportService.uhcUmrInsuranceType = null
+        reportService.dryNeedling3OrMore = null
 
         then:   'the stashed visit type is empty'
         reportService.initialVisitType == null
@@ -62,6 +63,7 @@ class ReportServiceSpec extends Specification {
         reportService.cancelNoShowVisitType == null
         reportService.uhcInsuranceType == null
         reportService.uhcUmrInsuranceType == null
+        reportService.dryNeedling3OrMore == null
 
 
         when:
@@ -73,6 +75,7 @@ class ReportServiceSpec extends Specification {
         reportService.cancelNoShowVisitType.visitTypeName == VisitType.CANCEL_NO_SHOW
         reportService.uhcInsuranceType.insuranceTypeName == InsuranceType.UNITED_HEALTHCARE
         reportService.uhcUmrInsuranceType.insuranceTypeName == InsuranceType.UNITED_HEALTHCARE_UMR
+        reportService.dryNeedling3OrMore.treatmentCode == Treatment.TREATMENT_CODE_DRY_NEEDLING_3_OR_MORE
     }
 
 
@@ -263,6 +266,19 @@ class ReportServiceSpec extends Specification {
                 es.employees[0], [buildVisitTreatment(lds.treatments[2], 2), buildVisitTreatment(lds.treatments[0], 1)]))
         then:   'count is 3'
         count == 3
+
+        when:   '1 dry needling treatments'
+        count = reportService.getTreatmentCount(buildVisit(lds.patientTypes[0], lds.insuranceTypes[0], lds.visitTypes[0],
+                es.employees[0], [buildVisitTreatment(lds.treatments[12], 1)]))
+        then:   'count is 2'
+        count == 2
+
+        when:   '2 dry needling + another treatment'
+        count = reportService.getTreatmentCount(buildVisit(lds.patientTypes[0], lds.insuranceTypes[0], lds.visitTypes[0],
+                es.employees[0], [buildVisitTreatment(lds.treatments[12], 2), buildVisitTreatment(lds.treatments[0], 1)]))
+        then:   'count is 5'
+        count == 5
+
     }
 
 

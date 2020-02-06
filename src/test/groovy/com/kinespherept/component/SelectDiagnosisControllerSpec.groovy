@@ -1,20 +1,19 @@
-package com.kinespherept
+package com.kinespherept.component
 
 import com.kinespherept.model.core.Diagnosis
-import com.kinespherept.screen.patient.SetupPatientController
-import com.kinespherept.screen.patient.SetupPatientView
+import com.kinespherept.model.core.DiagnosisType
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.Labeled
 import spock.lang.Specification
 
-class SetupPatientControllerSpec extends Specification {
+class SelectDiagnosisControllerSpec extends Specification {
 
     // the class under test
-    SetupPatientController controller
+    SelectDiagnosisController controller
 
     // supporting components
-    SetupPatientView patientAddView
+    SelectDiagnosisView selectDiagnosisView
 
     static {
         // force initialization JavaFX Toolkit
@@ -23,19 +22,22 @@ class SetupPatientControllerSpec extends Specification {
 
 
     void setup() {
-        patientAddView = Spy()
-        controller = new SetupPatientController(view: patientAddView)
+        selectDiagnosisView = Spy()
+        controller = new SelectDiagnosisController(view: selectDiagnosisView)
     }
 
 
 
     def 'test prepareDisplayableDiagnosisList()'() {
         given:
+        DiagnosisType dt1 = new DiagnosisType(diagnosisTypeName: 'typeA', displayOrder: 1)
+        DiagnosisType dt2 = new DiagnosisType(diagnosisTypeName: 'typeB', displayOrder: 2)
+
         List<Diagnosis> list1 = [
-                new Diagnosis(diagnosisTypeOrder: 1, diagnosisType: 'typeA', diagnosisName: 'nameA', displayOrder: 1, diagnosisCode: 'codeA'),
-                new Diagnosis(diagnosisTypeOrder: 1, diagnosisType: 'typeA', diagnosisName: 'nameB', displayOrder: 2, diagnosisCode: 'codeB'),
-                new Diagnosis(diagnosisTypeOrder: 2, diagnosisType: 'typeB', diagnosisName: 'nameC', displayOrder: 1, diagnosisCode: 'codeC'),
-                new Diagnosis(diagnosisTypeOrder: 2, diagnosisType: 'typeB', diagnosisName: 'nameD', displayOrder: 2, diagnosisCode: 'codeD'),
+                new Diagnosis(diagnosisTypeId: 1, diagnosisType: dt1, diagnosisName: 'nameA', displayOrder: 1, diagnosisCode: 'codeA'),
+                new Diagnosis(diagnosisTypeId: 1, diagnosisType: dt1, diagnosisName: 'nameB', displayOrder: 2, diagnosisCode: 'codeB'),
+                new Diagnosis(diagnosisTypeId: 2, diagnosisType: dt2, diagnosisName: 'nameC', displayOrder: 1, diagnosisCode: 'codeC'),
+                new Diagnosis(diagnosisTypeId: 2, diagnosisType: dt2, diagnosisName: 'nameD', displayOrder: 2, diagnosisCode: 'codeD'),
         ]
 
 
