@@ -196,3 +196,15 @@ versionDisplay - Writes version information on the standard output.
 versionFile - Writes version information into a file.
 
 ```
+
+
+### How to add a security group to the db
+
+Get the IP address here - https://whatismyipaddress.com/
+
+https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#SecurityGroups:search=home;sort=group-id
+
+
+https://us-east-2.console.aws.amazon.com/rds/home?region=us-east-2#dbinstance:id=kinespherept
+
+

@@ -14,7 +14,8 @@ enum VisitStatus {
     AWAITING_SECONDARY      ('Awaiting secondary'),
     BILL_SENT_TO_PATIENT    ('Bill sent to patient'),
     PAID_IN_FULL            ('Paid in full'),
-    REFUND_NEEDED           ('Refund needed')
+    REFUND_NEEDED           ('Refund needed'),
+    ENTERED_IN_TURBO_PT     ('Entered in TurboPT')
 
     // ARCHIVED - ??
 
