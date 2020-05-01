@@ -461,7 +461,7 @@ class TrackVisitStatusView extends BaseView {
 
         boolean disabledLabel = false
 
-        if(visit.visitStatus == VisitStatus.PAID_IN_FULL) {
+        if(visit.visitStatus == VisitStatus.PAID_IN_FULL || visit.visitStatus == VisitStatus.ENTERED_IN_TURBO_PT) {
             disabledLabel = true
         }
 
